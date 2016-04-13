@@ -2,11 +2,12 @@ import {Injectable} from 'angular2/core';
 import {Http, Response, Headers, RequestOptions, RequestMethod} from 'angular2/http';
 import {tokenNotExpired} from 'angular2-jwt';
 import {Observable} from 'rxjs/Observable';
+import {IAuthService} from './iauth.service';
 import {LoginForm} from '../forms/login-form';
 import {ResetForm} from '../forms/reset-form';
 
 @Injectable()
-export class BakerApiService {
+export class BakerApiService implements IAuthService {
 
     private url = 'http://localhost:3000';
 
@@ -28,6 +29,11 @@ export class BakerApiService {
 
     isLoggedIn() {
         return tokenNotExpired();
+    }
+
+    hasRole(roles: string[]) {
+        // TODO: replace stub with array intersect when jwt includes roles
+        return true;
     }
 
     logout() {
