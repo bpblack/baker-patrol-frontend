@@ -1,29 +1,41 @@
 import {Component} from 'angular2/core';
 import {Router, RouterLink} from 'angular2/router';
 import {Http} from 'angular2/http';
-import {LoginForm} from '../forms/login-form';
+import {FormBuilder, Validators, Control, ControlGroup, FORM_DIRECTIVES} from 'angular2/common';
 import {BakerApiService} from '../services/baker-api.service';
+import {emailRegexp} from '../validations/validations';
 
 @Component({
     selector: 'baker-patrol-login',
     templateUrl: 'app/views/login.component.html',
     styleUrls: ['app/styles/login.component.css'],
-    directives: [RouterLink]
+    directives: [RouterLink, FORM_DIRECTIVES]
 })
 
 export class LoginComponent {
-    errorMessage = '';
-    login = new LoginForm('', '');
+    error = false;
+    loginForm: ControlGroup;
     
-    constructor(private _apiService: BakerApiService, private _router: Router) {}
-
-    onSubmit() {
-        this.errorMessage = '';
-        this._apiService.login(this.login).subscribe(
-	    success => this._router.navigate(['Dash']),
-            error => this.errorMessage = error 
-        );
+    constructor(private _apiService: BakerApiService, private _router: Router, fb: FormBuilder) {
+	this.loginForm = fb.group({
+	    email: ['',Validators.compose([
+	        Validators.required,
+		Validators.pattern(emailRegexp)]) 
+	    ],
+	    password: ['', Validators.compose([Validators.required])]
+	});
     }
 
-    get diagnostic() { return JSON.stringify({'login': this.login}); }
+    onSubmit() {
+	this._apiService.login(this.loginForm.value).subscribe(
+	    success => this._router.navigate(['Dash']),
+	    error => this.error = true 
+	);
+    }
+
+    hasError() {
+        return this.error;
+    }
+
+    get diagnostic() { return JSON.stringify({'login': this.loginForm.value}); }
 }
