@@ -1,5 +1,5 @@
-import { ElementRef, DynamicComponentLoader, AttributeMetadata, Directive, Attribute } from 'angular2/core';
-import { Router, RouterOutlet, ComponentInstruction } from 'angular2/router';
+import {ElementRef, DynamicComponentLoader, AttributeMetadata, Directive, Attribute} from 'angular2/core';
+import {Router, RouterOutlet, ComponentInstruction} from 'angular2/router';
 import {IAuthService} from '../services/iauth.service';
 
 @Directive({
