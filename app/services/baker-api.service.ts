@@ -9,7 +9,7 @@ import {ResetForm} from '../forms/reset-form';
 @Injectable()
 export class BakerApiService implements IAuthService {
 
-  private url = 'http://localhost:3000';
+  private url = 'http://localhost:3000/api';
   private jwtHelper: JwtHelper = new JwtHelper();
 
   constructor(private http: Http, private authHttp: AuthHttp) {}
