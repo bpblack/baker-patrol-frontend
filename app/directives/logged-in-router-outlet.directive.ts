@@ -15,7 +15,6 @@ export class LoggedInRouterOutlet extends RouterOutlet {
     private _authService: IAuthService
   ) {
     super(_viewContainerRef, _loader, _parentRouter, nameAttr);
-
     this.router = _parentRouter;
   }
 
@@ -38,5 +37,4 @@ export class LoggedInRouterOutlet extends RouterOutlet {
 
     this.router.navigate(['Login']);
   }
-
 }
