@@ -1,0 +1,20 @@
+<h2 class="page-header">Duty Days</h2>
+<div class="table-responsive">
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Team</th>
+        <th>Responsibility</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let patrol of patrols">
+        <td>{{patrol.duty_day.date}}</td>
+        <td>{{patrol.duty_day.team.name}}</td>
+        <td>{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!--{{diagnostic}}-->

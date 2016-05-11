@@ -1,8 +1,10 @@
 import {Component} from '@angular/core';
 import {RouteConfig, Router, RouterLink} from '@angular/router-deprecated';
+import {LoggedInRouterOutlet} from '../directives/logged-in-router-outlet.directive';
 import {BakerApiService} from '../services/baker-api.service';
+import {PatrolsComponent} from './patrols.component'
 
-/*@RouteConfig([
+@RouteConfig([
   { 
     path: "/Patrols",     
     name: "Patrols",     
@@ -10,12 +12,12 @@ import {BakerApiService} from '../services/baker-api.service';
     useAsDefault: true,
     data: {roles: []}
   }
-])*/
+])
 
 @Component({
   selector: 'baker-patrol-dash',
   templateUrl: 'app/views/dash.component.html',
-  directives: [RouterLink]
+  directives: [LoggedInRouterOutlet, RouterLink]
 })
 
 export class DashComponent {

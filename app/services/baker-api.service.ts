@@ -51,9 +51,9 @@ export class BakerApiService implements IAuthService {
     return this.http.patch(this.url + '/password_resets/' + id, body, this.defaultOptions()).map(res => res.ok).catch(this.handleError);
   }
 
-  userPatrols(user_id: number = this.currentUser(), season_id: number = 0) {
+  userPatrols(user_id: number = this.currentUser(), season_id: number = 1) {
     return this.authHttp.get(this.url + '/users/' + user_id + '/patrols' + ((season_id > 0) ? ('?season_id=' + season_id) : '')).map(
-      res => res.json()
+      res => res.json().patrols
     ).catch(this.handleError);
   }
 
@@ -65,7 +65,7 @@ export class BakerApiService implements IAuthService {
   } 
 
   private currentUser() : number {
-    return this.jwtHelper.decodeToken(localStorage.getItem('id_token')).id;
+    return this.jwtHelper.decodeToken(localStorage.getItem('id_token')).sub;
   }
   
   private handleError(error: Response) {

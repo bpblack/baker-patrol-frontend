@@ -16,7 +16,7 @@ import {BakerApiService} from './services/baker-api.service';
     component: LoginComponent 
   },
   {
-    path: "/Dash",
+    path: "/Dash/...",
     name: "Dash",
     component: DashComponent,
     useAsDefault: true,

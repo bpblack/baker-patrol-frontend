@@ -23,7 +23,7 @@ export class LoginComponent {
         Validators.pattern(emailRegexp)]) 
       ],
       password: ['', Validators.compose([
-        Validators.required
+        Validators.required])
       ]
     });
   }
