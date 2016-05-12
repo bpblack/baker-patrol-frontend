@@ -1,0 +1,63 @@
+<div *ngIf="team">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2>{{team.name}}</h2>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3>Team Leader</h3>
+            </div> 
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <tbody>
+                    <tr>
+                      <td>{{team.leader.name}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3>Patrollers</h3>
+            </div> 
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <tbody>
+                    <tr *ngFor="let patroller of team.patrollers">
+                      <td>{{patroller.name}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3>Duty Days</h3>
+            </div> 
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <tbody>
+                    <tr *ngFor="let dutyDay of team.duty_days">
+                      <td><a [routerLink]="['../DutyDay', {id: dutyDay.id}]">{{dutyDay.date}}</a></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,21 +1,19 @@
-<div *ngIf="patrols" class="panel panel-default">
+<div *ngIf="dutyDay" class="panel panel-default">
   <div class="panel-heading">
-    <h2>Duty Days</h2>
+    <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
   </div>
   <div class="panel-body">
     <div class="table-responsive">
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Team</th>
+            <th>Patroller</th>
             <th>Responsibility</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let patrol of patrols">
-            <td><a [routerLink]="['../DutyDay', {id: patrol.duty_day.id}]">{{patrol.duty_day.date}}</a></td>
-            <td>{{patrol.duty_day.team.name}}</td>
+          <tr *ngFor="let patrol of dutyDay.patrols">
+            <td>{{patrol.patroller.name}}</td>
             <td>{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
           </tr>
         </tbody>

@@ -35,6 +35,18 @@ export class BakerApiService implements IAuthService {
     return true;
   }
 
+  userName() : string {
+    if (this.isLoggedIn()) {
+      return this.currentUserExtra().name;
+    }
+  }
+
+  userSeasons() {
+    if (this.isLoggedIn()) {
+      return this.currentUserExtra().seasons;
+    }
+  }
+      
   logout() {
     localStorage.removeItem('id_token');
   }
@@ -51,9 +63,30 @@ export class BakerApiService implements IAuthService {
     return this.http.patch(this.url + '/password_resets/' + id, body, this.defaultOptions()).map(res => res.ok).catch(this.handleError);
   }
 
-  userPatrols(user_id: number = this.currentUser(), season_id: number = 1) {
-    return this.authHttp.get(this.url + '/users/' + user_id + '/patrols' + ((season_id > 0) ? ('?season_id=' + season_id) : '')).map(
+  userExtraClaims() {
+    return this.authHttp.get(this.url + '/users/' + this.currentUser() + '/custom_claims').map(
+      res => { 
+        localStorage.setItem('id_token_extra', res.json().extra);
+        return res.ok;
+      }
+    ).catch(this.handleError);
+  }
+  
+  patrols(seasonId: number=this.userSeasons()[0].id, userId: number = this.currentUser()) {
+    return this.authHttp.get(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols').map(
       res => res.json().patrols
+    ).catch(this.handleError);
+  }
+
+  dutyDay(dutyDayId: number) {
+    return this.authHttp.get(this.url + '/duty_days/' + dutyDayId).map(
+      res => res.json()
+    ).catch(this.handleError);
+  }
+
+  team(seasonId: number = this.userSeasons()[0].id, userId: number = this.currentUser()) {
+    return this.authHttp.get(this.url + '/users/' + userId + '/seasons/' +  seasonId + '/teams').map(
+      res => res.json()
     ).catch(this.handleError);
   }
 
@@ -66,6 +99,11 @@ export class BakerApiService implements IAuthService {
 
   private currentUser() : number {
     return this.jwtHelper.decodeToken(localStorage.getItem('id_token')).sub;
+  }
+
+  private currentUserExtra() {
+    var extra_token = localStorage.getItem('id_token_extra');
+    return this.jwtHelper.decodeToken(extra_token);
   }
   
   private handleError(error: Response) {

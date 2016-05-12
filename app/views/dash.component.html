@@ -1,4 +1,4 @@
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -10,12 +10,16 @@
         </div>
         <p class="navbar-brand">Mt. Baker Volunteer Patrol</p>
         <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a [routerLink]="['Team']">Team</a></li>
+              <li><a [routerLink]="['Patrols']">Duty Days</a></li>
+            </ul>
             <ul class="nav navbar-nav navbar-right">
-      	        <li><a [routerLink]="['Login']" (click)="logout()">Logout</a></li>
+              <li><a [routerLink]="['Login']" (click)="logout()">Logout({{userName()}})</a></li>
             </ul>
         </div>
     </div>
-</div>
+</nav>
 
 <div class="container">
   <div class="starter-template">

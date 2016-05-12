@@ -4,8 +4,8 @@ import {BakerApiService} from '../services/baker-api.service';
 
 @Component({
   selector: 'baker-patrol-patrols',
-  templateUrl: 'app/views/patrols.component.html'//,
-  //directives: [RouterLink]
+  templateUrl: 'app/views/patrols.component.html',
+  directives: [RouterLink]
 })
 
 export class PatrolsComponent implements OnInit {
@@ -15,7 +15,7 @@ export class PatrolsComponent implements OnInit {
 
   ngOnInit() {
     //get the current user's patrols
-    this._apiService.userPatrols().subscribe(
+    this._apiService.patrols().subscribe(
       success => { this.patrols = success }
       //error => {}  
     );
