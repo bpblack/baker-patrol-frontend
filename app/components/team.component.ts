@@ -10,14 +10,20 @@ import {BakerApiService} from '../services/baker-api.service';
 
 export class TeamComponent implements OnInit {
   team: Object;
+  seasons: Array<any>;
 
   constructor(private _apiService: BakerApiService, private _router: Router) {}
 
   ngOnInit() {
-    //get the current user's team
-    this._apiService.team().subscribe(
-      success => { this.team = success }
-      //error => {}  
+    //get the current user's seasons, then the team for the most recent season
+    this._apiService.userSeasons().subscribe(
+      success => { this.seasons = success; },
+      err => {},
+      () => {
+        this._apiService.team(this.seasons[0].id).subscribe(
+          success => { this.team = success; }
+        );
+      }
     );
   }
 

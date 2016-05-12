@@ -10,14 +10,20 @@ import {BakerApiService} from '../services/baker-api.service';
 
 export class PatrolsComponent implements OnInit {
   patrols: Array<Object>;
+  seasons: Array<any>;
 
   constructor(private _apiService: BakerApiService, private _router: Router) {}
 
   ngOnInit() {
-    //get the current user's patrols
-    this._apiService.patrols().subscribe(
-      success => { this.patrols = success }
-      //error => {}  
+    //get the current user's seasons, then the patrols for the most recent season
+    this._apiService.userSeasons().subscribe(
+      success => { console.log("seasons"); this.seasons = success; },
+      err => {},
+      () => { 
+        this._apiService.patrols(this.seasons[0].id).subscribe(
+          success => { this.patrols = success; }
+        );
+      }
     );
   }
 

@@ -35,18 +35,26 @@ import {TeamComponent} from './team.component'
 })
 
 export class DashComponent implements OnInit {
+  userName: string;
+
   constructor(private _apiService: BakerApiService, private _router: Router) {}
 
   ngOnInit() {
-    this._apiService.userExtraClaims().subscribe( success => {})
-  }
-
-  userName() {
-    return this._apiService.userName();
+    this._apiService.userName().subscribe(
+      success => this.userName = success
+    );
   }
 
   logout() {
     this._apiService.logout();
+  }
+
+  get diagnostic() {
+    let seasons: Array<any>;
+    this._apiService.userSeasons().subscribe(
+      success => seasons = success
+    );
+    return JSON.stringify({name: this.userName, seasons: seasons});
   }
 }
 

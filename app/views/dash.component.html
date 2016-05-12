@@ -14,8 +14,8 @@
               <li><a [routerLink]="['Team']">Team</a></li>
               <li><a [routerLink]="['Patrols']">Duty Days</a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a [routerLink]="['Login']" (click)="logout()">Logout({{userName()}})</a></li>
+            <ul *ngIf="userName" class="nav navbar-nav navbar-right">
+              <li><a [routerLink]="['Login']" (click)="logout()">Logout({{userName}})</a></li>
             </ul>
         </div>
     </div>
@@ -25,4 +25,5 @@
   <div class="starter-template">
     <router-outlet></router-outlet>
   </div>
+  {{diagnostic}}
 </div>

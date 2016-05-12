@@ -1,47 +1,51 @@
 <div class="container">
   <div class="row">
-    <div class="Absolute-Center is-Responsive">
-      <div id="logo-container" class="text-center">
-        <h3>Reset Password</h3>
-      </div>
-      <div [hidden]="!wasSuccess()" class="col-sm-12 col-md-10 col-md-offset-1">
-	<div class="alert alert-success">
-          <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-          <span class="sr-only">Success:</span>
-	  Your password was successfully reset. You can now <a [routerLink]="['Login']" class="alert-link">login</a>.
+    <div class="col-sm-12 col-md-10 col-md-offset-1">
+      <div class="panel panel-default Absolute-Center is-Responsive">
+        <div id="logo-container" class="panel-heading text-center">
+          <h3>Reset Password</h3>
         </div>
-      </div>
-      <div [hidden]="wasSuccess()" class="col-sm-12 col-md-10 col-md-offset-1">
-	<div [hidden]="!hasError()" class="alert alert-danger" role="alert">
-	  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-          <span class="sr-only">Error:</span>
-          {{message}}
-        </div>
-        <form [ngFormModel]="resetForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" ngControl="password" placeholder="" #password="ngForm">
-            <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
-              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-              <span class="sr-only">Error:</span>
-	      A password of at least 8 characters is required.
+        <div class="panel-body">
+          <div [hidden]="!wasSuccess()">
+            <div class="alert alert-success">
+              <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+              <span class="sr-only">Success:</span>
+              Your password was successfully reset. You can now <a [routerLink]="['Login']" class="alert-link">login</a>.
             </div>
           </div>
-          <div class="form-group">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" class="form-control" ngControl="confirm_password" placeholder="" #confirm_password="ngForm">
-            <div [hidden]="confirm_password.valid || confirm_password.pristine || !resetForm.hasError('mismatchedPasswords')" class="alert alert-danger">
+          <div [hidden]="wasSuccess()">
+            <div [hidden]="!hasError()" class="alert alert-danger" role="alert">
               <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
               <span class="sr-only">Error:</span>
-	      A matching password of at least 8 characters is required.
+              {{message}}
             </div>
+            <form [ngFormModel]="resetForm" (ngSubmit)="onSubmit()">
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" ngControl="password" placeholder="" #password="ngForm">
+                <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
+                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                  <span class="sr-only">Error:</span>
+                  A password of at least 8 characters is required.
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" class="form-control" ngControl="confirm_password" placeholder="" #confirm_password="ngForm">
+                <div [hidden]="(confirm_password.valid && !resetForm.hasError('mismatchedPasswords')) || confirm_password.pristine" class="alert alert-danger">
+                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                  <span class="sr-only">Error:</span>
+                  A matching password of at least 8 characters is required.
+                </div>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-def btn-block" [disabled]="!resetForm.valid">Submit</button>
+              </div>
+            </form>
           </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-def btn-block" [disabled]="!resetForm.valid">Submit</button>
-          </div>
-        </form>
-        {{diagnostic}}
+        </div>
       </div>
+      {{diagnostic}}
     </div>
   </div>
 </div>

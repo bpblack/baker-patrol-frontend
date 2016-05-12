@@ -1,35 +1,39 @@
 <div class="container">
   <div class="row">
-    <div class="Absolute-Center is-Responsive">
-      <div id="logo-container" class="text-center">
-        <h3>Forgot Password</h3>
-      </div>
-      <div [hidden]="!wasSuccess()" class="col-sm-12 col-md-10 col-md-offset-1">
-        <div class="alert alert-success">
-	  <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-          <span class="sr-only">Success:</span>
-	  A password reset email has been sent. Please check your email and follow the link in the reset message.
+    <div class="col-sm-12 col-md-10 col-md-offset-1">
+      <div class="panel panel-default Absolute-Center is-Responsive">
+        <div id="logo-container" class="panel-heading text-center">
+          <h3>Forgot Password</h3>
         </div>
-      </div>
-      <div [hidden]="wasSuccess()" class="col-sm-12 col-md-10 col-md-offset-1">
-        <div [hidden]="!hasError()" class="alert alert-danger" role="alert">
-	  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-          <span class="sr-only">Error:</span>
-          {{message}}
-        </div>
-        <form [ngFormModel]="forgotForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <!-- Using #username, we can identify this input to get the value on the form's submit event -->
-            <input type="text" class="form-control" ngControl="email" placeholder="Email" #email="ngForm">
-            <div [hidden]="email.valid || email.pristine" class="alert alert-danger">
-              A valid email address is required.
+        <div class="panel-body">
+          <div [hidden]="!wasSuccess()">
+            <div class="alert alert-success">
+              <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+              <span class="sr-only">Success:</span>
+              A password reset email has been sent. Please check your email and follow the link in the reset message.
             </div>
           </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-def btn-block" [disabled]="!forgotForm.valid">Submit</button>
+          <div [hidden]="wasSuccess()" class="col-sm-12 col-md-10 col-md-offset-1">
+            <div [hidden]="!hasError()" class="alert alert-danger" role="alert">
+              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              <span class="sr-only">Error:</span>
+              {{message}}
+            </div>
+            <form [ngFormModel]="forgotForm" (ngSubmit)="onSubmit()">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <!-- Using #username, we can identify this input to get the value on the form's submit event -->
+                <input type="text" class="form-control" ngControl="email" placeholder="Email" #email="ngForm">
+                <div [hidden]="email.valid || email.pristine" class="alert alert-danger">
+                  A valid email address is required.
+                </div>
+              </div>
+              <div class="form-group">
+                <button type="submit" class="btn btn-def btn-block" [disabled]="!forgotForm.valid">Submit</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>

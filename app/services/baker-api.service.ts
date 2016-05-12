@@ -35,20 +35,25 @@ export class BakerApiService implements IAuthService {
     return true;
   }
 
-  userName() : string {
+  userName() : Observable<string> {
     if (this.isLoggedIn()) {
-      return this.currentUserExtra().name;
+      return this.currentUserExtra().map(
+        success => { return success.name; }
+      ).first();
     }
   }
 
-  userSeasons() {
+  userSeasons() : Observable<Array<any>>{
     if (this.isLoggedIn()) {
-      return this.currentUserExtra().seasons;
+      return this.currentUserExtra().map(
+        success => { return success.seasons; }
+      ).first();
     }
   }
       
   logout() {
     localStorage.removeItem('id_token');
+    localStorage.removeItem('id_token_extra');
   }
 
   forgot(email: string) {
@@ -63,16 +68,7 @@ export class BakerApiService implements IAuthService {
     return this.http.patch(this.url + '/password_resets/' + id, body, this.defaultOptions()).map(res => res.ok).catch(this.handleError);
   }
 
-  userExtraClaims() {
-    return this.authHttp.get(this.url + '/users/' + this.currentUser() + '/custom_claims').map(
-      res => { 
-        localStorage.setItem('id_token_extra', res.json().extra);
-        return res.ok;
-      }
-    ).catch(this.handleError);
-  }
-  
-  patrols(seasonId: number=this.userSeasons()[0].id, userId: number = this.currentUser()) {
+  patrols(seasonId: number, userId: number = this.currentUser()) {
     return this.authHttp.get(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols').map(
       res => res.json().patrols
     ).catch(this.handleError);
@@ -84,7 +80,7 @@ export class BakerApiService implements IAuthService {
     ).catch(this.handleError);
   }
 
-  team(seasonId: number = this.userSeasons()[0].id, userId: number = this.currentUser()) {
+  team(seasonId: number, userId: number = this.currentUser()) {
     return this.authHttp.get(this.url + '/users/' + userId + '/seasons/' +  seasonId + '/teams').map(
       res => res.json()
     ).catch(this.handleError);
@@ -101,13 +97,35 @@ export class BakerApiService implements IAuthService {
     return this.jwtHelper.decodeToken(localStorage.getItem('id_token')).sub;
   }
 
-  private currentUserExtra() {
+  private currentUserExtra() : Observable<any>{
     var extra_token = localStorage.getItem('id_token_extra');
-    return this.jwtHelper.decodeToken(extra_token);
+    if (extra_token === null) {
+      return this.userExtraClaims().map(
+        success => {
+          extra_token = localStorage.getItem('id_token_extra');
+          return this.jwtHelper.decodeToken(extra_token);
+        }
+      )
+    } else { 
+      return new Observable<any>(
+        (obs: any) => {
+          obs.next(this.jwtHelper.decodeToken(extra_token));
+        }
+      );
+    }
   }
   
   private handleError(error: Response) {
     console.error(error);
 	  return Observable.throw(error.json().error || 'Server Error');
+  }
+
+  private userExtraClaims() {
+    return this.authHttp.get(this.url + '/users/' + this.currentUser() + '/custom_claims').map(
+      res => { 
+        localStorage.setItem('id_token_extra', res.json().extra);
+        return res.ok;
+      }
+    ).catch(this.handleError);
   }
 }
