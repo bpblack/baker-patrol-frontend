@@ -1,18 +1,16 @@
 import {Component, OnInit} from '@angular/core';
-import {Router, RouterLink} from '@angular/router-deprecated';
 import {BakerApiService} from '../services/baker-api.service';
 
 @Component({
   selector: 'baker-patrol-team',
   templateUrl: 'app/views/team.component.html',
-  directives: [RouterLink]
 })
 
 export class TeamComponent implements OnInit {
   team: Object;
   seasons: Array<any>;
 
-  constructor(private _apiService: BakerApiService, private _router: Router) {}
+  constructor(private _apiService: BakerApiService) {}
 
   ngOnInit() {
     //get the current user's seasons, then the team for the most recent season

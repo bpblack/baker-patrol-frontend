@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http, Response, Headers, RequestOptions, RequestMethod} from '@angular/http';
 import {AuthHttp, AuthConfig, tokenNotExpired, JwtHelper} from 'angular2-jwt';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs/Rx';
 import {IAuthService} from './iauth.service';
 import {LoginForm} from '../forms/login-form';
 import {ResetForm} from '../forms/reset-form';
@@ -18,7 +18,7 @@ export class BakerApiService implements IAuthService {
     let body = JSON.stringify({
       'auth': l
 	  });
-    return this.http.post(this.url + '/knock/auth_token', body, this.defaultOptions()).map(
+    return this.http.post(this.url + '/user_token', body, this.defaultOptions()).map(
       res => {
         localStorage.setItem('id_token', res.json().jwt);
         return res.ok;
@@ -29,7 +29,7 @@ export class BakerApiService implements IAuthService {
   isLoggedIn() {
     return tokenNotExpired();
   }
-
+  
   hasRole(roles: string[]) {
     // TODO: replace stub with array intersect when jwt includes roles
     return true;
@@ -68,6 +68,7 @@ export class BakerApiService implements IAuthService {
     return this.http.patch(this.url + '/password_resets/' + id, body, this.defaultOptions()).map(res => res.ok).catch(this.handleError);
   }
 
+  
   patrols(seasonId: number, userId: number = this.currentUser()) {
     return this.authHttp.get(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols').map(
       res => res.json().patrols

@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
-import {Router, RouterLink, RouteParams} from '@angular/router-deprecated';
-import {FormBuilder, Validators, Control, ControlGroup, FORM_DIRECTIVES} from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Params} from '@angular/router';
+import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BakerApiService} from '../services/baker-api.service';
 import {passwordRegexp, matchingPasswords} from '../validations/validations';
 
@@ -8,17 +8,20 @@ import {passwordRegexp, matchingPasswords} from '../validations/validations';
   selector: 'baker-patrol-reset',
   templateUrl: 'app/views/reset.component.html',
   styleUrls: ['app/styles/login.component.css'],
-  directives: [RouterLink, FORM_DIRECTIVES]
+  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES]
 })
 
-export class ResetComponent {
-  resetForm: ControlGroup;
+export class ResetComponent implements OnInit {
+  resetForm: FormGroup;
   success: boolean;
   error: boolean;
   message: string;
+  private _token: string;
 
-  constructor(private _apiService: BakerApiService, private _router: Router, private _routeParams: RouteParams, fb: FormBuilder) {
-    this.resetForm = fb.group(
+  constructor(private _apiService: BakerApiService, private _route: ActivatedRoute, private _fb: FormBuilder) {}
+
+  ngOnInit() {
+    this.resetForm = this._fb.group(
       {
         password: ['', Validators.compose([Validators.required, Validators.pattern(passwordRegexp)])],
         confirm_password: ['', Validators.compose([Validators.required, Validators.pattern(passwordRegexp)])],
@@ -27,13 +30,14 @@ export class ResetComponent {
         validator: matchingPasswords('password', 'confirm_password')
       }
     );
+    this._route.params.subscribe(params => {this._token = params['id']});
   }
 
   onSubmit() {
     this.success = false;
     this.error = false;
     this.message='';
-    this._apiService.reset(this._routeParams.get('id'), this.resetForm.value).subscribe(
+    this._apiService.reset(this._token, this.resetForm.value).subscribe(
 	    success => { this.success = true; },
 	    error => { this.error = true; this.message = error; } 
     );
@@ -47,6 +51,6 @@ export class ResetComponent {
     return this.error == true;
   }
 
-  get diagnostic() { return JSON.stringify({'resetForm': this.resetForm.value, 'pw': this.resetForm.controls['password'].valid, 'mismatched': this.resetForm.hasError('mismatchedPasswords')}); }
+  get diagnostic() { return JSON.stringify({'token': this._token, 'resetForm': this.resetForm.value, 'pw': this.resetForm.controls['password'].valid, 'mismatched': this.resetForm.hasError('mismatchedPasswords')}); }
 
 }

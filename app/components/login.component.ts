@@ -1,7 +1,6 @@
-import {Component} from '@angular/core';
-import {Router, RouterLink} from '@angular/router-deprecated';
-import {Http} from '@angular/http';
-import {FormBuilder, Validators, Control, ControlGroup, FORM_DIRECTIVES} from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BakerApiService} from '../services/baker-api.service';
 import {emailRegexp} from '../validations/validations';
 
@@ -9,15 +8,17 @@ import {emailRegexp} from '../validations/validations';
   selector: 'baker-patrol-login',
   templateUrl: 'app/views/login.component.html',
   styleUrls: ['app/styles/login.component.css'],
-  directives: [RouterLink, FORM_DIRECTIVES]
+  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES],
 })
 
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   error = false;
-  loginForm: ControlGroup;
+  loginForm: FormGroup;
   
-  constructor(private _apiService: BakerApiService, private _router: Router, fb: FormBuilder) {
-    this.loginForm = fb.group({
+  constructor(private _apiService: BakerApiService, private _router: Router, private _fb: FormBuilder) {}
+
+  ngOnInit() {
+    this.loginForm = this._fb.group({
       email: ['', Validators.compose([
         Validators.required,
         Validators.pattern(emailRegexp)]) 
@@ -30,13 +31,17 @@ export class LoginComponent {
 
   onSubmit() {
     this._apiService.login(this.loginForm.value).subscribe(
-      success => this._router.navigate(['Dash']),
+      success => this._router.navigate(['/Dash']),
       error => this.error = true 
     );
   }
 
   hasError() {
     return this.error;
+  }
+
+  emailRegexp() {
+    return emailRegexp;
   }
 
   get diagnostic() { return JSON.stringify({'login': this.loginForm.value}); }

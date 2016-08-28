@@ -11,11 +11,9 @@
         <p class="navbar-brand">Mt. Baker Volunteer Patrol</p>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-              <li><a [routerLink]="['Team']">Team</a></li>
-              <li><a [routerLink]="['Patrols']">Duty Days</a></li>
-            </ul>
-            <ul *ngIf="userName" class="nav navbar-nav navbar-right">
-              <li><a [routerLink]="['Login']" (click)="logout()">Logout({{userName}})</a></li>
+              <li><a routerLink="/Dash/Team">Team</a></li>
+              <li><a routerLink="/Dash/Patrols">Duty Days</a></li>
+              <li *ngIf="userName"><a routerLink="/Login" (click)="logout()">Logout({{userName}})</a></li>
             </ul>
         </div>
     </div>

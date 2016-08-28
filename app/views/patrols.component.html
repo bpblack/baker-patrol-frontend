@@ -14,7 +14,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let patrol of patrols">
-            <td><a [routerLink]="['../DutyDay', {id: patrol.duty_day.id}]">{{patrol.duty_day.date}}</a></td>
+            <td><a routerLink="../DutyDay/{{patrol.duty_day.id}}">{{patrol.duty_day.date}}</a></td>
             <td>{{patrol.duty_day.team.name}}</td>
             <td>{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
           </tr>

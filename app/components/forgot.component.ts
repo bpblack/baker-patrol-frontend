@@ -1,6 +1,5 @@
-import {Component} from '@angular/core';
-import {Router} from '@angular/router-deprecated';
-import {FormBuilder, Validators, Control, ControlGroup, FORM_DIRECTIVES} from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BakerApiService} from '../services/baker-api.service';
 import {emailRegexp} from '../validations/validations';
 
@@ -8,17 +7,19 @@ import {emailRegexp} from '../validations/validations';
   selector: 'baker-patrol-forgot',
   templateUrl: 'app/views/forgot.component.html',
   styleUrls: ['app/styles/login.component.css'],
-  directives: [FORM_DIRECTIVES]
+  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES]
 })
 
-export class ForgotComponent {
-  forgotForm: ControlGroup;
+export class ForgotComponent implements OnInit {
+  forgotForm: FormGroup;
   message: string;
   success: boolean;
   error: boolean;
 
-  constructor(private _apiService: BakerApiService, private _router: Router, fb: FormBuilder) {
-    this.forgotForm = fb.group({
+  constructor(private _apiService: BakerApiService, private _fb: FormBuilder) {}
+
+  ngOnInit() {
+    this.forgotForm = this._fb.group({
       email: ['',Validators.compose([
         Validators.required,
         Validators.pattern(emailRegexp)]) 

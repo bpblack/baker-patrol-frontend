@@ -10,7 +10,7 @@
             <div class="alert alert-success">
               <span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
               <span class="sr-only">Success:</span>
-              Your password was successfully reset. You can now <a [routerLink]="['Login']" class="alert-link">login</a>.
+              Your password was successfully reset. You can now <a routerLink="/Login" class="alert-link">login</a>.
             </div>
           </div>
           <div [hidden]="wasSuccess()">
@@ -19,11 +19,11 @@
               <span class="sr-only">Error:</span>
               {{message}}
             </div>
-            <form [ngFormModel]="resetForm" (ngSubmit)="onSubmit()">
+            <form [formGroup]="resetForm" #f="ngForm" (ngSubmit)="onSubmit()">
               <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" ngControl="password" placeholder="" #password="ngForm">
-                <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
+                <input type="password" class="form-control" [formControl]="resetForm.controls['password']" placeholder="" #password="ngForm">
+                <div [hidden]="password.valid || (password.pristine && !f.submitted)" class="alert alert-danger">
                   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                   <span class="sr-only">Error:</span>
                   A password of at least 8 characters is required.
@@ -31,8 +31,8 @@
               </div>
               <div class="form-group">
                 <label for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control" ngControl="confirm_password" placeholder="" #confirm_password="ngForm">
-                <div [hidden]="(confirm_password.valid && !resetForm.hasError('mismatchedPasswords')) || confirm_password.pristine" class="alert alert-danger">
+                <input type="password" class="form-control" [formControl]="resetForm.controls['confirm_password']" placeholder="" #confirm_password="ngForm">
+                <div [hidden]="(confirm_password.valid && !resetForm.hasError('mismatchedPasswords')) || (confirm_password.pristine && !f.submitted)" class="alert alert-danger">
                   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
                   <span class="sr-only">Error:</span>
                   A matching password of at least 8 characters is required.
