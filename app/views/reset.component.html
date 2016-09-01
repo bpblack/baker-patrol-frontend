@@ -14,29 +14,17 @@
             </div>
           </div>
           <div [hidden]="wasSuccess()">
-            <div [hidden]="!hasError()" class="alert alert-danger" role="alert">
-              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-              <span class="sr-only">Error:</span>
-              {{message}}
-            </div>
+            <baker-api-error [error]="error"></baker-api-error>
             <form [formGroup]="resetForm" #f="ngForm" (ngSubmit)="onSubmit()">
               <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" class="form-control" [formControl]="resetForm.controls['password']" placeholder="" #password="ngForm">
-                <div [hidden]="password.valid || (password.pristine && !f.submitted)" class="alert alert-danger">
-                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                  <span class="sr-only">Error:</span>
-                  A password of at least 8 characters is required.
-                </div>
+                <baker-api-error [cond]="!(password.valid || (password.pristine && !f.submitted))" [error]="'A password of at least 8 characters is required.'"></baker-api-error>
               </div>
               <div class="form-group">
                 <label for="confirm_password">Confirm Password</label>
                 <input type="password" class="form-control" [formControl]="resetForm.controls['confirm_password']" placeholder="" #confirm_password="ngForm">
-                <div [hidden]="(confirm_password.valid && !resetForm.hasError('mismatchedPasswords')) || (confirm_password.pristine && !f.submitted)" class="alert alert-danger">
-                  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                  <span class="sr-only">Error:</span>
-                  A matching password of at least 8 characters is required.
-                </div>
+                <baker-api-error [cond]="!((confirm_password.valid && !resetForm.hasError('mismatchedPasswords')) || (confirm_password.pristine && !f.submitted))" [error]="'A matching password of at least 8 characters is required.'"></baker-api-error>
               </div>
               <div class="form-group">
                 <button type="submit" class="btn btn-def btn-block" [disabled]="!resetForm.valid">Submit</button>

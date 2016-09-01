@@ -14,19 +14,13 @@
             </div>
           </div>
           <div [hidden]="wasSuccess()" class="col-sm-12 col-md-10 col-md-offset-1">
-            <div [hidden]="!hasError()" class="alert alert-danger" role="alert">
-              <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-              <span class="sr-only">Error:</span>
-              {{message}}
-            </div>
+            <baker-api-error [cond]="hasError()" [error]="message"></baker-api-error>
             <form [formGroup]="forgotForm" #f="ngForm" (ngSubmit)="onSubmit()">
               <div class="form-group">
                 <label for="email">Email</label>
                 <!-- Using #username, we can identify this input to get the value on the form's submit event -->
                 <input type="text" class="form-control" [formControl]="forgotForm.controls['email']" placeholder="Email" #email="ngForm">
-                <div [hidden]="email.valid || (email.pristine && !f.submitted)" class="alert alert-danger">
-                  A valid email address is required.
-                </div>
+                <baker-api-error [cond]="!(email.valid || (email.pristine && !f.submitted))" [error]="'A valid email address is required.'"></baker-api-error>
               </div>
               <div class="form-group">
                 <button type="submit" class="btn btn-def btn-block" [disabled]="!forgotForm.valid">Submit</button>
@@ -38,4 +32,3 @@
     </div>
   </div>
 </div>
-{{diagnostic}}

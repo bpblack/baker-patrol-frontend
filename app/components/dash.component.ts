@@ -8,12 +8,20 @@ import {BakerApiService} from '../services/baker-api.service';
 
 export class DashComponent implements OnInit {
   userName: string;
+  userSeasons: Array<any>;
+  userRoles: Array<any>;
 
   constructor(private _apiService: BakerApiService) {}
 
   ngOnInit() {
     this._apiService.userName().subscribe(
       success => this.userName = success
+    );
+    this._apiService.userSeasons().subscribe(
+      success=> this.userSeasons = success
+    );
+    this._apiService.userRoles().subscribe(
+      success=> this.userRoles = success
     );
   }
 
@@ -22,11 +30,7 @@ export class DashComponent implements OnInit {
   }
 
   get diagnostic() {
-    let seasons: Array<any>;
-    this._apiService.userSeasons().subscribe(
-      success => seasons = success
-    );
-    return JSON.stringify({name: this.userName, seasons: seasons});
+    return JSON.stringify({name: this.userName, seasons: this.userSeasons, roles: this.userRoles});
   }
 }
 

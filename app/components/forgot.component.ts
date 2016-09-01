@@ -2,12 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BakerApiService} from '../services/baker-api.service';
 import {emailRegexp} from '../validations/validations';
+import {BakerApiError} from './error.component';
 
 @Component({
   selector: 'baker-patrol-forgot',
   templateUrl: 'app/views/forgot.component.html',
   styleUrls: ['app/styles/login.component.css'],
-  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES]
+  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, BakerApiError]
 })
 
 export class ForgotComponent implements OnInit {
@@ -28,7 +29,7 @@ export class ForgotComponent implements OnInit {
   }
  
   onSubmit() {
-    this.message = '';
+    this.message = null;
     this.success = false;
     this.error = false;
     this._apiService.forgot(this.forgotForm.controls['email'].value).subscribe(

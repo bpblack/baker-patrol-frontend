@@ -1,4 +1,5 @@
 import {ControlGroup} from '@angular/common';
+import {FormControl} from '@angular/forms';
 
 //SINGLE FIELD VALIDATORS
 export var emailRegexp = "[a-zA-Z0-9.!#$%&’*+=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*";
@@ -17,3 +18,8 @@ export function matchingPasswords(passwordKey: string, confirmPasswordKey: strin
     }
   }
 }
+
+export function validateIdSelection(c: FormControl) {
+  return c.value > 0 ? null : {validateIdSelection: {valid: false}};
+}
+

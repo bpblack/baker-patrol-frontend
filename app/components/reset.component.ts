@@ -3,19 +3,19 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BakerApiService} from '../services/baker-api.service';
 import {passwordRegexp, matchingPasswords} from '../validations/validations';
+import {BakerApiError} from './error.component';
 
 @Component({
   selector: 'baker-patrol-reset',
   templateUrl: 'app/views/reset.component.html',
   styleUrls: ['app/styles/login.component.css'],
-  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES]
+  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, BakerApiError]
 })
 
 export class ResetComponent implements OnInit {
   resetForm: FormGroup;
   success: boolean;
-  error: boolean;
-  message: string;
+  error: string;
   private _token: string;
 
   constructor(private _apiService: BakerApiService, private _route: ActivatedRoute, private _fb: FormBuilder) {}
@@ -35,20 +35,15 @@ export class ResetComponent implements OnInit {
 
   onSubmit() {
     this.success = false;
-    this.error = false;
-    this.message='';
+    this.error=null;
     this._apiService.reset(this._token, this.resetForm.value).subscribe(
 	    success => { this.success = true; },
-	    error => { this.error = true; this.message = error; } 
+	    error => { this.error = error; } 
     );
   }
 
   wasSuccess() {
     return this.success == true;
-  }
-
-  hasError() {
-    return this.error == true;
   }
 
   get diagnostic() { return JSON.stringify({'token': this._token, 'resetForm': this.resetForm.value, 'pw': this.resetForm.controls['password'].valid, 'mismatched': this.resetForm.hasError('mismatchedPasswords')}); }
