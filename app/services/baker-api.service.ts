@@ -33,8 +33,16 @@ export class BakerApiService implements IAuthService {
     return tokenNotExpired();
   }
   
-  findRole(role: string) : Observable<any> {
-    return this.userRoles().flatMap(x => x).filter(x => x['role'] === role);
+  // returns a stream of role objects
+  findRoles(...roles: Array<string>) : Observable<any> {
+    // convert roles to a "set" for O(1) test in filter
+    console.log('findRoles arg ' + JSON.stringify(roles));
+    let roleSet = {};
+    for (var role of roles) {
+      roleSet[role] = 1;
+    }
+    console.log('searching for roles ' + JSON.stringify(roleSet));
+    return this.userRoles().flatMap(x => x).filter(x => x['role'] in roleSet);
   }
 
   userName() : Observable<string> {

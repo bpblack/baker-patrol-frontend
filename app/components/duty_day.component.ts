@@ -33,13 +33,14 @@ export class DutyDayComponent implements OnInit {
     //get the duty day patrols
     //also check if current user is an admin
     this.updateDutyDay(() => {
-        let adminRole: Object;
-        this._apiService.findRole("leader").subscribe(
-          role => adminRole = role,
-          err => {},
-          () => {
-            this.isAdmin = this.isRoleAdmin(adminRole);
-          }
+        this._apiService.findRoles('admin', 'leader').subscribe(
+          role => {
+            console.log('found role ' + JSON.stringify(role));
+            if (!this.isAdmin && this.isRoleAdmin(role)) {
+             this.isAdmin = true;
+            }
+          },
+          err => {}
         );
       }
     );
