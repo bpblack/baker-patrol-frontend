@@ -2,66 +2,20 @@
   <div class="panel-heading">
     <h2>Duty Days</h2>
   </div>
-  <tabset *ngIf="patrols">
-    <tab heading="Patrols" (select)="clearError()">
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Team</th>
-                <th>Responsibility</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let patrol of patrols">
-                <td>
-                  <a routerLink="../DutyDay/{{patrol.duty_day.id}}">{{patrol.duty_day.date}}</a>
-                </td>
-                <td>{{patrol.duty_day.team.name}}</td>
-                <td>{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
-                <td>
-                  <button class="btn btn-primary" *ngIf="!patrol.pending_substitution.id" [disabled]="!patrol.swappable" (click)="showCreateSubModal(patrol.id, patrol.duty_day.date)">Request Sub</button>
-                  <button class="btn btn-primary" *ngIf="patrol.pending_substitution.id" [disabled]="!patrol.swappable" (click)="showManageSubModal(patrol.id,  patrol.duty_day.date, patrol.pending_substitution.id, patrol.pending_substitution.sub_id, patrol.pending_substitution.sub_name)">Manage Sub</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </tab>
-    <tab *ngIf="requests" [disabled]="requests.length == 0" (select)="clearError()">
-      <template tabHeading>
-        <i *ngIf="requests.length > 0" class="glyphicon glyphicon-inbox"></i> Sub Requests
+  <tabset>
+    <tab *ngFor="let tabz of tabs; let i = index" 
+         [active]="tabz.active"
+         (select)="tabz.active = true"
+         (deselect)="tabz.active = false"
+         [disabled]="tabz.disabled">
+      <!--tab index i==0 is the patrols tab-->
+      <template *ngIf="i==0" tabHeading>Patrols</template>
+      <baker-patrols-tab *ngIf="i==0 && patrols" [patrols]="patrols" (createSub)="showCreateSubModal($event)" (manageSub)="showManageSubModal($event)"></baker-patrols-tab>
+      <!--tab index i==1 is the requests tab-->
+      <template *ngIf="i==1" tabHeading>
+        <i *ngIf="requests && requests.length > 0" class="glyphicon glyphicon-inbox"></i> Sub Requests
       </template>
-      <div class="panel-body">
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Patroller</th>
-                <th>Responsibility</th>
-                <th>Response</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let request of requests">
-                <td>
-                  <a routerLink="../DutyDay/{{request.duty_day.id}}">{{request.duty_day.date}}</a>
-                </td>
-                <td>{{request.sub_for.name}}</td>
-                <td>{{request.responsibility.name}} v{{request.responsibility.version}}</td>
-                <td>
-                  <button class="btn btn-primary" (click)="showManageRequestModal(request.id, request.duty_day.date, request.sub_for.name)">Accept/Reject</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-    </div>
+      <baker-requests-tab *ngIf="i==1 && requests" [requests]="requests" (manageRequest)="showManageRequestModal($event)"></baker-requests-tab>
     </tab>
   </tabset>
 </div>
@@ -78,39 +32,10 @@
       <div class="modal-body">
         <tabset *ngIf="createSubTabset">
           <tab heading="Email Request" (select)="clearError()">
-            <baker-api-error [error]="error"></baker-api-error>
-            <form [formGroup]="subCreateEmailForm" #f="ngForm" (ngSubmit)="onSubRequestEmailSubmit()">
-              <div class="form-group">
-                <label for="reason">Reason:</label>
-                <input type="text" maxlength="50" class="form-control" [formControl]="subCreateEmailForm.controls['reason']" placeholder="Reason (50 chars or less)" #reason="ngForm">
-              </div>
-              <div class="form-group">
-                <label for="message">Message:</label>
-                <textarea class="form-control" rows="4" [formControl]="subCreateEmailForm.controls['message']" placeholder="Message to send in email" #message="ngForm"></textarea>
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-def btn-block">Email Request</button>
-              </div>
-            </form> 
+            <baker-create-sub-form [patrolId]="modalState.patrolId" (success)="onSubRequestEmailSubmit()"></baker-create-sub-form>
           </tab>
           <tab heading="Create & Assign" (select)="clearError()">
-            <baker-api-error [error]="error"></baker-api-error>
-            <form [formGroup]="subCreateAssignForm" #f="ngForm" (ngSubmit)="onSubRequestAssignSubmit()">
-              <div class="form-group">
-                <label for="reason">Reason:</label>
-                <input type="text" maxlength="50" class="form-control" [formControl]="subCreateAssignForm.controls['reason']" placeholder="Reason (50 chars or less)" #reason="ngForm">
-              </div>
-              <div *ngIf="assignables" class="form-group">
-                <label for="message">Assign To:</label>
-                <select [formControl]="subCreateAssignForm.controls['assigned_id']" #assigned_id="ngForm">
-                  <option value="0" disabled>Please select a substitute</option>
-                  <option *ngFor="let assignable of assignables" value="{{assignable.id}}" [selected]="assignable.id == modalState.subId">{{assignable.name}}</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-def btn-block" [disabled]="!subCreateAssignForm.valid">Create & Assign</button>
-              </div>
-            </form>
+            <baker-create-assign-sub-form [patrolId]="modalState.patrolId" (success)="onSubRequestAssignSubmit()"></baker-create-assign-sub-form>
           </tab>
         </tabset>
       </div>
@@ -130,32 +55,10 @@
       <div class="modal-body">
         <tabset *ngIf="manageSubTabset">
           <tab heading="Assign" (select)="clearError()">
-            <baker-api-error [error]="error"></baker-api-error>
-            <form [formGroup]="subAssignForm" #f="ngForm" (ngSubmit)="onSubAssignSubmit()">
-              <div *ngIf="assignables" class="form-group">
-                <label for="substitute">Substitute</label>
-                <select [formControl]="subAssignForm.controls['assigned_id']" #assigned_id="ngForm">
-                  <option *ngIf="!modalState.subName" disabled>Please select a substitute</option>
-                  <option *ngFor="let assignable of assignables" value="{{assignable.id}}">{{assignable.name}}</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-def btn-block" [disabled]="!subAssignForm.valid || subAssignForm.controls['assigned_id'].value == modalState.subUserId">Assign</button>
-              </div>
-            </form> 
+            <baker-assign-sub-form [patrolId]="modalState.patrolId" [subId]="modalState.subId" [subUserId]="modalState.subUserId" [subName]="modalState.subName" (success)="onSubAssignSubmit()"></baker-assign-sub-form>
           </tab>
           <tab heading="Remind" (select)="clearError()">
-            <baker-api-error [error]="error"></baker-api-error>
-            <form [formGroup]="subRemindForm" #f="ngForm" (ngSubmit)="onSubRemindSubmit()">
-              <div class="form-group">
-                <label *ngIf="!modalState.subName" for="message">Message to group</label>
-                <label *ngIf="modalState.subName" for="message">Message to {{modalState.subName}}</label>
-                <textarea class="form-control" rows="4" [formControl]="subRemindForm.controls['message']" placeholder="Message to send in email" #message="ngForm"></textarea>
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-def btn-block">Remind</button>
-              </div>
-            </form>
+            <baker-email-sub-form [subId]="modalState.subId" [subName]="modalState.subName" [buttonText]="'Remind'" (success)="onSubRemindSubmit()"></baker-email-sub-form>
           </tab>
           <tab heading="Delete" select="clearError()">
             <baker-api-error [error]="error"></baker-api-error>
@@ -185,17 +88,7 @@
             <button class="btn btn-primary" (click)="onRequestAcceptSubmit()">Accept</button>
           </tab>
           <tab heading="Reject" (select)="clearError()">
-            <baker-api-error [error]="error"></baker-api-error>
-            <form [formGroup]="requestRejectForm" #f="ngForm" (ngSubmit)="onRequestRejectSubmit()">
-              <div class="form-group">
-                <label *ngIf="!modalState.subName" for="message">Message to group</label>
-                <label *ngIf="modalState.subName" for="message">Message to {{modalState.subName}}</label>
-                <textarea class="form-control" rows="4" [formControl]="requestRejectForm.controls['message']" placeholder="Message to send in email" #message="ngForm"></textarea>
-              </div>
-              <div class="form-group">
-                <button type="submit" class="btn btn-def btn-block">Reject</button>
-              </div>
-            </form>
+            <baker-email-sub-form [subId]="modalState.subId" [subName]="modalState.subName" [reject]="true" [buttonText]="'Reject'" (success)="onRequestRejectSubmit()"></baker-email-sub-form>
           </tab>
         </tabset>
       </div>

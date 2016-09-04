@@ -4,33 +4,54 @@ import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup} from 
 import {Observable} from 'rxjs/Rx';
 import {MODAL_DIRECTIVES, BS_VIEW_PROVIDERS, ModalDirective, TAB_DIRECTIVES, TabDirective, TabsetComponent} from 'ng2-bootstrap/ng2-bootstrap';
 import {BakerApiService} from '../services/baker-api.service';
-import {validateIdSelection} from '../validations/validations';
-import {BakerApiError} from './error.component';
+import {PatrolsTab} from './patrols_tab.component';
+import {RequestsTab} from './requests_tab.component';
+import {CreateSubForm} from './create_sub_form.component';
+import {CreateAssignSubForm} from './create_assign_sub_form.component';
+import {EmailSubForm} from './email_sub_form.component';
+import {AssignSubForm} from './assign_sub_form.component';
+
+class ModalState {
+  private _index: number;
+  private _patrolId: number;
+  private _date: string;
+  private _subId: number;
+  private _subUserId: number;
+  private _subName: string;
+
+  constructor(index: number = -1, patrolId: number = 0, date: string = '', subId: number = 0, subUserId: number = 0, subName: string = '') {
+    this._index = index;
+    this._patrolId = patrolId;
+    this._date = date;
+    this._subId = subId;
+    this._subUserId = subUserId;
+    this._subName = subName;
+  }
+  get index() { return this._index; }
+  get patrolId() { return this._patrolId; }
+  get date() { return this._date; }
+  get subId() { return this._subId; }
+  get subUserId() { return this._subUserId; }
+  get subName() { return this._subName; }
+}
 
 @Component({
   selector: 'baker-patrol-patrols',
   templateUrl: 'app/views/patrols.component.html',
-  directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, TAB_DIRECTIVES, BakerApiError],
+  directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES, TAB_DIRECTIVES, PatrolsTab, RequestsTab, CreateSubForm, CreateAssignSubForm, EmailSubForm, AssignSubForm],
   viewProviders: [BS_VIEW_PROVIDERS]
 })
-
 export class PatrolsComponent implements OnInit {
   patrols: Array<any>;
-  assignables: Array<any>;
   requests: Array<any>;
   seasons: Array<any>;
+  tabs: Array<any>
 
   error: string;
-
-  modalState =  {patrolId: -1, date: '', subId: -1, subUserId: -1, subName: ''};
+  modalState: ModalState; 
   createSubTabset: boolean;
   manageSubTabset: boolean;
   manageRequestTabset: boolean;
-  subCreateEmailForm: FormGroup;
-  subCreateAssignForm: FormGroup;
-  subAssignForm: FormGroup;
-  subRemindForm: FormGroup;
-  requestRejectForm: FormGroup;
 
   @ViewChild('createSubModal') public createSubModal: ModalDirective;
   @ViewChild('manageSubModal') public manageSubModal: ModalDirective;
@@ -39,6 +60,20 @@ export class PatrolsComponent implements OnInit {
   constructor(private _apiService: BakerApiService, private _fb: FormBuilder) {}
 
   ngOnInit() {
+    this.tabs = [
+      {
+        //patrols tab
+        active: true,
+        disabled: false
+      },
+      {
+        //requests tab
+        active: false,
+        disabled: true
+      }
+    ];
+
+    this.modalState = new ModalState();
     //get the current user's seasons, then the patrols for the most recent season
     this._apiService.userSeasons().subscribe(
       success => { this.seasons = success; },
@@ -48,102 +83,52 @@ export class PatrolsComponent implements OnInit {
         this.updateRequests();
       }
     );
-
-    this.subCreateEmailForm = this._fb.group({
-      reason: '',
-      message: ''
-    });
-
-    this.subCreateAssignForm = this._fb.group({
-      reason: '',
-      assigned_id: [0, validateIdSelection]
-    });
-
-    this.subAssignForm = this._fb.group({
-      assigned_id: [0, validateIdSelection]
-    });
-
-    this.subRemindForm = this._fb.group({
-      message: ''
-    });
-
-    this.requestRejectForm = this._fb.group({
-      message: ''
-    });
-    
   }
 
   // Sub request creation modal controls
-  showCreateSubModal(patrolId: number, date: string) {
+  showCreateSubModal($event) {
     this.createSubTabset = true;
-    this.clearError();
-    this.modalState = {patrolId: patrolId, date: date, subId: -1, subUserId: -1, subName: ''};
-    this.updateAssignables(patrolId);
+    this.modalState = new ModalState($event.index, $event.patrolId, $event.date);
     this.createSubModal.show();
   }
 
   closeCreateSubModal() {
-    this.clearError();
-    this.subCreateEmailForm.reset();
-    this.subCreateAssignForm.reset();
+    this.modalState = new ModalState();
     this.createSubModal.hide();
     this.createSubTabset = false;
   }
 
   onSubRequestEmailSubmit() {
-    this._apiService.createSubEmailRequest(this.modalState.patrolId, this.subCreateEmailForm.value).subscribe(
-      success => {
-        this.updatePatrols();
-        this.closeCreateSubModal();
-      },
-      error => this.error = error
-    );
+    this.updatePatrols();
+    this.closeCreateSubModal();
   }
 
   onSubRequestAssignSubmit() {
-    this._apiService.createSubAssignRequest(this.modalState.patrolId, this.subCreateAssignForm.value).subscribe(
-      success => {
-        this.updatePatrols();
-        this.closeCreateSubModal();
-      },
-      error => this.error = error
-    );
+    this.updatePatrols();
+    this.closeCreateSubModal();
   }
 
   // Sub management modal controls
-  showManageSubModal(patrolId: number, date: string, subId: number, subUserId: number, subName: string) {
+  showManageSubModal($event) {
     this.manageSubTabset=true;
-    this.clearError();
-    this.modalState = {patrolId: patrolId, date: date, subId: subId, subUserId: subUserId, subName: subName};
-    this.updateAssignables(patrolId, () => {
-      this.subAssignForm.controls['assigned_id'].setValue(subUserId); 
-    });
+    this.modalState = new ModalState($event.index, $event.patrolId, $event.date, $event.subId, $event.subUserId, $event.subName);
     this.manageSubModal.show();
   }
 
   closeManageSubModal() {
     this.clearError();
-    this.subAssignForm.reset();
-    this.subRemindForm.reset();
-    this.manageSubModal.hide();
+    this.modalState = new ModalState();
     this.manageSubTabset=false;
+    this.manageSubModal.hide();
   }
 
   onSubAssignSubmit() {
-    this._apiService.assignSubRequest(this.modalState.subId, this.subAssignForm.value).subscribe(
-      success => {
-        this.updatePatrols();
-        this.closeManageSubModal();
-      },
-      error => this.error = error
-    );
+    this.updatePatrols();
+    this.closeManageSubModal();
   }
 
   onSubRemindSubmit() {
-    this._apiService.remindSubRequest(this.modalState.subId, this.subRemindForm.value).subscribe(
-      success => this.closeManageSubModal(),
-      error => this.error = error
-    );
+    this.closeManageSubModal();
   }
 
   onSubDeleteSubmit() {
@@ -157,16 +142,15 @@ export class PatrolsComponent implements OnInit {
   }
 
   // Sub request controls
-  showManageRequestModal(subId:number, date: string, subName: string) {
+  showManageRequestModal($event) {
     this.manageRequestTabset=true;
-    this.clearError();
-    this.modalState = {patrolId: -1, date: date, subId: subId, subUserId: -1, subName: subName};
+    this.modalState = new ModalState($event.index, 0, $event.date, $event.requestId, 0, $event.subName);
     this.manageRequestModal.show();
   }
 
   closeManageRequestModal() {
     this.clearError();
-    this.requestRejectForm.reset();
+    this.modalState = new ModalState();
     this.manageRequestModal.hide();
     this.manageRequestTabset=false;
   }
@@ -183,13 +167,8 @@ export class PatrolsComponent implements OnInit {
   }
 
   onRequestRejectSubmit() {
-    this._apiService.rejectSubRequest(this.modalState.subId, this.requestRejectForm.value).subscribe(
-      success => {
-        this.updateRequests();
-        this.closeManageRequestModal();
-      },
-      error => this.error = error
-    );
+    this.updateRequests();
+    this.closeManageRequestModal();
   }
 
   updatePatrols() {
@@ -198,17 +177,20 @@ export class PatrolsComponent implements OnInit {
     );
   }
 
-  updateAssignables(patrolId: number, lambda = ()=>{}) {
-    this._apiService.getAssignableUsers(patrolId).subscribe(
-      assignables => this.assignables = assignables,
-      err => {},
-      lambda
-    );
-  }
-
   updateRequests() {
     this._apiService.getSubRequests(this.seasons[0].id).subscribe(
-      requests => this.requests = requests
+      requests => this.requests = requests,
+      err => {},
+      () => {
+        if (this.requests.length == 0) {
+          if (this.tabs[0].active == false) {
+            this.tabs[0].active = true;
+          }
+          this.tabs[1].disabled = true;
+        } else {
+          this.tabs[1].disabled = false;
+        }
+      }
     );
   }
 
