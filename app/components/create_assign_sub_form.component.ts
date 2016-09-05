@@ -39,7 +39,6 @@ export class CreateAssignSubForm {
   constructor(private _apiService: BakerApiService, private _fb: FormBuilder) {}
 
   ngOnInit() {
-    console.log('create assign ' + this.patrolId);
     this.subCreateAssignForm = this._fb.group({
       reason: '',
       assigned_id: [0, validateIdSelection]
@@ -53,7 +52,7 @@ export class CreateAssignSubForm {
 
   onCreateEmailSubmit() {
      this._apiService.createSubAssignRequest(this.patrolId, this.subCreateAssignForm.value).subscribe(
-      success => this.success.emit(),
+      success => this.success.emit(success),
       error => this.error = error
     );
   }

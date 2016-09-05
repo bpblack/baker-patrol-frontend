@@ -52,6 +52,8 @@ export class PatrolsComponent implements OnInit {
   createSubTabset: boolean;
   manageSubTabset: boolean;
   manageRequestTabset: boolean;
+  
+  private _updatePatrols: boolean;
 
   @ViewChild('createSubModal') public createSubModal: ModalDirective;
   @ViewChild('manageSubModal') public manageSubModal: ModalDirective;
@@ -64,7 +66,7 @@ export class PatrolsComponent implements OnInit {
       {
         //patrols tab
         active: true,
-        disabled: false
+        disabled: false 
       },
       {
         //requests tab
@@ -79,10 +81,28 @@ export class PatrolsComponent implements OnInit {
       success => { this.seasons = success; },
       err => {},
       () => { 
+        this._updatePatrols = true;
         this.updatePatrols();
+        this._updatePatrols = false;
         this.updateRequests();
       }
     );
+  }
+
+  selectTab(i: number) {
+    this.tabs[i].active = true;
+    if (i == 0) {
+      this.updatePatrols();
+    }
+  }
+
+  disableOrEnableRequestsTab() {
+    if (this.requests.length == 0) {
+      this.tabs[0].active = true;
+      this.tabs[1].disabled = true;
+    } else if (this.tabs[1].disabled) {
+      this.tabs[1].disabled = false;
+    }
   }
 
   // Sub request creation modal controls
@@ -98,13 +118,8 @@ export class PatrolsComponent implements OnInit {
     this.createSubTabset = false;
   }
 
-  onSubRequestEmailSubmit() {
-    this.updatePatrols();
-    this.closeCreateSubModal();
-  }
-
-  onSubRequestAssignSubmit() {
-    this.updatePatrols();
+  onSubRequestCreate($event) {
+    this.patrols[this.modalState.index].pending_substitution = $event;
     this.closeCreateSubModal();
   }
 
@@ -122,19 +137,15 @@ export class PatrolsComponent implements OnInit {
     this.manageSubModal.hide();
   }
 
-  onSubAssignSubmit() {
-    this.updatePatrols();
-    this.closeManageSubModal();
-  }
-
-  onSubRemindSubmit() {
+  onSubRequestAssign($event) {
+    this.patrols[this.modalState.index].pending_substitution = $event;
     this.closeManageSubModal();
   }
 
   onSubDeleteSubmit() {
     this._apiService.deleteSubRequest(this.modalState.subId).subscribe(
       success => {
-        this.updatePatrols();
+        this.patrols[this.modalState.index].pending_substitution = {id: null, sub_id: null, sub_name: null};
         this.closeManageSubModal();
       },
       error => this.error = error
@@ -158,8 +169,9 @@ export class PatrolsComponent implements OnInit {
   onRequestAcceptSubmit() {
     this._apiService.acceptSubRequest(this.modalState.subId).subscribe(
       success => {
-        this.updatePatrols();
-        this.updateRequests();
+        this._updatePatrols = true;
+        this.requests.splice(this.modalState.index, 1)
+        this.disableOrEnableRequestsTab();
         this.closeManageRequestModal();
       },
       error => this.error = (error + ' Please reject this request if you are already patrolling on the given day.')
@@ -167,30 +179,25 @@ export class PatrolsComponent implements OnInit {
   }
 
   onRequestRejectSubmit() {
-    this.updateRequests();
+    this.requests.splice(this.modalState.index, 1);
+    this.disableOrEnableRequestsTab();
     this.closeManageRequestModal();
   }
 
   updatePatrols() {
-    this._apiService.patrols(this.seasons[0].id).subscribe(
-      patrols => this.patrols = patrols
-    );
+    if (this._updatePatrols) {
+      this._apiService.patrols(this.seasons[0].id).subscribe(
+        patrols => this.patrols = patrols
+      );
+      this._updatePatrols = false;
+    }
   }
 
   updateRequests() {
     this._apiService.getSubRequests(this.seasons[0].id).subscribe(
       requests => this.requests = requests,
       err => {},
-      () => {
-        if (this.requests.length == 0) {
-          if (this.tabs[0].active == false) {
-            this.tabs[0].active = true;
-          }
-          this.tabs[1].disabled = true;
-        } else {
-          this.tabs[1].disabled = false;
-        }
-      }
+      () => this.disableOrEnableRequestsTab()
     );
   }
 

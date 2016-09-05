@@ -77,7 +77,9 @@ export class BakerApiService implements IAuthService {
     let body = JSON.stringify({
       'email': email
 	  });
-    return this.http.post(this.url + '/password_resets', body, this.defaultOptions()).map(res => res.ok).catch(this.handleError);
+    return this.http.post(this.url + '/password_resets', body, this.defaultOptions()).map(
+      res => res.ok
+    ).catch(this.handleError);
   }
 
   reset(id: string, r: ResetForm) {
@@ -106,12 +108,16 @@ export class BakerApiService implements IAuthService {
 
   createSubEmailRequest(patrolId: number, cs: CreateSubEmailForm) : Observable<any> {
     let body = JSON.stringify(cs);
-    return this.authHttp.post(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).catch(this.handleError);
+    return this.authHttp.post(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).map(
+      res => res.json()
+    ).catch(this.handleError);
   }
 
   createSubAssignRequest(patrolId: number, cs: CreateSubAssignForm) : Observable<any> {
     let body = JSON.stringify(cs);
-    return this.authHttp.post(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).catch(this.handleError);
+    return this.authHttp.post(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).map(
+      res => res.json()
+    ).catch(this.handleError);
   }
 
   getAssignableUsers(patrolId: number) : Observable<Array<any>> {
@@ -122,7 +128,9 @@ export class BakerApiService implements IAuthService {
 
   assignSubRequest(substitutionId: number, a: AssignSubForm) : Observable<any> {
     let body = JSON.stringify(a);
-    return this.authHttp.patch(this.url + '/substitutions/' + substitutionId + '/assign', body, this.defaultOptions()).catch(this.handleError);
+    return this.authHttp.patch(this.url + '/substitutions/' + substitutionId + '/assign', body, this.defaultOptions()).map(
+      res => res.json()
+    ).catch(this.handleError);
   }
 
   remindSubRequest(substitutionId: number, r: RejectSubForm) : Observable<any> { //Reject contains just a message, should work fine
@@ -140,13 +148,17 @@ export class BakerApiService implements IAuthService {
     ).catch(this.handleError);
   }
 
-  acceptSubRequest(id: number) : Observable<any> {
-    return this.authHttp.patch(this.url + '/substitutions/' + id + '/accept', '', this.defaultOptions).catch(this.handleError);
+  acceptSubRequest(id: number) : Observable<boolean> {
+    return this.authHttp.patch(this.url + '/substitutions/' + id + '/accept', '', this.defaultOptions).map(
+      res => res.ok
+    ).catch(this.handleError);
   }
 
-  rejectSubRequest(id: number, r: RejectSubForm) {    
+  rejectSubRequest(id: number, r: RejectSubForm) : Observable<boolean> {    
     let body = JSON.stringify(r);
-    return this.authHttp.patch(this.url + '/substitutions/' + id + '/reject', body, this.defaultOptions()).catch(this.handleError);
+    return this.authHttp.patch(this.url + '/substitutions/' + id + '/reject', body, this.defaultOptions()).map(
+      res => res.ok
+    ).catch(this.handleError);
   }
 
   getSubHistory(id: number) : Observable<Array<any>> {

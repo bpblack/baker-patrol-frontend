@@ -35,7 +35,6 @@ export class DutyDayComponent implements OnInit {
     this.updateDutyDay(() => {
         this._apiService.findRoles('admin', 'leader').subscribe(
           role => {
-            console.log('found role ' + JSON.stringify(role));
             if (!this.isAdmin && this.isRoleAdmin(role)) {
              this.isAdmin = true;
             }

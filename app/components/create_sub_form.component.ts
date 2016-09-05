@@ -42,7 +42,7 @@ export class CreateSubForm {
 
   onCreateEmailSubmit() {
      this._apiService.createSubEmailRequest(this.patrolId, this.subCreateEmailForm.value).subscribe(
-      success => this.success.emit(),
+      success => this.success.emit(success),
       error => this.error = error
     );
   }

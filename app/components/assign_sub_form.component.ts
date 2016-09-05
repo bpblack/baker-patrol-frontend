@@ -43,7 +43,6 @@ export class AssignSubForm {
     });
 
     this.subUserId = this.subUserId ? this.subUserId : 0;
-    console.log(this.patrolId + ' ' + this.subId + ' ' + this.subName + ' ' + this.subUserId);
     this._apiService.getAssignableUsers(this.patrolId).subscribe(
       assignables => this.assignables = assignables,
       err => {},
@@ -53,7 +52,7 @@ export class AssignSubForm {
 
   onAssignSubmit() {
     this._apiService.assignSubRequest(this.subId, this.subAssignForm.value).subscribe(
-      success => this.success.emit(),
+      success => this.success.emit(success),
       error => this.error = error
     );
   }

@@ -5,7 +5,7 @@
   <tabset>
     <tab *ngFor="let tabz of tabs; let i = index" 
          [active]="tabz.active"
-         (select)="tabz.active = true"
+         (select)="selectTab(i)"
          (deselect)="tabz.active = false"
          [disabled]="tabz.disabled">
       <!--tab index i==0 is the patrols tab-->
@@ -32,10 +32,10 @@
       <div class="modal-body">
         <tabset *ngIf="createSubTabset">
           <tab heading="Email Request" (select)="clearError()">
-            <baker-create-sub-form [patrolId]="modalState.patrolId" (success)="onSubRequestEmailSubmit()"></baker-create-sub-form>
+            <baker-create-sub-form [patrolId]="modalState.patrolId" (success)="onSubRequestCreate($event)"></baker-create-sub-form>
           </tab>
           <tab heading="Create & Assign" (select)="clearError()">
-            <baker-create-assign-sub-form [patrolId]="modalState.patrolId" (success)="onSubRequestAssignSubmit()"></baker-create-assign-sub-form>
+            <baker-create-assign-sub-form [patrolId]="modalState.patrolId" (success)="onSubRequestCreate($event)"></baker-create-assign-sub-form>
           </tab>
         </tabset>
       </div>
@@ -55,10 +55,10 @@
       <div class="modal-body">
         <tabset *ngIf="manageSubTabset">
           <tab heading="Assign" (select)="clearError()">
-            <baker-assign-sub-form [patrolId]="modalState.patrolId" [subId]="modalState.subId" [subUserId]="modalState.subUserId" [subName]="modalState.subName" (success)="onSubAssignSubmit()"></baker-assign-sub-form>
+            <baker-assign-sub-form [patrolId]="modalState.patrolId" [subId]="modalState.subId" [subUserId]="modalState.subUserId" [subName]="modalState.subName" (success)="onSubRequestAssign($event)"></baker-assign-sub-form>
           </tab>
           <tab heading="Remind" (select)="clearError()">
-            <baker-email-sub-form [subId]="modalState.subId" [subName]="modalState.subName" [buttonText]="'Remind'" (success)="onSubRemindSubmit()"></baker-email-sub-form>
+            <baker-email-sub-form [subId]="modalState.subId" [subName]="modalState.subName" [buttonText]="'Remind'" (success)="closeManageSubModal()"></baker-email-sub-form>
           </tab>
           <tab heading="Delete" select="clearError()">
             <baker-api-error [error]="error"></baker-api-error>
