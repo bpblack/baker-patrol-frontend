@@ -1,35 +1,55 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {CORE_DIRECTIVES}   from '@angular/common';
 import {ActivatedRoute, Params} from '@angular/router';
-import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup} from '@angular/forms';
 import {MODAL_DIRECTIVES, BS_VIEW_PROVIDERS, ModalDirective, TAB_DIRECTIVES, TabDirective, TabsetComponent} from 'ng2-bootstrap/ng2-bootstrap';
 import {BakerApiService} from '../services/baker-api.service';
 import {validateIdSelection} from '../validations/validations';
 import {BakerApiError} from './error.component';
+import {CreateAssignSubForm} from './create_assign_sub_form.component';
+import {AssignSubForm} from './assign_sub_form.component';
+
+class ModalState {
+  private _index: number;
+  private _patrolId: number;
+  private _patrolName: string;
+  private _hasSubs: boolean;
+  private _hasPending: boolean;
+
+  constructor(index: number = -1, patrolId: number = 0, patrolName: string = '', hasSubs: boolean = false, hasPending: boolean = false) {
+    this._index = index;
+    this._patrolId = patrolId;
+    this._patrolName = patrolName;
+    this._hasSubs = hasSubs;
+    this._hasPending = hasPending;
+  }
+  get index() { return this._index; }
+  get patrolId() { return this._patrolId; }
+  get patrolName() { return this._patrolName; }
+  get hasSubs() { return this._hasSubs; }
+  get hasPending() { return this._hasPending; }
+}
 
 @Component({
   selector: 'baker-patrol-duty-day',
   templateUrl: 'app/views/duty_day.component.html',
-  directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES, FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, TAB_DIRECTIVES, BakerApiError],
+  directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES, TAB_DIRECTIVES, BakerApiError, CreateAssignSubForm, AssignSubForm],
   viewProviders: [BS_VIEW_PROVIDERS]
 })
-
 export class DutyDayComponent implements OnInit {
   dutyDay: any;
   isAdmin: boolean;
   history: Array<any>;
-  assignables: Array<any>;
   error: string;
 
-  modalState = {patrolId: -1, patrolName: '', hasSubs: false, hasPending: false};
-  subCreateAssignForm: FormGroup;
-  subAssignForm: FormGroup;
+  modalState: ModalState;
 
   @ViewChild('managePatrolModal') public managePatrolModal: ModalDirective;
 
-  constructor(private _apiService: BakerApiService, private _route: ActivatedRoute, private _fb: FormBuilder) {}
+  constructor(private _apiService: BakerApiService, private _route: ActivatedRoute) {}
 
   ngOnInit() {
+    this.modalState = new ModalState();
+
     //get the duty day patrols
     //also check if current user is an admin
     this.updateDutyDay(() => {
@@ -43,58 +63,39 @@ export class DutyDayComponent implements OnInit {
         );
       }
     );
-
-    this.subCreateAssignForm = this._fb.group({
-      reason: '',
-      assigned_id: [0, validateIdSelection]
-    });
-
-    this.subAssignForm = this._fb.group({
-      assigned_id: [0, validateIdSelection]
-    });
   }
 
-  showManagePatrolModal(patrolId: number, patrolName: string, hasSubs: boolean, hasPending: boolean) {
-    this.modalState={patrolId: patrolId, patrolName: patrolName, hasSubs: hasSubs, hasPending: hasPending};
+  showManagePatrolModal(index: number, patrolId: number, patrolName: string, hasSubs: boolean, hasPending: boolean) {
+    this.modalState = new ModalState(index, patrolId, patrolName, hasSubs, hasPending);
     this.error = '';
     if (hasSubs) {
       this.updateSubHistory(patrolId, () => {
         let id = this.history[0].sub.id;
-        this.subAssignForm.controls['assigned_id'].setValue(id ? id : 0);
       });
     }
-    this.updateAssignables(patrolId);
     this.managePatrolModal.show();
     
   }
 
   closeManagePatrolModal() {
-    this.modalState = {patrolId: -1, patrolName: '', hasSubs: false, hasPending: false};
-    this.error = 'foo';
     this.history = null;
-    this.assignables = null;
-    this.subCreateAssignForm.reset();
-    this.subAssignForm.reset();
     this.managePatrolModal.hide();
   }
   
-  onSubRequestAssignSubmit() {
-    this._apiService.createSubAssignRequest(this.modalState.patrolId, this.subCreateAssignForm.value).subscribe(
-      success => {
-        this.updateDutyDay();
-        this.closeManagePatrolModal();
-      },
-      error => this.error = error
-    );
+  onSubRequestAssignSubmit($event) {
+    this.dutyDay.patrols[this.modalState.index].has_substitutions = true;
+    this.dutyDay.patrols[this.modalState.index].has_pending_substitutions = true;
+    this.closeManagePatrolModal();
   }
 
-  onSubAssignSubmit(subId: number) {
-    this._apiService.assignSubRequest(subId, this.subAssignForm.value).subscribe(
-      success => {
-        this.closeManagePatrolModal();
-      },
-      error => this.error = error
-    );
+  onSubAssign($event) {
+    console.log("assigned sub " + JSON.stringify($event));
+    this.managePatrolModal.hide();
+  }
+
+  onSubAssignError($event) {
+    console.log("assignment error " + JSON.stringify($event));
+    this.error = $event.error;
   }
 
   private updateDutyDay(lambda  = ()=>{}) {
@@ -113,12 +114,6 @@ export class DutyDayComponent implements OnInit {
       history => this.history = history,
       err=>{},
       lambda
-    );
-  }
-
-  private updateAssignables(patrolId: number) {
-    this._apiService.getAssignableUsers(patrolId).subscribe(
-      assignables => this.assignables = assignables
     );
   }
 

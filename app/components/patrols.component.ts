@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {CORE_DIRECTIVES}   from '@angular/common';
-import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs/Rx';
 import {MODAL_DIRECTIVES, BS_VIEW_PROVIDERS, ModalDirective, TAB_DIRECTIVES, TabDirective, TabsetComponent} from 'ng2-bootstrap/ng2-bootstrap';
 import {BakerApiService} from '../services/baker-api.service';
@@ -59,7 +58,7 @@ export class PatrolsComponent implements OnInit {
   @ViewChild('manageSubModal') public manageSubModal: ModalDirective;
   @ViewChild('manageRequestModal') public manageRequestModal: ModalDirective;
 
-  constructor(private _apiService: BakerApiService, private _fb: FormBuilder) {}
+  constructor(private _apiService: BakerApiService) {}
 
   ngOnInit() {
     this.tabs = [

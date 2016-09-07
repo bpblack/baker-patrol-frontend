@@ -13,10 +13,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let patrol of dutyDay.patrols" [ngClass]="{'info': isAdmin && patrol.has_substitutions && !patrol.has_pending_substitutions, 'danger': isAdmin && patrol.has_pending_substitutions}">
+          <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="{'info': isAdmin && patrol.has_substitutions && !patrol.has_pending_substitutions, 'danger': isAdmin && patrol.has_pending_substitutions}">
             <td>{{patrol.patroller.name}}</td>
             <td>{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
-            <td *ngIf="isAdmin"><button class="btn btn-primary" (click)="showManagePatrolModal(patrol.id, patrol.responsibility.name + ' ' + dutyDay.date, patrol.has_substitutions, patrol.has_pending_substitutions)">Manage</button></td>
+            <td *ngIf="isAdmin"><button class="btn btn-primary" (click)="showManagePatrolModal(i, patrol.id, patrol.responsibility.name + ' ' + dutyDay.date, patrol.has_substitutions, patrol.has_pending_substitutions)">Manage</button></td>
           </tr>
         </tbody>
       </table>
@@ -34,30 +34,14 @@
         <h4 class="modal-title">Manage patrol {{modalState.patrolName}}</h4>
       </div>
       <div class="modal-body">
-        <tabset>
+        <tabset *ngIf="modalState.patrolId > 0">
           <tab *ngIf="!modalState.hasPending" heading="Create & Assign">
-            <div *ngIf="assignables">
-              <baker-api-error [error]="error"></baker-api-error>
-              <form [formGroup]="subCreateAssignForm" #f="ngForm" (ngSubmit)="onSubRequestAssignSubmit()">
-                <div class="form-group">
-                  <label for="reason">Reason:</label>
-                  <input type="text" maxlength="50" class="form-control" [formControl]="subCreateAssignForm.controls['reason']" placeholder="Reason (50 chars or less)" #reason="ngForm">
-                </div>
-                <div class="form-group">
-                  <label for="message">Assign To:</label>
-                  <select [formControl]="subCreateAssignForm.controls['assigned_id']" #assigned_id="ngForm">
-                    <option *ngIf="!modalState.subName" disabled>Please select a substitute</option>
-                    <option *ngIf="modalState.subName" disabled>Currently assigned to {{modalState.subName}}</option>
-                    <option *ngFor="let assignable of assignables" value="{{assignable.id}}" [selected]="assignable.id == modalState.subId">{{assignable.name}}</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <button type="submit" class="btn btn-def btn-block" [disabled]="!subCreateAssignForm.valid">Create & Assign</button>
-                </div>
-              </form>
+            <div>
+              <baker-create-assign-sub-form [patrolId]="modalState.patrolId" (success)="onSubRequestAssignSubmit($event)"></baker-create-assign-sub-form>
             </div>
           </tab>
           <tab *ngIf="modalState.hasSubs" heading="Sub History">
+            <baker-api-error [error]="_error"></baker-api-error>
             <table *ngIf="history" class="table table-bordered table-hover">
               <thead>
                 <tr>
@@ -70,23 +54,9 @@
                 <tr *ngFor="let sub of history; let i = index" [ngClass]="{'danger': !sub.accepted}">
                   <td>{{sub.subbed.name}}</td>
                   <td *ngIf="modalState.hasPending && i == 0">
-                    <span *ngIf="assignables">
-                      <div>
-                        <form [formGroup]="subAssignForm" #f="ngForm" class="form-inline" (ngSubmit)="onSubAssignSubmit(sub.id)">
-                          <div class="form-group">
-                            <select [formControl]="subAssignForm.controls['assigned_id']" class="form-control" #assigned_id="ngForm">
-                              <option *ngIf="!sub.sub.id" value="0" disabled selected>Please select a substitute</option>
-                              <option *ngFor="let assignable of assignables" [ngValue]="assignable.id">{{assignable.name}}</option>
-                            </select>
-                          </div>
-                          <div class="form-group">
-                            <button type="submit" class="btn btn-primary btn-sm" [disabled]="!subAssignForm.valid || assigned_id.value == sub.sub.id">
-                              <i class="glyphicon glyphicon-ok"></i>
-                            </button>
-                          </div>
-                        </form>
-                      </div>
-                    </span>
+                    <div>
+                      <baker-assign-sub-form [patrolId]="modalState.patrolId" [subId]="sub.id" [subUserId]="sub.sub.id" inline="true" (success)="onSubAssign($event)" (error)="onSubAssignError($event)"></baker-assign-sub-form> 
+                    </div>
                   </td>
                   <td *ngIf="!modalState.hasPending || i > 0">{{sub.sub.name}}</td>
                   <td>{{sub.reason}}</td>
