@@ -1,28 +1,26 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs/Rx';
 import {BakerApiService} from '../services/baker-api.service';
 import {validateIdSelection} from '../validations/validations';
-import {BakerApiError} from './error.component';
 
 @Component({
   selector: 'baker-assign-sub-form',
-  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, BakerApiError],
   template: `
     <baker-api-error *ngIf="!inline" [error]="_error"></baker-api-error>
-    <form [formGroup]="subAssignForm" [ngClass]="{'form-inline': inline}" #f="ngForm" (ngSubmit)="onAssignSubmit()">
+    <form [formGroup]="subAssignForm" [ngClass]="{'form-inline': inline}" (ngSubmit)="onAssignSubmit()">
       <div *ngIf="assignables" class="form-group">
         <label *ngIf="!inline" for="substitute">Substitute</label>
-        <select [formControl]="subAssignForm.controls['assigned_id']" #assigned_id="ngForm">
+        <select formControlName="assigned_id">
           <option *ngIf="!subUserId || subUserId == 0" value="0" disabled selected>Please select a substitute</option>
           <option *ngFor="let a of assignables" value="{{a.id}}">{{a.name}}</option>
         </select>
       </div>
       <div class="form-group">
-        <button *ngIf="inline" type="submit" class="btn btn-primary btn-sm" [disabled]="!subAssignForm.valid || subAssignForm.controls['assigned_id'].value == subUserId">
+        <button *ngIf="inline" type="submit" class="btn btn-primary btn-sm" [disabled]="!subAssignForm.valid || subAssignForm.controls.assigned_id.value == subUserId">
           <i class="glyphicon glyphicon-ok"></i>
         </button>
-        <button *ngIf="!inline" type="submit" class="btn btn-def btn-block" [disabled]="!subAssignForm.valid || subAssignForm.controls['assigned_id'].value == subUserId">Assign</button>
+        <button *ngIf="!inline" type="submit" class="btn btn-def btn-block" [disabled]="!subAssignForm.valid || subAssignForm.controls.assigned_id.value == subUserId">Assign</button>
       </div>
     </form>
   `

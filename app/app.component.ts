@@ -1,4 +1,4 @@
-import {Component, provide, ViewContainerRef} from '@angular/core';
+import {Component, ViewContainerRef} from '@angular/core';
 import {JwtHelper} from 'angular2-jwt';
 import {BakerApiService} from './services/baker-api.service';
 
@@ -6,9 +6,7 @@ import {BakerApiService} from './services/baker-api.service';
   selector: 'baker-patrol-app',
   template: `
     <router-outlet></router-outlet>
-    {{diagnostic}}
-  `,
-  providers: [BakerApiService]
+  `
 })
 
 export class AppComponent {

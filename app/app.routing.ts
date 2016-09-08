@@ -1,6 +1,6 @@
 import {ModuleWithProviders}  from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {Http, HTTP_PROVIDERS} from '@angular/http';
+import {Http} from '@angular/http';
 
 import {AuthGuard} from './guards/auth.guard';
 import {NoAuthGuard} from './guards/no-auth.guard';
@@ -14,6 +14,11 @@ import {DutyDayComponent} from './components/duty_day.component';
 import {TeamComponent}    from './components/team.component';
 
 const appRoutes: Routes = [
+  {
+    path: '',
+    redirectTo: '/Dash/Patrols',
+    pathMatch: 'full'
+  },
   { 
     path: 'Login', 
     component: LoginComponent,

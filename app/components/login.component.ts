@@ -1,15 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BakerApiService} from '../services/baker-api.service';
 import {emailRegexp} from '../validations/validations';
-import {BakerApiError} from './error.component';
 
 @Component({
   selector: 'baker-patrol-login',
   templateUrl: 'app/views/login.component.html',
-  styleUrls: ['app/styles/login.component.css'],
-  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, BakerApiError],
+  styleUrls: ['app/styles/login.component.css']
 })
 
 export class LoginComponent implements OnInit {

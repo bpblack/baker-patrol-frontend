@@ -7,18 +7,18 @@
         </div>
         <div class="panel-body">
           <baker-api-error [cond]="hasError()" [error]="'Email or password is incorrect'"></baker-api-error>
-          <form [formGroup]="loginForm" #f="ngForm" (ngSubmit)="onSubmit()">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <div class="form-group">
               <label for="email">Email</label>
               <!-- Using #username, we can identify this input to get the value on the form's submit event -->
-              <input type="text" class="form-control" [formControl]="loginForm.controls['email']" placeholder="Email" #email="ngForm">
-              <baker-api-error [cond]="!(email.valid || (email.pristine && !f.submitted))" [error]="'A valid email address is required'"></baker-api-error>
+              <input type="text" class="form-control" formControlName="email" placeholder="Email">
+              <baker-api-error [cond]="!(loginForm.controls.email.valid || (loginForm.controls.email.pristine && !loginForm.submitted))" [error]="'A valid email address is required'"></baker-api-error>
             </div>
             <div class="form-group">
               <label for="password">Password</label>
               <!-- Using #password we can identify this input to get its value -->
-              <input type="password" class="form-control" [formControl]="loginForm.controls['password']" placeholder="Password" #password="ngForm">
-              <baker-api-error [cond]="!(password.valid || (password.pristine && !f.submitted))" [error]="'A valid email address is required'"></baker-api-error>
+              <input type="password" class="form-control" formControlName="password" placeholder="Password">
+              <baker-api-error [cond]="!(loginForm.controls.password.valid || (loginForm.controls.password.pristine && !loginForm.submitted))" [error]="'A valid email address is required'"></baker-api-error>
             </div>
             <div class="form-group">
               <button type="submit" class="btn btn-def btn-block" [disabled]="!loginForm.valid">Submit</button>

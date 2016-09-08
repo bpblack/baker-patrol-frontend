@@ -15,7 +15,7 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let patrol of patrols; let i = index">
+            <tr *ngFor="let patrol of patrols; let i = index" [ngClass]="{'danger': patrol.pending_substitution.id > 0 && !patrol.pending_substitution.sub_id, 'warning': patrol.pending_substitution.sub_id > 0}">
               <td>
                 <a routerLink="../DutyDay/{{patrol.duty_day.id}}">{{patrol.duty_day.date}}</a>
               </td>

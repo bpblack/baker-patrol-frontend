@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {CORE_DIRECTIVES}   from '@angular/common';
 import {Observable} from 'rxjs/Rx';
-import {MODAL_DIRECTIVES, BS_VIEW_PROVIDERS, ModalDirective, TAB_DIRECTIVES, TabDirective, TabsetComponent} from 'ng2-bootstrap/ng2-bootstrap';
+import {ModalDirective} from 'ng2-bootstrap/ng2-bootstrap';
 import {BakerApiService} from '../services/baker-api.service';
 import {PatrolsTab} from './patrols_tab.component';
 import {RequestsTab} from './requests_tab.component';
@@ -36,9 +35,7 @@ class ModalState {
 
 @Component({
   selector: 'baker-patrol-patrols',
-  templateUrl: 'app/views/patrols.component.html',
-  directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES, TAB_DIRECTIVES, PatrolsTab, RequestsTab, CreateSubForm, CreateAssignSubForm, EmailSubForm, AssignSubForm],
-  viewProviders: [BS_VIEW_PROVIDERS]
+  templateUrl: 'app/views/patrols.component.html'
 })
 export class PatrolsComponent implements OnInit {
   patrols: Array<any>;

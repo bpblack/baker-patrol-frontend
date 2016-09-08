@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {CORE_DIRECTIVES}   from '@angular/common';
 import {ActivatedRoute, Params} from '@angular/router';
-import {MODAL_DIRECTIVES, BS_VIEW_PROVIDERS, ModalDirective, TAB_DIRECTIVES, TabDirective, TabsetComponent} from 'ng2-bootstrap/ng2-bootstrap';
+import {ModalDirective} from 'ng2-bootstrap/ng2-bootstrap';
 import {BakerApiService} from '../services/baker-api.service';
 import {validateIdSelection} from '../validations/validations';
 import {BakerApiError} from './error.component';
@@ -31,9 +30,7 @@ class ModalState {
 
 @Component({
   selector: 'baker-patrol-duty-day',
-  templateUrl: 'app/views/duty_day.component.html',
-  directives: [MODAL_DIRECTIVES, CORE_DIRECTIVES, TAB_DIRECTIVES, BakerApiError, CreateAssignSubForm, AssignSubForm],
-  viewProviders: [BS_VIEW_PROVIDERS]
+  templateUrl: 'app/views/duty_day.component.html'
 })
 export class DutyDayComponent implements OnInit {
   dutyDay: any;

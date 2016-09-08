@@ -1,19 +1,17 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
-import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs/Rx';
 import {BakerApiService} from '../services/baker-api.service';
-import {BakerApiError} from './error.component';
 
 @Component({
   selector: 'baker-email-sub-form',
-  directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, BakerApiError],
   template: `
     <baker-api-error [error]="error"></baker-api-error>
-    <form [formGroup]="subEmailForm" #f="ngForm" (ngSubmit)="onEmailSubmit()">
+    <form [formGroup]="subEmailForm" (ngSubmit)="onEmailSubmit()">
       <div class="form-group">
         <label *ngIf="!subName" for="message">Message to group</label>
         <label *ngIf="subName" for="message">Message to {{subName}}</label>
-        <textarea class="form-control" rows="4" [formControl]="subEmailForm.controls['message']" placeholder="Message to send in email" #message="ngForm"></textarea>
+        <textarea class="form-control" rows="4" formControlName="message" placeholder="Message to send in email"></textarea>
       </div>
       <div class="form-group">
         <button type="submit" class="btn btn-def btn-block">{{buttonText}}</button>
