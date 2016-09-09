@@ -13,10 +13,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="{'success': isAdmin && patrol.has_substitutions && !patrol.has_pending_substitutions, 'danger': isAdmin && patrol.has_pending_substitutions}">
+          <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="rowColor(patrol.latest_substitution)">
             <td>{{patrol.patroller.name}}</td>
             <td>{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
-            <td *ngIf="isAdmin"><button class="btn btn-primary" (click)="showManagePatrolModal(i, patrol.id, patrol.responsibility.name + ' ' + dutyDay.date, patrol.has_substitutions, patrol.has_pending_substitutions)">Manage</button></td>
+            <td *ngIf="isAdmin"><button class="btn btn-primary" (click)="showManagePatrolModal(i, patrol.id, patrol.responsibility.name + ' ' + dutyDay.date, patrol.latest_substitution != null, patrol.latest_substitution != null && patrol.latest_substitution.accepted == false)">Manage</button></td>
           </tr>
         </tbody>
       </table>
@@ -51,7 +51,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let sub of history; let i = index" [ngClass]="{'danger': !sub.accepted}">
+                <tr *ngFor="let sub of history; let i = index" [ngClass]="{'danger': !sub.accepted && !sub.sub.id, 'warning': !sub.accepted && sub.sub.id}">
                   <td>{{sub.subbed.name}}</td>
                   <td *ngIf="modalState.hasPending && i == 0">
                     <div>

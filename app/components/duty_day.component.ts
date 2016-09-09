@@ -66,9 +66,7 @@ export class DutyDayComponent implements OnInit {
     this.modalState = new ModalState(index, patrolId, patrolName, hasSubs, hasPending);
     this.error = '';
     if (hasSubs) {
-      this.updateSubHistory(patrolId, () => {
-        let id = this.history[0].sub.id;
-      });
+      this.updateSubHistory(patrolId);
     }
     this.managePatrolModal.show();
     
@@ -76,23 +74,38 @@ export class DutyDayComponent implements OnInit {
 
   closeManagePatrolModal() {
     this.history = null;
+    this.modalState = new ModalState();
     this.managePatrolModal.hide();
   }
   
   onSubRequestAssignSubmit($event) {
-    this.dutyDay.patrols[this.modalState.index].has_substitutions = true;
-    this.dutyDay.patrols[this.modalState.index].has_pending_substitutions = true;
+    if (this.dutyDay.patrols[this.modalState.index].latest_substitution == null) {
+      this.dutyDay.patrols[this.modalState.index].latest_substitution = {accepted: false, sub_id: $event.sub_id};
+    } else {
+      this.dutyDay.patrols[this.modalState.index].latest_substitution.accepted = false;
+      this.dutyDay.patrols[this.modalState.index].latest_substitution.sub_id = $event.sub_id;
+    }
     this.closeManagePatrolModal();
   }
 
   onSubAssign($event) {
-    console.log("assigned sub " + JSON.stringify($event));
+    this.dutyDay.patrols[this.modalState.index].latest_substitution.sub_id = $event.sub_id;
     this.managePatrolModal.hide();
   }
 
   onSubAssignError($event) {
-    console.log("assignment error " + JSON.stringify($event));
     this.error = $event.error;
+  }
+
+  rowColor(latestSub: any) : string {
+    if (this.isAdmin && latestSub) {
+      if (latestSub.accepted) {
+        return 'success'
+      } else {
+        return latestSub.sub_id ? 'warning' : 'danger'
+      }
+    }
+    return null;
   }
 
   private updateDutyDay(lambda  = ()=>{}) {

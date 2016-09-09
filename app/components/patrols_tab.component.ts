@@ -15,15 +15,15 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let patrol of patrols; let i = index" [ngClass]="{'danger': patrol.pending_substitution.id > 0 && !patrol.pending_substitution.sub_id, 'warning': patrol.pending_substitution.sub_id > 0}">
+            <tr *ngFor="let patrol of patrols; let i = index" [ngClass]="rowColor(patrol.pending_substitution)">
               <td>
                 <a routerLink="../DutyDay/{{patrol.duty_day.id}}">{{patrol.duty_day.date}}</a>
               </td>
               <td>{{patrol.duty_day.team.name}}</td>
               <td>{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
               <td>
-                <button class="btn btn-primary" *ngIf="!patrol.pending_substitution.id" [disabled]="!patrol.swappable" (click)="createClick(i, patrol.id, patrol.duty_day.date)">Request Sub</button>
-                <button class="btn btn-primary" *ngIf="patrol.pending_substitution.id" [disabled]="!patrol.swappable" (click)="manageClick(i, patrol.id,  patrol.duty_day.date, patrol.pending_substitution.id, patrol.pending_substitution.sub_id, patrol.pending_substitution.sub_name)">Manage Sub</button>
+                <button class="btn btn-primary" *ngIf="!patrol.pending_substitution" [disabled]="!patrol.swappable" (click)="createClick(i, patrol.id, patrol.duty_day.date)">Request Sub</button>
+                <button class="btn btn-primary" *ngIf="patrol.pending_substitution" [disabled]="!patrol.swappable" (click)="manageClick(i, patrol.id,  patrol.duty_day.date, patrol.pending_substitution.id, patrol.pending_substitution.sub_id, patrol.pending_substitution.sub_name)">Manage Sub</button>
               </td>
             </tr>
           </tbody>
@@ -54,5 +54,12 @@ export class PatrolsTab {
       subUserId: subUserId,
       subName: subName
     });
+  }
+
+  rowColor(latestSub: any) : string {
+    if (latestSub) {
+      return latestSub.sub_id ? 'warning' : 'danger';
+    }
+    return null;
   }
 }

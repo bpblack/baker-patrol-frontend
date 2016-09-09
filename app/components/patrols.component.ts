@@ -141,7 +141,7 @@ export class PatrolsComponent implements OnInit {
   onSubDeleteSubmit() {
     this._apiService.deleteSubRequest(this.modalState.subId).subscribe(
       success => {
-        this.patrols[this.modalState.index].pending_substitution = {id: null, sub_id: null, sub_name: null};
+        this.patrols[this.modalState.index].pending_substitution = null;
         this.closeManageSubModal();
       },
       error => this.error = error
