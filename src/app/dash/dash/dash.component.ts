@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, Subject, Subscription, interval, of } from 'rxjs';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import { BakerApiService, Role, User } from '../../shared/services/baker-api.service';
 
 @Component({
@@ -13,15 +13,16 @@ import { BakerApiService, Role, User } from '../../shared/services/baker-api.ser
   providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
 })
 export class DashComponent implements OnInit, OnDestroy {
-  
-  logoutRef: BsModalRef;
+  public igear: IconDefinition = faGear;
+  public ipower: IconDefinition = faPowerOff;
+  public isCollapsed: boolean = false;
   @ViewChild('logoutModal') logoutElement: any;
   public loaded: Observable<boolean>;
   public isAdmin = new Subject<boolean>();
   public isStaff = new Subject<boolean>();
   public name = new Subject<string>();
-  public igear = faGear;
-  public ipower = faPowerOff;
+
+  private logoutRef: BsModalRef;
   private _logoutPoll: Subscription;
   private _userSubscription: Subscription;
   private _adminRoles: Set<string> = new Set(['admin', 'leader']);
@@ -58,6 +59,8 @@ export class DashComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  collapseClick() { this.isCollapsed = !this.isCollapsed; console.log("clicked. now val is: ", this.isCollapsed);}
 
   ngOnDestroy(): void {
     this._logoutPoll.unsubscribe();
