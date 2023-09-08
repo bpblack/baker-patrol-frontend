@@ -6,19 +6,23 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DashRoutingModule } from './dash-routing.module';
 import { DashComponent } from './dash/dash.component';
 import { RouterModule } from '@angular/router';
+
+import { AlertModule } from 'ngx-bootstrap/alert';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import { PatrolsComponent } from './patrols/patrols.component';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+
+import { PatrolsComponent } from './patrols/patrols.component';
 import { TeamComponent } from './team/team.component';
 import { RosterComponent } from './roster/roster.component';
 import { SeasonComponent } from './season/season.component';
 import { AccountComponent } from './account/account.component';
-import { AlertModule } from 'ngx-bootstrap/alert';
-import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { SearchRosterPipe } from './roster/roster-search.pipe';
 import { SearchComponent } from './search/search.component';
 import { SearchDutyDaysPipe } from './season/season-search.pipe';
+import { DutyDayComponent } from './duty-day/duty-day.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +34,8 @@ import { SearchDutyDaysPipe } from './season/season-search.pipe';
     AccountComponent,
     SearchRosterPipe,
     SearchDutyDaysPipe,
-    SearchComponent
+    SearchComponent,
+    DutyDayComponent
   ],
   imports: [
     CommonModule,
@@ -40,6 +45,7 @@ import { SearchDutyDaysPipe } from './season/season-search.pipe';
     BsDropdownModule.forRoot(),
     CollapseModule.forRoot(),
     ModalModule.forRoot(),
+    TabsModule.forRoot(),
     FontAwesomeModule,
     DashRoutingModule
   ]

@@ -4,7 +4,7 @@ import { Observable} from 'rxjs';
 import { BakerApiService, Season, TeamRoster } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'app-roster',
+  selector: 'baker-roster',
   templateUrl: './roster.component.html'
 })
 export class RosterComponent {

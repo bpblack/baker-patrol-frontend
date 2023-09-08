@@ -42,6 +42,7 @@ export interface RosterUser {
   phone?: string;
   email?: string;
   roles?: string;
+  skills?: string; //TODO change the ruby api so this is roles
 }
 
 export interface TeamRoster {
@@ -59,6 +60,34 @@ interface SeasonRoster {
 export interface Team {
   id: number;
   name: string;
+}
+
+export interface LatestSub {
+  id: number;
+  accepted: boolean;
+  sub_id: number;
+}
+
+export interface Responsibility {
+  id: number;
+  name: string;
+  version: string;
+  role: string;
+}
+
+export interface Patrol {
+  id: number;
+  latest_substitution: LatestSub;
+  patroller: User;
+  responsibility: Responsibility;
+}
+
+export interface DutyDayDetail {
+  season_id: number;
+  date: string;
+  swappable: boolean;
+  team: Team;
+  patrols: Patrol[];
 }
 
 export interface GoogleAuth {
@@ -143,9 +172,6 @@ export class BakerApiService implements IAuthService {
   private url = 'https://volypatrol.mtbaker.us/api';//environment.apiUrl;
   private didLogin: boolean = false;
   private jwtHelper: JwtHelperService = new JwtHelperService();
-  private _currentUserActual: User;
-  private _observable: Observable<User>;
-  private _subscription: any;
   private _currentUser: ReplaySubject<User>;
 
   constructor(private http: HttpClient) {
@@ -213,14 +239,14 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   dutyDay(dutyDayId: number) : Observable<Object> {
-//     return this.http.get(this.url + '/duty_days/' + dutyDayId, this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  getDutyDay(dutyDayId: number): Observable<DutyDayDetail>  {
+    return this.http.get<DutyDayDetail>(this.url + '/duty_days/' + dutyDayId, this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 
-  getSeasonDutyDays(seasonId: number) : Observable<DutyDay[]> {
+  getSeasonDutyDays(seasonId: number): Observable<DutyDay[]> {
     return this.http.get<DutyDay[]>(this.url + '/seasons/' + seasonId + '/duty_days', this.defaultOptions()).pipe(
       catchError(this.handleError)
     );
@@ -313,17 +339,17 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   getSubHistory(id: number) : Observable<Array<any>> {
-//     return this.http.get(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).map(
-//       res => res.json().sub_history
-//     ).catch(this.handleError);
-//   }
+  getSubHistory(id: number) : Observable<Array<any>> {
+    return this.http.get<any>(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
   
-//   getAvailablePatrollers(id: number) : Observable<Array<string>> {
-//     return this.http.get(this.url + '/admin/duty_days/' + id + '/available_patrollers', this.defaultOptions()).map(
-//       res => res.json().emails
-//     ).catch(this.handleError);
-//   }
+  getAvailablePatrollers(id: number) : Observable<string[]> {
+    return this.http.get<string[]>(this.url + '/admin/duty_days/' + id + '/available_patrollers', this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 //   updateUser(form: UserNameForm | UserEmailForm | UserPhoneForm | UserPasswordForm, userId: number = this.currentUserId()): Observable<boolean> {
 //     let body = JSON.stringify(form);

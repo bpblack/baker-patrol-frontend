@@ -7,6 +7,7 @@ import { TeamComponent } from './team/team.component';
 import { RosterComponent } from './roster/roster.component';
 import { AccountComponent } from './account/account.component';
 import { SeasonComponent } from './season/season.component';
+import { DutyDayComponent } from './duty-day/duty-day.component';
 
 const routes: Routes = [
   {
@@ -17,11 +18,12 @@ const routes: Routes = [
       path: '',
       canActivateChild: [AuthGuard],
       children: [
-        { path: '', component: PatrolsComponent},
-        { path: 'Account', component: AccountComponent},
-        { path: 'Roster', component: RosterComponent},
-        { path: 'Season', component: SeasonComponent},
-        { path: 'Team', component: TeamComponent},
+        { path: '', component: PatrolsComponent },
+        { path: 'Account', component: AccountComponent },
+        { path: 'DutyDay/:id', component: DutyDayComponent },
+        { path: 'Roster', component: RosterComponent },
+        { path: 'Season', component: SeasonComponent },
+        { path: 'Team', component: TeamComponent },
       ]
     }]
   }
