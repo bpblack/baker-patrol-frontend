@@ -220,18 +220,18 @@ export class BakerApiService implements IAuthService {
 //   }
 
 
-//   getSeasonDutyDays(seasonId: number) : Observable<Array<DutyDay>> {
-//     return this.http.get(this.url + '/seasons/' + seasonId + '/duty_days', this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  getSeasonDutyDays(seasonId: number) : Observable<DutyDay[]> {
+    return this.http.get<DutyDay[]>(this.url + '/seasons/' + seasonId + '/duty_days', this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
-    getSeasonRoster(seasonId: number) : Observable<TeamRoster[]> {
-      return this.http.get<SeasonRoster>(this.url + '/seasons/' + seasonId + '/roster', this.defaultOptions()).pipe(
-        map(r => r.roster),
-        catchError(this.handleError)
-      );
-    }
+  getSeasonRoster(seasonId: number) : Observable<TeamRoster[]> {
+    return this.http.get<SeasonRoster>(this.url + '/seasons/' + seasonId + '/roster', this.defaultOptions()).pipe(
+      map(r => r.roster),
+      catchError(this.handleError)
+    );
+  }
 
 //   swapResponsibilities(patrolId: number, s: SwapForm) {
 //     let body = JSON.stringify(s);

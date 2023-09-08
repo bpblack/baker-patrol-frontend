@@ -1,49 +1,47 @@
 <div class="pt-3">
   <div  *ngIf="(roster | async) as roster" class="card">
     <div class="card-header">
-      <h2>{{season_name}} Roster</h2>
+      <h2>{{seasonName}} Roster</h2>
     </div>
     <div class="card-body">
       <div class="container">
         <div *ngIf="roster.length > 0; else nodisplay" class="row">
-          <alert *ngIf="error" type="danger">
-            <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
-            {{error}}
-          </alert>
           <baker-search *ngIf="roster.length > 0" (update)="searchTerm = $event"></baker-search>
         </div>
-        <accordion [isAnimated]="true">
-          <accordion-group *ngFor="let team of roster | searchRoster:searchTerm" heading="{{team.name}}" [isOpen]="team.members.length > 0">
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th class="col-md-3">Name</th>
-                    <th class="col-md-3">Email</th>
-                    <th class="col-md-3">Phone</th>
-                    <th class="col-md-3">Roles</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let member of team.members">
-                    <td data-title="Name">
-                      {{member.name}}
-                    </td>
-                    <td data-title="Email">
-                      <a href="mailto:{{member.email}}" class="baker-email">{{member.email}}</a>
-                    </td>
-                    <td data-title="Phone">
-                      <a href="tel:{{member.phone}}" class="baker-tel">{{member.phone}}</a>
-                    </td>
-                    <td data-title="Roles">
-                      {{member.roles}}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </accordion-group>
-        </accordion>
+        <div class="row">
+          <accordion [isAnimated]="true">
+            <accordion-group *ngFor="let team of roster | searchRoster:searchTerm" heading="{{team.name}}" [isOpen]="team.members.length > 0">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th class="col-md-3">Name</th>
+                      <th class="col-md-3">Email</th>
+                      <th class="col-md-3">Phone</th>
+                      <th class="col-md-3">Roles</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let member of team.members">
+                      <td data-title="Name">
+                        {{member.name}}
+                      </td>
+                      <td data-title="Email">
+                        <a href="mailto:{{member.email}}" class="baker-email">{{member.email}}</a>
+                      </td>
+                      <td data-title="Phone">
+                        <a href="tel:{{member.phone}}" class="baker-tel">{{member.phone}}</a>
+                      </td>
+                      <td data-title="Roles">
+                        {{member.roles}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </accordion-group>
+          </accordion>
+        </div>
       </div>
     </div>
   </div>
@@ -53,7 +51,7 @@
   <div class="card">
     <div class="card-body">
       <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-      Loading team data...
+      Loading roster data...
     </div>
   </div>
 </ng-template>

@@ -16,8 +16,9 @@ import { SeasonComponent } from './season/season.component';
 import { AccountComponent } from './account/account.component';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
-import { SearchRosterPipe } from './roster/search-roster.pipe';
+import { SearchRosterPipe } from './roster/roster-search.pipe';
 import { SearchComponent } from './search/search.component';
+import { SearchDutyDaysPipe } from './season/season-search.pipe';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { SearchComponent } from './search/search.component';
     SeasonComponent,
     AccountComponent,
     SearchRosterPipe,
+    SearchDutyDaysPipe,
     SearchComponent
   ],
   imports: [
