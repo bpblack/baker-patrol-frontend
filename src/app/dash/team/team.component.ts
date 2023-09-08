@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
-import { BakerApiService, Season, TeamRoster } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, Season } from 'src/app/shared/services/baker-api.service';
 
 @Component({
   selector: 'app-team',
-  templateUrl: './team.component.html',
-  styleUrls: ['./team.component.css']
+  templateUrl: './team.component.html'
 })
 export class TeamComponent {
   public igear: IconDefinition = faGear;

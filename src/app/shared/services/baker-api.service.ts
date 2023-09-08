@@ -41,7 +41,7 @@ export interface RosterUser {
   name: string;
   phone?: string;
   email?: string;
-  roles?: Role[];
+  roles?: string;
 }
 
 export interface TeamRoster {

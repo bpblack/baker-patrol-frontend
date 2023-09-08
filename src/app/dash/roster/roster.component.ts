@@ -5,11 +5,11 @@ import { BakerApiService, Season, TeamRoster } from 'src/app/shared/services/bak
 
 @Component({
   selector: 'app-roster',
-  templateUrl: './roster.component.html',
-  styleUrls: ['./roster.component.css']
+  templateUrl: './roster.component.html'
 })
 export class RosterComponent {
   public error: string;
+  public searchTerm: string = '';
   public season_name: string;
   public igear: IconDefinition = faGear;
   public itriangle: IconDefinition = faTriangleExclamation;
@@ -21,11 +21,7 @@ export class RosterComponent {
     this._apiService.currentUserSeason.subscribe({
       next: (s: Season) => {
         this.season_name = s.name;
-        this.roster = this._apiService.getSeasonRoster(s.id); // .pipe(
-        //   map(
-        //     (tra: TeamRoster[]) => tra.map(tr => <TeamRosterCollapse>({...tr, collapsed: false})
-        //   ))
-        // );
+        this.roster = this._apiService.getSeasonRoster(s.id);
       }
     });
   }

@@ -1,67 +1,69 @@
 
 <div class="pt-3">
-  <div class="card">
-    <div *ngIf="!team; else loaded" class="card-body">
-        [<fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-        Loading team data...
+  <div *ngIf="(team | async) as team; else loading" class="card">
+    <div class="card-header">
+      <h2>{{team.name}}</h2>
     </div>
-  </div>
-</div>
-
-<ng-template #loaded>
-  <div class="card-header">
-    <h2>{{(team | async).name}}</h2>
-  </div>
-  <div class="card-body">
-    <div class="container">
-      <div class="row justify-content-md-center">
-        <!-- print the team column -->
-        <div [ngClass]="{'col-md-6': (team | async).duty_days.length > 0, 'col-md-12': (team | async).duty_days.length == 0}">
-          <div class="pr-1">
-            <!-- Print the team leader card -->
-            <div class="row">
-              <div *ngIf="(team | async).leader" class="card px-0">
-                <div class="card-header">
-                  <h3>Team Leader</h3>
+    <div class="card-body">
+      <div class="container">
+        <div class="row justify-content-md-center">
+          <!-- print the team column -->
+          <div [ngClass]="{'col-md-6': team.duty_days.length > 0, 'col-md-12': team.duty_days.length == 0}">
+            <div class="pr-1">
+              <!-- Print the team leader card -->
+              <div class="row">
+                <div *ngIf="team.leader" class="card px-0">
+                  <div class="card-header">
+                    <h3>Team Leader</h3>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">{{team.leader.name}}</li>
+                  </ul>
                 </div>
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item">{{(team | async).leader.name}}</li>
-                </ul>
               </div>
-            </div>
-            <!-- print the team roster -->
-            <div class="row pt-2">
-              <div class="card px-0">
-                <div class="card-header">
-                  <h3>Patrollers</h3>
-                </div> 
-                <ul class="list-group list-group-flush">
-                  <li *ngFor="let patroller of (team | async).patrollers" class="list-group-item">
-                    {{patroller.name}}
-                  </li>
-                </ul>
+              <!-- print the team roster -->
+              <div class="row pt-2">
+                <div class="card px-0">
+                  <div class="card-header">
+                    <h3>Patrollers</h3>
+                  </div> 
+                  <ul class="list-group list-group-flush">
+                    <li *ngFor="let patroller of team.patrollers" class="list-group-item">
+                      {{patroller.name}}
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <!-- print the duty days column -->
-        <div *ngIf="(team | async).duty_days.length > 0" class="col-md-6">
-          <div class="row">
-            <div class=""pl-1>
-              <div class="card px-0">
-                <div class="card-header">
-                  <h3>Duty Days</h3>
-                </div> 
-                <ul class="list-group list-group-flush">
-                  <li *ngFor="let dutyDay of (team | async).duty_days" class="list-group-item">
-                    <a routerLink="./DutyDay/{{dutyDay.id}}">{{dutyDay.date}}</a>
-                  </li>
-                </ul>
+          <!-- print the duty days column -->
+          <div *ngIf="team.duty_days.length > 0" class="col-md-6">
+            <div class="row">
+              <div class=""pl-1>
+                <div class="card px-0">
+                  <div class="card-header">
+                    <h3>Duty Days</h3>
+                  </div> 
+                  <ul class="list-group list-group-flush">
+                    <li *ngFor="let dutyDay of team.duty_days" class="list-group-item">
+                      <a routerLink="./DutyDay/{{dutyDay.id}}">{{dutyDay.date}}</a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="card">
+    <div class="card-body">
+      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      Loading team data...
+  </div>
   </div>
 </ng-template>
