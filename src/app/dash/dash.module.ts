@@ -14,6 +14,8 @@ import { TeamComponent } from './team/team.component';
 import { RosterComponent } from './roster/roster.component';
 import { SeasonComponent } from './season/season.component';
 import { AccountComponent } from './account/account.component';
+import { AlertModule } from 'ngx-bootstrap/alert';
+import { AccordionModule } from 'ngx-bootstrap/accordion';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,8 @@ import { AccountComponent } from './account/account.component';
   imports: [
     CommonModule,
     RouterModule,
+    AccordionModule.forRoot(),
+    AlertModule.forRoot(),
     BsDropdownModule.forRoot(),
     CollapseModule.forRoot(),
     ModalModule.forRoot(),

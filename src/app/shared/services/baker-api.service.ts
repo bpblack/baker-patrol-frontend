@@ -46,9 +46,14 @@ export interface RosterUser {
 
 export interface TeamRoster {
   name: string;
-  leader: RosterUser;
+  leader?: RosterUser;
   members: RosterUser[];
-  duty_days: DutyDay[];
+  duty_days?: DutyDay[];
+  collapsed?: boolean;
+}
+
+interface SeasonRoster {
+  roster: TeamRoster[];
 }
 
 export interface Team {
@@ -221,11 +226,12 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   getSeasonRoster(seasonId: number) : Observable<Array<TeamRoster>> {
-//     return this.http.get(this.url + '/seasons/' + seasonId + '/roster', this.defaultOptions()).map(
-//       res => res.json().roster
-//     ).catch(this.handleError);
-//   }
+    getSeasonRoster(seasonId: number) : Observable<TeamRoster[]> {
+      return this.http.get<SeasonRoster>(this.url + '/seasons/' + seasonId + '/roster', this.defaultOptions()).pipe(
+        map(r => r.roster),
+        catchError(this.handleError)
+      );
+    }
 
 //   swapResponsibilities(patrolId: number, s: SwapForm) {
 //     let body = JSON.stringify(s);

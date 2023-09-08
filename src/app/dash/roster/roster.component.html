@@ -1,1 +1,66 @@
-<p>roster works!</p>
+<div class="pt-3">
+  <div class="card">
+    <div *ngIf="!roster; else loaded" class="card-body">
+        <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+        Loading team data...
+    </div>
+  </div>
+</div>
+
+<ng-template #loaded>
+  <div class="card-header">
+    <h2>{{season_name}} Roster</h2>
+  </div>
+  <div class="card-body">
+    <div class="container">
+      <div *ngIf="(roster | async)?.length == 0; else display"class="row">
+        <alert type="danger">
+          <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+          Season has no roster!
+        </alert>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #display>
+  <div class="row">
+    <alert *ngIf="error" type="danger">
+      <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+      {{error}}
+    </alert>
+    <!-- <baker-search *ngIf="roster.length > 0" (update)="searchTerm = $event"></baker-search> -->
+  </div>
+  <accordion [isAnimated]="true">
+    <accordion-group *ngFor="let team of (roster | async)" heading="{{team.name}}" [isOpen]="true">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th class="col-md-3">Name</th>
+              <th class="col-md-3">Email</th>
+              <th class="col-md-3">Phone</th>
+              <th class="col-md-3">Roles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let member of team.members">
+              <td data-title="Name">
+                {{member.name}}
+              </td>
+              <td data-title="Email">
+                <a href="mailto:{{member.email}}" class="baker-email">{{member.email}}</a>
+              </td>
+              <td data-title="Phone">
+                <a href="tel:{{member.phone}}" class="baker-tel">{{member.phone}}</a>
+              </td>
+              <td data-title="Roles">
+                {{member.roles}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </accordion-group>
+  </accordion>
+</ng-template>

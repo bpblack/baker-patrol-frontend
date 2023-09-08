@@ -1,9 +1,9 @@
 
-<div class="card p-0">
-  <div *ngIf="!team; else loaded" class="card-header">
-    <div class="card-body p-0">
-      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-      Loading team data...
+<div class="pt-3">
+  <div class="card">
+    <div *ngIf="!team; else loaded" class="card-body">
+        [<fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+        Loading team data...
     </div>
   </div>
 </div>
