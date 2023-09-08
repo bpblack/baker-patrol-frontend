@@ -13,7 +13,7 @@
           <baker-search *ngIf="roster.length > 0" (update)="searchTerm = $event"></baker-search>
         </div>
         <accordion [isAnimated]="true">
-          <accordion-group *ngFor="let team of roster | searchRoster:searchTerm" heading="{{team.name}}" [isOpen]="true">
+          <accordion-group *ngFor="let team of roster | searchRoster:searchTerm" heading="{{team.name}}" [isOpen]="team.members.length > 0">
             <div class="table-responsive">
               <table class="table table-bordered table-hover">
                 <thead>
