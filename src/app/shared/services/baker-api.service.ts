@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Observable, BehaviorSubject, throwError} from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, throwError, ReplaySubject} from 'rxjs';
+import { catchError, first, map, mergeMap } from 'rxjs/operators';
 import { IAuthService } from './iauth.service';
 import { tokenGetter } from 'src/app/app.module';
 import { environment } from 'src/environments/environment';
@@ -28,6 +28,34 @@ export interface Role {
   season_id?: number;
 }
 
+export interface User {
+  name: string;
+  phone: string;
+  email: string;
+  seasons: Season[];
+  roles: Role[];
+}
+
+export interface RosterUser {
+  id?: number;
+  name: string;
+  phone?: string;
+  email?: string;
+  roles?: Role[];
+}
+
+export interface TeamRoster {
+  name: string;
+  leader: RosterUser;
+  members: RosterUser[];
+  duty_days: DutyDay[];
+}
+
+export interface Team {
+  id: number;
+  name: string;
+}
+
 export interface GoogleAuth {
   uri: string;
 }
@@ -42,34 +70,16 @@ export interface Google {
   calendars: Array<GoogleCalendar>;
 }
 
-export interface Team {
-  id: number;
-  name: string;
-}
-
 export interface DutyDay {
   id: number;
   date: string;
   team?: Team;
 }
 
-export interface TeamRoster {
-  name: string;
-  members: Array<User>;
-}
-
 export interface SubAssignment {
   id: number;
   sub_id: number;
   sub_name: string;
-}
-
-export interface User {
-  name: string;
-  phone: string;
-  email: string;
-  seasons: Season[];
-  roles: Role[];
 }
 
 interface UserNameForm {
@@ -131,11 +141,10 @@ export class BakerApiService implements IAuthService {
   private _currentUserActual: User;
   private _observable: Observable<User>;
   private _subscription: any;
-  private _currentUser: BehaviorSubject<User>;
+  private _currentUser: ReplaySubject<User>;
 
   constructor(private http: HttpClient) {
-    console.log("new api service");
-    this._currentUser = new BehaviorSubject(<User>{});
+    this._currentUser = new ReplaySubject(1);
   }
 
   isLoggedIn() {
@@ -143,11 +152,18 @@ export class BakerApiService implements IAuthService {
     return active;
   }
 
-  get currentUser(): Observable<User> {
+  get currentUser(): ReplaySubject<User> {
     if (this.isLoggedIn() && !this.didLogin) {
       this.getCurrentUser();
+      this.didLogin = true;
     }
     return this._currentUser;
+  }
+
+  get currentUserSeason(): Observable<Season> {
+    return this.currentUser.pipe(
+      mergeMap(u => u.seasons), first()
+    );
   }
 
   login(l: LoginForm) : Observable<boolean> {
@@ -218,11 +234,11 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   team(seasonId: number, userId: number = this.currentUserId()) {
-//     return this.http.get(this.url + '/users/' + userId + '/seasons/' +  seasonId + '/teams', this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  team(seasonId: number, userId: number = this.currentUserId()): Observable<TeamRoster> {
+    return this.http.get<TeamRoster>(this.url + '/users/' + userId + '/seasons/' +  seasonId + '/teams', this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 //   createSubEmailRequest(patrolId: number, cs: EmailForm) : Observable<any> {
 //     let body = JSON.stringify(cs);

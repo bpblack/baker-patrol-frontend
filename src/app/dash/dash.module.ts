@@ -10,11 +10,19 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { PatrolsComponent } from './patrols/patrols.component';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { TeamComponent } from './team/team.component';
+import { RosterComponent } from './roster/roster.component';
+import { SeasonComponent } from './season/season.component';
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
     DashComponent,
-    PatrolsComponent
+    PatrolsComponent,
+    TeamComponent,
+    RosterComponent,
+    SeasonComponent,
+    AccountComponent
   ],
   imports: [
     CommonModule,

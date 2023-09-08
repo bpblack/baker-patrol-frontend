@@ -17,20 +17,17 @@ export class DashComponent implements OnInit, OnDestroy {
   public ipower: IconDefinition = faPowerOff;
   public isCollapsed: boolean = false;
   @ViewChild('logoutModal') logoutElement: any;
-  public loaded: Observable<boolean>;
-  public isAdmin = new Subject<boolean>();
-  public isStaff = new Subject<boolean>();
-  public name = new Subject<string>();
+  public loaded: boolean = false;
+  public isAdmin: Observable<boolean>;
+  public isStaff: Observable<boolean>;
+  public name: Observable<string>;
 
   private logoutRef: BsModalRef;
   private _logoutPoll: Subscription;
   private _userSubscription: Subscription;
   private _adminRoles: Set<string> = new Set(['admin', 'leader']);
 
-  constructor(private _apiService: BakerApiService, private _modalService: BsModalService, private _router: Router) {
-    this.isAdmin.next(false);
-    this.isStaff.next(false);
-  }
+  constructor(private _apiService: BakerApiService, private _modalService: BsModalService, private _router: Router) {  }
 
   ngOnInit(): void {
     // initialize the logout poll
@@ -48,14 +45,14 @@ export class DashComponent implements OnInit, OnDestroy {
         if (user.name !== undefined) {
           user.roles.forEach((r: Role) => {
             if (r.role === 'staff') {
-              this.isStaff.next(true);
+              this.isStaff = of(true);
             } else if (this._adminRoles.has(r.role)) {
-              this.isAdmin.next(true);
+              this.isAdmin = of(true);
             }
           });
+          this.name = of(user.name);
+          this.loaded = true;
         }
-        this.name.next(user.name);
-        this.loaded = of(true);
       }
     );
   }

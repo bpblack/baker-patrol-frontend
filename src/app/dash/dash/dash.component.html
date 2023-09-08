@@ -7,19 +7,19 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAlt" aria-controls="navbarSupportedContent" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation" (click)="collapseClick()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent" [collapse]="isCollapsed">
+    <div *ngIf="loaded" class="collapse navbar-collapse" id="navbarSupportedContent" [collapse]="isCollapsed">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li *ngIf="!(isStaff | async)" [routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="/Dash/Team">Team</a>
+          <a class="nav-link" routerLink="./Team">Team</a>
         </li>
         <li *ngIf="!(isStaff | async)"[routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="/Dash/Patrols">Duty Days</a>
+          <a class="nav-link" routerLink="./">Duty Days</a>
         </li>
         <li [routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="/Dash/Roster">Roster</a>
+          <a class="nav-link" routerLink="./Roster">Roster</a>
         </li>
         <li *ngIf="(isAdmin | async) || (isStaff | async)" [routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="/Dash/Season">Season</a>
+          <a class="nav-link" routerLink="./Season">Season</a>
         </li>
         <li *ngIf="name | async as n" class="nav-item dropdown" dropdown>
           <a dropdownToggle [routerLinkActive]="['active']" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -27,7 +27,7 @@
           </a>
           <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
             <li>
-              <a class="dropdown-item" routerLink="/Dash/Account">
+              <a class="dropdown-item" routerLink="./Account">
                 <fa-icon [icon]="igear"></fa-icon>&nbsp;
                 Settings
               </a>
@@ -45,14 +45,18 @@
   </div>
 </nav>
 <div class="container">
-  <div class="starter-template">
-    <div *ngIf="!loaded" class="panel-body">
+  <div *ngIf="!loaded; else loadedUser" class="card p-3 m-3">
+    <div class="card-body">
       <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
       Loading user info...
     </div>
-    <router-outlet></router-outlet>
   </div>
 </div>
+
+<ng-template #loadedUser>
+  <router-outlet></router-outlet>
+</ng-template>
+
 <ng-template #logoutModal data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
   <div class="modal-header">
     <h4 class="modal-title pull-left">Session expired</h4>
