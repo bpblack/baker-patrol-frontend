@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, Subscription, interval, of } from 'rxjs';
+import { Observable, Subject, Subscription, interval, of, startWith, switchMap } from 'rxjs';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { IconDefinition, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
@@ -13,45 +13,43 @@ import { BakerApiService, Role, User } from '../../shared/services/baker-api.ser
   providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
 })
 export class DashComponent implements OnInit, OnDestroy {
+  public isAdmin: boolean = false;
+  public isStaff: boolean = false;
+  public isCollapsed: boolean = false;
+  public user: Observable<User>;
   public igear: IconDefinition = faGear;
   public ipower: IconDefinition = faPowerOff;
-  public isCollapsed: boolean = false;
   @ViewChild('logoutModal') logoutElement: any;
-  public loaded: boolean = false;
-  public isAdmin: Observable<boolean>;
-  public isStaff: Observable<boolean>;
-  public name: Observable<string>;
 
   private logoutRef: BsModalRef;
   private _logoutPoll: Subscription;
-  private _userSubscription: Subscription;
   private _adminRoles: Set<string> = new Set(['admin', 'leader']);
 
   constructor(private _apiService: BakerApiService, private _modalService: BsModalService, private _router: Router) {  }
 
   ngOnInit(): void {
     // initialize the logout poll
-    this._logoutPoll = interval(6000).subscribe(
-      x => {
-        if (!this._apiService.isLoggedIn()) {
-          this.logoutRef = this._modalService.show(this.logoutElement, {ignoreBackdropClick: true});
-          this._logoutPoll.unsubscribe();
-        }
+    this._logoutPoll = interval(6000).pipe(
+      startWith(0),
+      switchMap(() => of(this._apiService.isLoggedIn()))
+    ).subscribe( (p: boolean) => {
+      if (!p) {
+        this.logoutRef = this._modalService.show(this.logoutElement, {ignoreBackdropClick: true});
+        this._logoutPoll.unsubscribe();
       }
-    );
+    });
     // initialize the user subscription
-    this._userSubscription = this._apiService.currentUser.subscribe(
+    this.user = this._apiService.currentUser;
+    this.user.subscribe(
       (user: User) => {
         if (user.name !== undefined) {
           user.roles.forEach((r: Role) => {
             if (r.role === 'staff') {
-              this.isStaff = of(true);
+              this.isStaff = true;
             } else if (this._adminRoles.has(r.role)) {
-              this.isAdmin = of(true);
+              this.isAdmin = true;
             }
           });
-          this.name = of(user.name);
-          this.loaded = true;
         }
       }
     );

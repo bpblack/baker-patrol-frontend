@@ -7,23 +7,23 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAlt" aria-controls="navbarSupportedContent" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation" (click)="collapseClick()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div *ngIf="loaded" class="collapse navbar-collapse" id="navbarSupportedContent" [collapse]="isCollapsed">
+    <div *ngIf="(user | async) as user" class="collapse navbar-collapse" id="navbarSupportedContent" [collapse]="isCollapsed">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li *ngIf="!(isStaff | async)" [routerLinkActive]="['active']" class="nav-item">
+        <li *ngIf="!isStaff" [routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./Team">Team</a>
         </li>
-        <li *ngIf="!(isStaff | async)"[routerLinkActive]="['active']" class="nav-item">
+        <li *ngIf="!isStaff"[routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./">Duty Days</a>
         </li>
         <li [routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./Roster">Roster</a>
         </li>
-        <li *ngIf="(isAdmin | async) || (isStaff | async)" [routerLinkActive]="['active']" class="nav-item">
+        <li *ngIf="isAdmin || isStaff" [routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./Season">Season</a>
         </li>
-        <li *ngIf="name | async as n" class="nav-item dropdown" dropdown>
+        <li class="nav-item dropdown" dropdown>
           <a dropdownToggle [routerLinkActive]="['active']" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {{n}}
+            {{user.name}}
           </a>
           <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
             <li>
@@ -45,16 +45,16 @@
   </div>
 </nav>
 <div class="container">
-  <div *ngIf="!loaded; else loadedUser" class="card p-3 m-3">
+  <router-outlet *ngIf="(user | async); else loading"></router-outlet>
+</div>
+
+<ng-template #loading>
+  <div  class="card p-3 m-3">
     <div class="card-body">
       <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
       Loading user info...
     </div>
   </div>
-</div>
-
-<ng-template #loadedUser>
-  <router-outlet></router-outlet>
 </ng-template>
 
 <ng-template #logoutModal data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">

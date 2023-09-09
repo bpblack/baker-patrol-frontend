@@ -164,6 +164,10 @@ interface GoogleCalendarForm {
   calendar_id: string;
 }
 
+interface Available {
+  emails: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -346,7 +350,8 @@ export class BakerApiService implements IAuthService {
   }
   
   getAvailablePatrollers(id: number) : Observable<string[]> {
-    return this.http.get<string[]>(this.url + '/admin/duty_days/' + id + '/available_patrollers', this.defaultOptions()).pipe(
+    return this.http.get<Available>(this.url + '/admin/duty_days/' + id + '/available_patrollers', this.defaultOptions()).pipe(
+      map(e => e.emails),
       catchError(this.handleError)
     );
   }
