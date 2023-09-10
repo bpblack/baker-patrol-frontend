@@ -19,14 +19,14 @@ export class ForgotComponent {
     email: new FormControl('', [Validators.required, Validators.email])
   });
 
-  constructor(private _apiService: BakerApiService, private _fb: FormBuilder) {}
+  constructor(private _api: BakerApiService, private _fb: FormBuilder) {}
 
   ngOnInit() { }
 
   onSubmit() {
     this.clearError();
     this.submitted = true;
-    this._apiService.forgot(this.forgotForm.controls['email'].value).subscribe({
+    this._api.forgot(this.forgotForm.controls['email'].value).subscribe({
       next: s => this.submitted = false,
       error: e => {
         this.submitted = false;

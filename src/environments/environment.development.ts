@@ -1,4 +1,4 @@
 export const environment = {
     production: false,
-    apiUrl: 'https://volypatrol.mtbaker.us'
+    apiUrl: 'https://volypatrol.mtbaker.us/api'
 };

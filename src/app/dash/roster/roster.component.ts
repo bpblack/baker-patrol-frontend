@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IconDefinition, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { Observable} from 'rxjs';
+import { Observable, concatMap} from 'rxjs';
 import { BakerApiService, Season, TeamRoster } from 'src/app/shared/services/baker-api.service';
 
 @Component({
@@ -14,14 +14,14 @@ export class RosterComponent {
   public itriangle: IconDefinition = faTriangleExclamation;
   public roster: Observable<TeamRoster[]>;
 
-  constructor(private _apiService: BakerApiService) { }
+  constructor(private _api: BakerApiService) { }
 
   ngOnInit() {
-    this._apiService.currentUserSeason.subscribe({
-      next: (s: Season) => {
+    this.roster = this._api.currentUserSeason.pipe(
+      concatMap((s: Season) => {
         this.seasonName = s.name;
-        this.roster = this._apiService.getSeasonRoster(s.id);
-      }
-    });
+        return this._api.getSeasonRoster(s.id)
+      })
+    );
   }
 }

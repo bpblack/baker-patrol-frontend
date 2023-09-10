@@ -173,13 +173,17 @@ interface Available {
 })
 export class BakerApiService implements IAuthService {
 
-  private url = 'https://volypatrol.mtbaker.us/api';//environment.apiUrl;
+  private url = environment.apiUrl;
   private didLogin: boolean = false;
   private jwtHelper: JwtHelperService = new JwtHelperService();
   private _currentUser: ReplaySubject<User>;
 
   constructor(private http: HttpClient) {
     this._currentUser = new ReplaySubject(1);
+  }
+
+  log(...data: any[]) {
+    if (environment.production === false) console.log(data);
   }
 
   isLoggedIn() {

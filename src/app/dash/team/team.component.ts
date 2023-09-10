@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
+import { Observable, concatMap } from 'rxjs';
 import { BakerApiService, Season } from 'src/app/shared/services/baker-api.service';
 
 @Component({
@@ -11,16 +11,13 @@ export class TeamComponent {
   public igear: IconDefinition = faGear;
   public team: Observable<any>;
 
-  constructor(private _apiService: BakerApiService) { }
+  constructor(private _api: BakerApiService) { }
 
   ngOnInit(): void {
-    this._apiService.currentUserSeason.subscribe({
-      next: (s: Season) => {
-        if (s.name) {
-          this.team = this._apiService.team(s.id);
-        }
-      }
-    });
+    this.team = this._api.currentUserSeason.pipe(
+      concatMap( (s: Season) => {
+        return this._api.team(s.id);
+      })
+    );
   }
-
 }

@@ -22,11 +22,11 @@ export class LoginComponent {
     password: new FormControl('', Validators.required)
   })
 
-  constructor(private _apiService: BakerApiService, private _router: Router, private _fb: FormBuilder) { }
+  constructor(private _api: BakerApiService, private _router: Router, private _fb: FormBuilder) { }
 
   onSubmit() {
     this.submitted = true;
-    const api = this._apiService.login(this.loginForm.value).pipe(
+    const api = this._api.login(this.loginForm.value).pipe(
       finalize(() => this.submitted = false)
     );
     api.subscribe({
