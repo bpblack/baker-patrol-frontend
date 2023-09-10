@@ -1,19 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { finalize } from 'rxjs';
-import { IconDefinition, faCheck, faCircleCheck, faGear, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { BakerApiService } from '../../../shared/services/baker-api.service';
+import { IconDefinition, faCheck, faGear, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { BakerApiService } from 'src/app/shared/services/baker-api.service';
+import { idSelectionValidator } from 'src/app/shared/validations/validations';
 import { PatrolResponsibility } from '../duty-day.component';
 
 export interface SwapResult {
   from: number;
   to: number;
-}
-
-export function idSelectionValidator(): ValidatorFn {
-  return (c: AbstractControl): ValidationErrors | null => {
-    return c.value > 0 ? null : {validateIdSelection: {valid: false}};
-  }
 }
 
 @Component({

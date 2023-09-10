@@ -1,0 +1,34 @@
+<form *ngIf="(assignables | async) as assignables; else loading" [formGroup]="createAssignForm" (ngSubmit)="onCreateEmailSubmit()">
+  <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
+    {{error}}
+  </alert>
+  <div class="form-group">
+    <label for="reason">Reason:</label>
+    <input type="text" maxlength="50" class="form-control" formControlName="reason" placeholder="Reason (50 chars or less)">
+  </div>
+  
+  <div *ngIf="assignables" class="form-group">
+    <label for="message">Assign To:</label>
+    <select formControlName="assigned_id">
+      <option value="0" disabled selected>Please select a substitute</option>
+      <option *ngFor="let assignable of assignables" value="{{assignable.id}}">{{assignable.name}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <button *ngIf="!submitted; else submitting" type="submit" class="btn btn-primary btn-block" [disabled]="!createAssignForm.valid">Create & Assign</button>
+  </div>
+</form>
+
+<ng-template #loading>
+  <div>
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>;nbsp;
+    Loading assignable users...
+  </div>
+</ng-template>
+
+<ng-template #submitting>
+  <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Creating & Assigning...
+  </button>
+</ng-template>

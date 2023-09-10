@@ -95,12 +95,17 @@
     </button>
   </div>
   <div *ngIf="(history | async) as history; loadingSub" class="modal-body">
-    <tabset [justified]="true">
-      <tab *ngIf="(history.length === 0 || history[0].accepted) && (isAdmin || isLeader)" heading="Create & Assign" id="tab1">
-        <!-- BPB TODO -->
-        <!-- <baker-create-assign-sub-form [patrolId]="modalPatrol.id" admin="true" (create)="onSubRequestAssignSubmit($event)"></baker-create-assign-sub-form> -->
+    <tabset>
+      <tab *ngIf="(history.length === 0 || history[0].accepted) && (isAdmin || isLeader)" heading="Create & Assign" id="tab1" (selectTab)="clearCreateError();clearSubError()">
+        <alert *ngIf="createError" type="danger" [dismissible]="true" (click)="clearCreateError()">
+          {{createError}}
+        </alert>
+        <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)"></baker-create-assign-sub-form>
       </tab>
-      <tab *ngIf="history.length > 0" heading="Sub History">
+      <tab *ngIf="history.length > 0" heading="Sub History" (selectTab)="clearCreateError();clearSubError()">
+        <alert *ngIf="subError" type="danger" [dismissible]="true" (click)="clearSubError()">
+          {{subError}}
+        </alert>
         <!-- BPB TODO: auto width columns -->
         <div class="table-responsive">
           <table class="table table-bordered table-hover">
@@ -116,8 +121,7 @@
                 <td data-title="Name">{{sub.subbed.name}}</td>
                 <td *ngIf="i == 0 && !history[0]!.accepted && (isAdmin || isLeader)" data-title="Sub Name">
                   <span class="editable-container editable-inline">
-                    <!-- BPB TODO -->
-                    <!-- <baker-assign-sub-form [patrolId]="modalPatrol.id" [sub]="{id: sub.id, sub_id: sub.sub.id, sub_name: sub.sub.name}" admin="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>  -->
+                    <baker-assign-sub-form [patrolId]="managePatrol.id" [sub]="{id: sub.id, sub_id: sub.id, sub_name: sub.sub.name}" [inline]="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>
                   </span>
                 </td>
                 <td *ngIf="i > 0 || history[0]!.accepted || isStaff" data-title="Sub Name">{{sub.sub.name}}</td>

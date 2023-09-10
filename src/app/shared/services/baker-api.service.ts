@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Observable, BehaviorSubject, throwError, ReplaySubject} from 'rxjs';
+import { Observable, throwError, ReplaySubject} from 'rxjs';
 import { catchError, first, map, mergeMap } from 'rxjs/operators';
 import { IAuthService } from './iauth.service';
 import { tokenGetter } from 'src/app/app.module';
 import { environment } from 'src/environments/environment';
+
+export interface APIError {
+  error: string;
+}
 
 export interface RequestOptions {
     headers?: HttpHeaders
@@ -102,6 +106,14 @@ interface SubHistoryAPI {
   sub_history: SubHistory[];
 }
 
+export interface AssignSuccess {
+  sub_id: number;
+}
+
+export function isAssignSuccess(o: any): o is AssignSuccess {
+  return 'sub_id' in o;
+}
+
 export interface GoogleAuth {
   uri: string;
 }
@@ -127,6 +139,12 @@ export interface SubAssignment {
   sub_id: number;
   sub_name: string;
 }
+
+interface AssignableUsersAPI {
+  assignable_users: RosterUser[];
+}
+
+// in use?
 
 interface UserNameForm {
   first_name: string;
@@ -299,25 +317,26 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   createSubAssignRequest(patrolId: number, cs: AssignForm) : Observable<SubAssignment> {
-//     let body = JSON.stringify(cs);
-//     return this.http.post(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  createSubAssignRequest(patrolId: number, cs: AssignForm) : Observable<SubAssignment> {
+    this.log("Create assign request:", cs);
+    let body = JSON.stringify(cs);
+    return this.http.post<SubAssignment>(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
-//   getAssignableUsers(patrolId: number) : Observable<Array<any>> {
-//     return this.http.get(this.url + '/patrols/' + patrolId + '/assignable', this.defaultOptions()).map(
-//       res => res.json().assignable_users
-//     ).catch(this.handleError);
-//   }
+  getAssignableUsers(patrolId: number) : Observable<RosterUser[]> {
+    return this.http.get<AssignableUsersAPI>(this.url + '/patrols/' + patrolId + '/assignable', this.defaultOptions()).pipe(
+      map(res => res.assignable_users),
+      catchError(this.handleError)
+    );
+  }
 
-//   assignSubRequest(substitutionId: number, a: AssignForm) : Observable<SubAssignment> {
-//     let body = JSON.stringify(a);
-//     return this.http.patch(this.url + '/substitutions/' + substitutionId + '/assign', body, this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  assignSubRequest(substitutionId: number, a: AssignForm) : Observable<SubAssignment> {
+    return this.http.patch<SubAssignment>(this.url + '/substitutions/' + substitutionId + '/assign', a, this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 //   remindSubRequest(substitutionId: number, r: EmailForm, toId: number = null) : Observable<any> { //Reject contains just a message, should work fine
 //     if (toId > 0) {
@@ -360,7 +379,6 @@ export class BakerApiService implements IAuthService {
 //   }
 
   getSubHistory(id: number) : Observable<SubHistory[]> {
-    this.log(this.url + '/admin/patrols/' + id + '/substitutions');
     return this.http.get<SubHistoryAPI>(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).pipe(
       map(sh => sh.sub_history),
       catchError(this.handleError)

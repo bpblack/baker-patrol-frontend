@@ -25,6 +25,8 @@ import { SearchComponent } from './search/search.component';
 import { SearchDutyDaysPipe } from './season/season-search.pipe';
 import { DutyDayComponent } from './duty-day/duty-day.component';
 import { ResponsibilitySwapFormComponent } from './duty-day/responsibility-swap-form/responsibility-swap-form.component';
+import { CreateAssignFormComponent } from './shared-forms/create-assign-form/create-assign-form.component';
+import { AssignFormComponent } from './shared-forms/assign-form/assign-form.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { ResponsibilitySwapFormComponent } from './duty-day/responsibility-swap-
     SearchDutyDaysPipe,
     SearchComponent,
     DutyDayComponent,
-    ResponsibilitySwapFormComponent
+    ResponsibilitySwapFormComponent,
+    CreateAssignFormComponent,
+    AssignFormComponent
   ],
   imports: [
     CommonModule,

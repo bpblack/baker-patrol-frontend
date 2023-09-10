@@ -1,0 +1,41 @@
+<form *ngIf="(assignables | async) as assignables" [formGroup]="assignForm" [ngClass]="{'form-inline': inline}" (ngSubmit)="onAssignSubmit()">
+  <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
+    {{error}}
+  </alert>
+  <div class="form-group">
+    <label *ngIf="!inline" for="assigned_id">Substitute</label>
+    <select formControlName="assigned_id">
+      <option *ngIf="sub.sub_id == 0 && !inline" value="0" disabled selected>Please select a substitute</option>
+      <option *ngIf="inline" value="0">No one</option>
+      <option *ngIf="sub.sub_id != 0" value="{{sub.sub_id}}" disabled selected>{{sub.sub_name}}</option>
+      <option *ngFor="let a of assignables" value="{{a.id}}">{{a.name}}</option>
+    </select>
+  </div>
+  <div *ngIf="inline; else regular" class="form-group">
+    <button *ngIf="!submitted" type="submit" class="btn btn-primary btn-sm" [disabled]="!assignForm.valid || assignForm.controls['assigned_id'].value == sub.sub_id">
+      <fa-icon [icon]="icheck"></fa-icon>
+    </button>
+    <button *ngIf="submitted" type="submit" class="btn btn-primary btn-sm" [disabled]=true>
+      <fa-icon [icon]="ixmark"></fa-icon>
+    </button>
+  </div>
+</form>
+
+<ng-template loading>
+  <div>
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    {{loadingMessage()}}
+  </div>
+</ng-template>
+
+<ng-template #regular>
+  <div class="form-group">
+    <button *ngIf="!submitted" type="submit" class="btn btn-primary btn-block" [disabled]="!assignForm.valid || assignForm.controls['assigned_id'].value == sub.sub_id">
+      Assign
+    </button>
+    <button *ngIf="submitted" type="submit" class="btn btn-primary btn-block" [disabled]=true>
+      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      Assigning...
+    </button>
+  </div>
+</ng-template>

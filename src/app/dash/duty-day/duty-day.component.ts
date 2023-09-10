@@ -5,7 +5,7 @@ import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
-import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory } from 'src/app/shared/services/baker-api.service';
+import { APIError, BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, AssignSuccess, isAssignSuccess } from 'src/app/shared/services/baker-api.service';
 
 export interface PatrolResponsibility {
   patrolId: number;
@@ -28,8 +28,10 @@ export class DutyDayComponent {
   public swapRow: number = -1;
   public managePatrol: Patrol;
   public responsibilities = new Map<string, PatrolResponsibility[]>();
+  public createError: string | null = null;
+  public subError: string | null = null;
   public patrolRow = new Map<number, number>();
-  public history: Observable<SubHistory[]> | null = null;
+  public history: Observable<SubHistory[]>;
   public igear: IconDefinition = faGear;
   public manageRef?: BsModalRef;
   @ViewChild('manageModal') manageElement: any;
@@ -117,20 +119,11 @@ export class DutyDayComponent {
 
   showManageModal(i: number) {
     this.managePatrol = this.dutyDay.patrols[i];
-    this.history = this._api.getSubHistory(this.managePatrol.id).pipe(
-      map((x: SubHistory[]) => {
-        this._api.log(history);
-        if(x.length === 0) {
-          return [<SubHistory>{id: -1, accepted: false, reason: '', subbed: {}, sub: {}}];
-        }
-        return x;
-      })
-    );
+    this.history = this._api.getSubHistory(this.managePatrol.id);
     this.manageRef = this._modal.show(this.manageElement, {backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'});
   }
 
   closeManageModal() {
-    this.history = null;
     if (this.manageRef) this.manageRef.hide();
   }
 
@@ -159,6 +152,33 @@ export class DutyDayComponent {
         }
       }
     }
+  }
+
+  onSubCreateAssign($event: APIError | AssignSuccess) {
+    if (isAssignSuccess($event)) {
+      this.managePatrol.latest_substitution.sub_id = $event.sub_id;
+      this.manageRef!.hide();
+    } else {
+      this.createError = $event.error;
+    }
+  }
+
+  clearCreateError() {
+    this.createError = null;
+  }
+
+  onSubAssign($event: APIError | AssignSuccess) {
+    if (isAssignSuccess($event)) {
+      this.managePatrol.latest_substitution.sub_id = $event.sub_id;
+      this.manageRef!.hide();
+    } else {
+      this.subError = $event.error;
+    }
+  }
+
+  clearSubError() {
+    this._api.log("Dismissed sub errors");
+    this.subError = null;
   }
 
   private updateRoles(ra: Role[], seasonId: number, teamId: number) {
