@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -23,6 +24,7 @@ import { SearchRosterPipe } from './roster/roster-search.pipe';
 import { SearchComponent } from './search/search.component';
 import { SearchDutyDaysPipe } from './season/season-search.pipe';
 import { DutyDayComponent } from './duty-day/duty-day.component';
+import { ResponsibilitySwapFormComponent } from './duty-day/responsibility-swap-form/responsibility-swap-form.component';
 
 @NgModule({
   declarations: [
@@ -35,11 +37,13 @@ import { DutyDayComponent } from './duty-day/duty-day.component';
     SearchRosterPipe,
     SearchDutyDaysPipe,
     SearchComponent,
-    DutyDayComponent
+    DutyDayComponent,
+    ResponsibilitySwapFormComponent
   ],
   imports: [
     CommonModule,
     RouterModule,
+    ReactiveFormsModule,
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
     BsDropdownModule.forRoot(),

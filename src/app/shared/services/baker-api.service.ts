@@ -78,16 +78,28 @@ export interface Responsibility {
 export interface Patrol {
   id: number;
   latest_substitution: LatestSub;
-  patroller: User;
+  patroller: RosterUser;
   responsibility: Responsibility;
 }
 
 export interface DutyDayDetail {
   season_id: number;
   date: string;
-  swappable: boolean;
+  swapable: boolean;
   team: Team;
   patrols: Patrol[];
+}
+
+export interface SubHistory {
+  id: number;
+  reason: string;
+  accepted: boolean;
+  subbed: RosterUser;
+  sub: RosterUser;
+}
+
+interface SubHistoryAPI {
+  sub_history: SubHistory[];
 }
 
 export interface GoogleAuth {
@@ -267,12 +279,12 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   swapResponsibilities(patrolId: number, s: SwapForm) {
-//     let body = JSON.stringify(s);
-//     return this.http.patch(this.url + '/patrols/' + patrolId + '/swap', body, this.defaultOptions()).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  swapResponsibilities(patrolId: number, s: SwapForm): Observable<boolean> {
+    return this.http.patch(this.url + '/patrols/' + patrolId + '/swap', s, this.defaultOptions()).pipe(
+      map(res => true),
+      catchError(this.handleError)
+    );
+  }
 
   team(seasonId: number, userId: number = this.currentUserId()): Observable<TeamRoster> {
     return this.http.get<TeamRoster>(this.url + '/users/' + userId + '/seasons/' +  seasonId + '/teams', this.defaultOptions()).pipe(
@@ -347,8 +359,10 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-  getSubHistory(id: number) : Observable<Array<any>> {
-    return this.http.get<any>(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).pipe(
+  getSubHistory(id: number) : Observable<SubHistory[]> {
+    this.log(this.url + '/admin/patrols/' + id + '/substitutions');
+    return this.http.get<SubHistoryAPI>(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).pipe(
+      map(sh => sh.sub_history),
       catchError(this.handleError)
     );
   }
