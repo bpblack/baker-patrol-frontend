@@ -27,6 +27,8 @@ import { DutyDayComponent } from './duty-day/duty-day.component';
 import { ResponsibilitySwapFormComponent } from './duty-day/responsibility-swap-form/responsibility-swap-form.component';
 import { CreateAssignFormComponent } from './shared-forms/create-assign-form/create-assign-form.component';
 import { AssignFormComponent } from './shared-forms/assign-form/assign-form.component';
+import { PatrolsTabComponent } from './patrols/patrols-tab/patrols-tab.component';
+import { RequestsTabComponent } from './patrols/requests-tab/requests-tab.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,9 @@ import { AssignFormComponent } from './shared-forms/assign-form/assign-form.comp
     DutyDayComponent,
     ResponsibilitySwapFormComponent,
     CreateAssignFormComponent,
-    AssignFormComponent
+    AssignFormComponent,
+    PatrolsTabComponent,
+    RequestsTabComponent
   ],
   imports: [
     CommonModule,

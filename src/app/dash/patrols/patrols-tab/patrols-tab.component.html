@@ -1,0 +1,40 @@
+
+<div *ngIf="patrols; else loading" class="table-responsive">
+  <table *ngIf="patrols.length > 0; else noPatrols" class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Team</th>
+        <th>Responsibility</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let patrol of patrols; let i = index" [ngClass]="rowColor(patrol.pending_substitution)">
+        <td data-title="Date">
+          <a routerLink="../DutyDay/{{patrol.duty_day.id}}">{{patrol.duty_day.date}}</a>
+        </td>
+        <td data-title="Team">{{patrol.duty_day.team.name}}</td>
+        <td data-title="Responsibility">{{patrol.responsibility.name}} v{{patrol.responsibility.version}}</td>
+        <td data-title="Status">
+          <button class="btn btn-primary" *ngIf="!patrol.pending_substitution" [disabled]="!patrol.swapable" (click)="createClick(i)">Request Sub</button>
+          <button class="btn btn-danger" *ngIf="patrol.pending_substitution" [disabled]="!patrol.swapable" (click)="manageClick(i)">Manage Sub</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #loading>
+  <div>
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Loading season patrols...
+  </div>
+</ng-template>
+
+<ng-template #noPatrols>
+  <div>
+    <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+    You have no assigned patrols at this time.
+  </div>
+</ng-template>

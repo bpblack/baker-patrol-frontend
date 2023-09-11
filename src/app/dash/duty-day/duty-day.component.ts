@@ -33,7 +33,7 @@ export class DutyDayComponent {
   public patrolRow = new Map<number, number>();
   public history: Observable<SubHistory[]>;
   public igear: IconDefinition = faGear;
-  public manageRef?: BsModalRef;
+  public manageRef: BsModalRef;
   @ViewChild('manageModal') manageElement: any;
 
   private _id: number = -1;
@@ -120,11 +120,11 @@ export class DutyDayComponent {
   showManageModal(i: number) {
     this.managePatrol = this.dutyDay.patrols[i];
     this.history = this._api.getSubHistory(this.managePatrol.id);
-    this.manageRef = this._modal.show(this.manageElement, {backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'});
+    this.manageRef = this._modal.show(this.manageElement, {animated: true, backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'});
   }
 
   closeManageModal() {
-    if (this.manageRef) this.manageRef.hide();
+    this.manageRef.hide();
   }
 
   onPatrolSwap(swap: SwapResult) {

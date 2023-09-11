@@ -34,7 +34,7 @@ export class DashComponent implements OnInit, OnDestroy {
       switchMap(() => of(this._apiService.isLoggedIn()))
     ).subscribe( (p: boolean) => {
       if (!p) {
-        this.logoutRef = this._modalService.show(this.logoutElement, {ignoreBackdropClick: true});
+        this.logoutRef = this._modalService.show(this.logoutElement, {animated: true, ignoreBackdropClick: true});
         this._logoutPoll.unsubscribe();
       }
     });

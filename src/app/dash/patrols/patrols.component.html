@@ -1,1 +1,107 @@
-<p>patrols works!</p>
+<div class="pt-3">
+  <div *ngIf="patrols" class="card">
+    <div class="card-header">
+      <h2>{{season.name}} Duty Days</h2>
+    </div>
+    <div class="card-body">
+      <tabset>
+        <tab [active]="tabs[0].active" (select)="selectTab(0)" (deselect)="tabs[0].active = false" [disabled]="tabs[0].disabled" heading="Patrols">
+          <baker-patrols-tab [patrols]="patrols" (createSub)="showCreateSub($event)" (manageSub)="showManageSub($event)"></baker-patrols-tab>
+        </tab>
+        <tab [active]="tabs[1].active" (select)="selectTab(1)" (deselect)="tabs[1].active = false" [disabled]="tabs[1].disabled">
+          <ng-template tabHeading>
+            <span class="badge badge-secondary bg-secondary">{{this.subs ? this.subs.requests.length: 0}}</span>&nbsp;Sub Requests
+          </ng-template>
+          <baker-requests-tab [requests]="subs.substitutions" (manageRequest)="showManageRequest($event)"></baker-requests-tab>
+        </tab>
+      </tabset>
+    </div>
+  </div>
+</div>
+
+<ng-template let-tab="tab" #loading>
+  <div class="card">
+    <div class="card-body">
+      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      Loading patrols data...
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #createSub>
+  <div class="modal-header">
+    <h4 class="modal-title">Request a Sub for {{modalPatrol!.duty_day.date}}</h4>
+    <button type="button" class="btn-close" (click)="hideCreateSub()" aria-label="Close" [disabled]="disableClose.createSub">
+    </button>
+  </div>
+  <div class="modal-body">
+    <tabset>
+      <tab heading="Group Email" (select)="clearError()">
+        TODO
+        <!-- <baker-create-sub-form [patrolId]="modalPatrol.id" (create)="onCreateSub($event)"></baker-create-sub-form> -->
+      </tab>
+      <tab heading="Create & Assign" (select)="clearError()">
+        <baker-create-assign-sub-form [patrolId]="modalPatrol!.id" (create)="onCreateSub($event)"></baker-create-assign-sub-form>
+      </tab>
+    </tabset>
+  </div>
+</ng-template>
+
+<ng-template #manageSub>
+  <div class="modal-header">
+    <h4 class="modal-title">Manage Sub request for {{modalPatrol!.duty_day.date}}</h4>
+    <button type="button" class="btn-close" (click)="hideManageSub()" aria-label="Close" [disabled]="disableClose.manageSub">
+    </button>
+  </div>
+  <div class="modal-body">
+    <tabset>
+      <tab heading="Assign" (select)="clearError()">
+        <baker-assign-sub-form [patrolId]="modalPatrol!.id" [sub]="modalPatrolSub()" (assign)="onAssignSub($event)"></baker-assign-sub-form>
+      </tab>
+      <tab heading="Remind" (select)="clearError()">
+        TODO
+        <!-- <baker-email-sub-form [sub]="modalPatrolSub()" [buttonText]="'Remind'" (email)="closeManageSubModal()"></baker-email-sub-form> -->
+      </tab>
+      <tab heading="Delete" select="clearError()">
+        TODO
+        <!-- <alert *ngFor="let error of errors" type="danger" dismissible="true" (click)="clearError()">
+          {{error}}
+        </alert>
+        Do you really want to delete this request? 
+        <button *ngIf="!deleted" class="btn btn-primary" (click)="onSubDeleteSubmit()">Delete</button>
+        <button *ngIf="deleted" type="submit" class="btn btn-primary" [disabled]=true>
+          <i class="fa fa-cog fa-spin fa-fw"></i>
+          Deleting...
+        </button> -->
+      </tab>
+    </tabset>
+  </div>
+</ng-template>
+
+<ng-template #manageRequest>
+  <div class="modal-header">
+    <h4 class="modal-title">Respond to request from {{modalRequest!.sub_for!.name}} for {{modalRequest!.duty_day.date}}</h4>
+    <button type="button" class="btn-closet" (click)="hideManageSub()" aria-label="Close" [disabled]="disableClose.manageRequest">
+    </button>
+  </div>
+  <div class="modal-body">
+    <tabset>
+      <tab heading="Accept" (select)="clearError()">
+        TODO
+        <!-- <alert *ngFor="let error of errors" type="danger" dismissible="true" (click)="clearError()">
+          {{error}}
+        </alert>
+        Do you really want to Accept this request? 
+        <button *ngIf="!accepted" class="btn btn-primary" (click)="onRequestAcceptSubmit()">Accept</button>
+        <button *ngIf="accepted" type="submit" class="btn btn-primary" [disabled]=true>
+          <i class="fa fa-cog fa-spin fa-fw"></i>
+          Accepting...
+        </button> -->
+      </tab>
+      <tab heading="Reject" (select)="clearError()">
+        TODO
+        <!-- <baker-email-sub-form [sub]="{id: modalRequest.id, sub_name: modalRequest.sub_for.name}" [reject]="true" [buttonText]="'Reject'" (email)="onRequestRejectSubmit()"></baker-email-sub-form> -->
+      </tab>
+    </tabset>
+  </div>
+</ng-template>

@@ -86,6 +86,21 @@ export interface Patrol {
   responsibility: Responsibility;
 }
 
+export interface PatrolDutyDay {
+  id: Date;
+  season_id: number;
+  date: string;
+  team: Team;
+}
+
+export interface PatrolDetails {
+  id: number;
+  swapable: boolean;
+  pending_substitution: SubAssignment | null;
+  duty_day: PatrolDutyDay;
+  responsibility: Responsibility;
+}
+
 export interface DutyDayDetail {
   season_id: number;
   date: string;
@@ -135,13 +150,36 @@ export interface DutyDay {
 }
 
 export interface SubAssignment {
+  id?: number;
+  sub_id: number | null;
+  name?: string | null;
+  sub_name?: string | null;
+}
+
+export interface Substitution {
   id: number;
-  sub_id: number;
-  sub_name: string;
+  date: string;
+  accepted: boolean;
+  reason: string;
+  patrol_id: number;
+  duty_day: DutyDay;
+  sub?: SubAssignment;
+  sub_for?: SubAssignment;
+  responsibility?: Responsibility;
+}
+
+export interface Substitutions {
+  requests: Substitution[];
+  substitutions: Substitution[];
+  timestamp: string;
 }
 
 interface AssignableUsersAPI {
   assignable_users: RosterUser[];
+}
+
+interface PatrolsAPI {
+  patrols: PatrolDetails[]
 }
 
 // in use?
@@ -271,18 +309,18 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   patrols(seasonId: number, userId: number = this.currentUserId()) : Observable<Array<Object>> {
-//     return this.http.get(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols', this.defaultOptions()).map(
-//       res => res.json().patrols
-//     ).catch(this.handleError);
-//   }
+  getPatrols(seasonId: number, userId: number = this.currentUserId()) : Observable<PatrolDetails[]> {
+    return this.http.get<PatrolsAPI>(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols', this.defaultOptions()).pipe(
+      map(res => res.patrols),
+      catchError(this.handleError)
+    );
+  }
 
   getDutyDay(dutyDayId: number): Observable<DutyDayDetail>  {
     return this.http.get<DutyDayDetail>(this.url + '/duty_days/' + dutyDayId, this.defaultOptions()).pipe(
       catchError(this.handleError)
     );
   }
-
 
   getSeasonDutyDays(seasonId: number): Observable<DutyDay[]> {
     return this.http.get<DutyDay[]>(this.url + '/seasons/' + seasonId + '/duty_days', this.defaultOptions()).pipe(
@@ -354,16 +392,16 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   getSubstitutions(seasonId:number, params: Array<Array<string>> = [], userId: number = this.currentUserId()) : Observable<any> {
-//     let paramsStr = '';
-//     for (let pair of params) {
-//       paramsStr += paramsStr.length === 0 ? '?' : '&';
-//       paramsStr += pair[0] + '=' + pair[1];
-//     }
-//     return this.http.get(this.url + '/users/' + userId + '/seasons/' + seasonId + '/substitutions' + paramsStr, this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  getSubstitutions(seasonId:number, params: string[][], userId: number = this.currentUserId()) : Observable<Substitutions> {
+    let paramsStr = '';
+    for (let pair of params) {
+      paramsStr += paramsStr.length === 0 ? '?' : '&';
+      paramsStr += pair[0] + '=' + pair[1];
+    }
+    return this.http.get<Substitutions>(this.url + '/users/' + userId + '/seasons/' + seasonId + '/substitutions' + paramsStr, this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 //   acceptSubRequest(id: number) : Observable<boolean> {
 //     return this.http.patch(this.url + '/substitutions/' + id + '/accept', '', this.defaultOptions()).map(
