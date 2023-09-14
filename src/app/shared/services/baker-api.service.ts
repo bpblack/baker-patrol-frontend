@@ -302,12 +302,13 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   reset(id: string, r: ResetForm) {
-//     let body = JSON.stringify(r);
-//     return this.http.patch(this.url + '/password_resets/' + id, body, this.defaultOptions()).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  reset(id: string, r: ResetForm) {
+    let body = JSON.stringify(r);
+    return this.http.patch(this.url + '/password_resets/' + id, body, this.defaultOptions()).pipe(
+      map(res => true),
+      catchError(this.handleError)
+    );
+  }
 
   getPatrols(seasonId: number, userId: number = this.currentUserId()) : Observable<PatrolDetails[]> {
     return this.http.get<PatrolsAPI>(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols', this.defaultOptions()).pipe(
