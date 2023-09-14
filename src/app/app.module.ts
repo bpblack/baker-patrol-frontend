@@ -15,6 +15,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LoginComponent } from './login/login.component';
 import { ForgotComponent } from './forgot/forgot.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { environment } from 'src/environments/environment';
 
 export function tokenGetter() {
   return localStorage.getItem("id_token");
@@ -36,7 +37,7 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        allowedDomains: ["volypatrol.mtbaker.us"],
+        allowedDomains: environment.allowedDomains,
       },
     }),
     AlertModule.forRoot(),

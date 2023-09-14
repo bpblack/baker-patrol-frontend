@@ -17,7 +17,6 @@ export class SearchRosterPipe implements PipeTransform {
                 || (member.email && member.email.toLowerCase().indexOf(sl) > -1) 
                 || (member.phone && member.phone.indexOf(sl) > -1)
                 || (member.roles && member.roles.toLowerCase().indexOf(sl) > -1)) {
-              console.log("Found", member);
               return true;
             }
             return false;

@@ -20,9 +20,9 @@ export interface PatrolResponsibility {
 export class DutyDayComponent {
   public dutyDay: DutyDayDetail;
   public available: string[];
-  public isAdmin: boolean;
-  public isLeader: boolean;
-  public isStaff: boolean;
+  public isAdmin: boolean = false;
+  public isLeader: boolean = false;
+  public isStaff: boolean = false;
   public patrolling: string[] = [];
   public hosting: string[] = [];
   public swapRow: number = -1;
@@ -51,12 +51,10 @@ export class DutyDayComponent {
         ([dd, ra]: [DutyDayDetail, Role[]]) => {
           this.updateRoles(ra, dd.season_id, dd.team.id);
           this.updateDutyDay(dd);
-          this._api.log('Initialized duty-day data', dd, this.isLeader || this.isAdmin);
           return (this.isAdmin || this.isLeader || this.isStaff) ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
         }
       )
     ).subscribe((a: string[]) => {
-      this._api.log("Got available emails:", a);
       this.available = a;
     });
 
@@ -70,7 +68,6 @@ export class DutyDayComponent {
       )
     ).subscribe( 
       ([dd, a]: [DutyDayDetail, string[]]) => {
-        this._api.log("Updated duty day;", dd, a)
         this.updateDutyDay(dd);
         this.available = a;
       }
@@ -100,7 +97,6 @@ export class DutyDayComponent {
   rowColor(patrollerId: number, latestSub: LatestSub) : string {
     if (this.isLeader || this.isAdmin || this.isStaff) {
       if (latestSub) {
-        this._api.log("Adming and has latest sub", latestSub)
         if (latestSub.accepted) {
           return 'table-success';
         } else {
@@ -177,7 +173,6 @@ export class DutyDayComponent {
   }
 
   clearSubError() {
-    this._api.log("Dismissed sub errors");
     this.subError = null;
   }
 

@@ -66,7 +66,6 @@ export class AssignFormComponent {
   }
 
   clearError() {
-    this._api.log("dismissed alert");
     this.error = null;
   }
 

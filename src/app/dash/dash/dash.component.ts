@@ -55,7 +55,7 @@ export class DashComponent implements OnInit, OnDestroy {
     );
   }
 
-  collapseClick() { this.isCollapsed = !this.isCollapsed; console.log("clicked. now val is: ", this.isCollapsed);}
+  collapseClick() { this.isCollapsed = !this.isCollapsed; }
 
   ngOnDestroy(): void {
     this._logoutPoll.unsubscribe();

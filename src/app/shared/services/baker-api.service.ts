@@ -356,7 +356,6 @@ export class BakerApiService implements IAuthService {
 //   }
 
   createSubAssignRequest(patrolId: number, cs: AssignForm) : Observable<SubAssignment> {
-    this.log("Create assign request:", cs);
     let body = JSON.stringify(cs);
     return this.http.post<SubAssignment>(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).pipe(
       catchError(this.handleError)

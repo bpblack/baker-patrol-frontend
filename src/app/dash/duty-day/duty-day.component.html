@@ -5,7 +5,7 @@
         <div class="col-md-auto">
           <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
         </div>
-        <div class="col">
+        <div *ngIf="isAdmin || isLeader || isStaff" class="col">
           <div class="btn-group" dropdown>
             <button id="contact-button" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"aria-controls="contact-menu">
               Contact options... <span class="caret"></span>
