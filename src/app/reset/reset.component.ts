@@ -11,10 +11,8 @@ const confirmPasswordValidator: ValidatorFn = (f: AbstractControl): ValidationEr
   const pw = f.get('password');
   const cpw = f.get('confirmPassword');
     if (pw && cpw && pw.value !== cpw.value) {
-      console.log("errors");
       return { passwordNoMatch: true };
     } else {
-      console.log("no errors");
       return null;
     }
   };
@@ -25,7 +23,7 @@ const confirmPasswordValidator: ValidatorFn = (f: AbstractControl): ValidationEr
   styleUrls: ['./reset.component.css']
 })
 export class ResetComponent {
-  public success: boolean;
+  public success: boolean = false;
   public error: string | null = null;
   public submitted: boolean = false;
   public ikey: IconDefinition = faKey;
@@ -50,12 +48,13 @@ export class ResetComponent {
 
   onSubmit() {
     this.closeError();
-    this.success = false;
     this.submitted = true;
     this._api.reset(this._token, this.resetForm.value).pipe(
-      finalize(() => this.submitted = false),
-      catchError((e: Error) => this.error = e.message)
-    ).subscribe(s => this.success = true);
+      finalize(() => this.submitted = false)
+    ).subscribe({
+      next: s => this.success = true,
+      error: (e: Error) => this.error = e.message
+    });
   }
 
   closeError() {
@@ -68,7 +67,6 @@ export class ResetComponent {
 
   styleControl(c: AbstractControl, invalid: boolean = false): string {
     if (!c.pristine) {
-      const fe = this.resetForm.errors?.['passwordNoMatch'];
       if (c.valid && !invalid) {
         return 'form-control is-valid';
       }
@@ -77,13 +75,16 @@ export class ResetComponent {
     return 'form-control';
   } 
 
+  get password() { return this.resetForm.controls['password']; }
+  
+  get confirmPassword() { return this.resetForm.controls['confirmPassword']; }
+
   showAlert(c: AbstractControl): boolean {
     return c.invalid && !c.pristine && c.touched;
   }
 
   showFormAlert(): boolean {
-    const cw = this.resetForm.controls['confirmPassword'];
-    this._api.log(this.resetForm.errors?.['passwordNoMatch'], cw.invalid)
+    const cw = this.confirmPassword;
     return (this.resetForm.errors?.['passwordNoMatch'] || (cw.invalid && !cw.pristine)) && cw.touched; 
   }
 }

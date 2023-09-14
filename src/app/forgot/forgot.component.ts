@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BakerApiService } from '../shared/services/baker-api.service';
-import { faCircleCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faCircleCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'baker-patrol-forgot',
@@ -9,13 +9,13 @@ import { faCircleCheck, faTriangleExclamation } from '@fortawesome/free-solid-sv
   styleUrls: ['./../login/login.component.css']
 })
 export class ForgotComponent {
-  icheck = faCircleCheck;
-  itriangle = faTriangleExclamation;
-  success: boolean = false;
-  submitted: boolean = false;
-  emailBlur: boolean = false;
-  errors: Array<string> = [];
-  forgotForm: FormGroup = this._fb.group({
+  public success: boolean = false;
+  public submitted: boolean = false;
+  public error: string | null = null;
+  public iat = faAt;
+  public icheck = faCircleCheck;
+  public itriangle = faTriangleExclamation;
+  public forgotForm: FormGroup = this._fb.group({
     email: new FormControl('', [Validators.required, Validators.email])
   });
 
@@ -30,18 +30,28 @@ export class ForgotComponent {
       next: s => this.submitted = false,
       error: e => {
         this.submitted = false;
-        this.errors.push(e);
+        this.error = e.message
       }
     });
   }
-
-  emailFocused() { this.emailBlur = false; }
-
-  emailBlurred() { this.emailBlur = true; }
 
   get email() { return this.forgotForm.controls['email']; }
 
   wasSuccess() { return this.success === true; }
 
-  clearError() { this.errors = []; }
+  clearError() { this.error = null; }
+
+  styleControl(): string {
+    if (!this.email.pristine) {
+      if (this.email.valid) {
+        return 'form-control is-valid';
+      }
+      return 'form-control is-invalid'
+    }
+    return 'form-control';
+  }
+
+  showAlert(): boolean {
+    return this.email.invalid && !this.email.pristine && this.email.touched;
+  }
 }

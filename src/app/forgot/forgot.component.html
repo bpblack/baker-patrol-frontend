@@ -15,37 +15,47 @@
     <div class="col-md-6 col-lg-4">
       <form [formGroup]="forgotForm" (ngSubmit)="onSubmit()">
         <div class="d-grid gap-3">
-          <div class="row form-group">
+          <div class="row">
             <h1 class="h3 mb-3 fw-normal">Password reset</h1>
-            <alert *ngIf="wasSuccess()" type="success" class="px-0 py-1">
+            <alert *ngIf="wasSuccess()" type="success">
               <span class="sr-only">Success:</span>
               <fa-icon [icon]="icheck"></fa-icon>&nbsp;
               A password reset email has been sent. Please check your email and follow the link in the reset message.
             </alert>
-            <alert *ngFor="let error of errors" type="danger" [dismissible]="true" (click)="clearError()" class="px-0 py-1">
+            <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
               <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
               {{error}}
             </alert>
           </div>
-          <div class="row form-group" [hidden]="wasSuccess()">
+          <div class="row" [hidden]="wasSuccess()">
             <!-- Using #username, we can identify this input to get the value on the form's submit event -->
-            <input type="email" class="form-control" formControlName="email" placeholder="name@example.com" (focus)="emailFocused()" (blur)="emailBlurred()">
-            <alert *ngIf="emailBlur && email.invalid && (email.dirty || email.touched)" type="danger" class="px-0 py-1">
+            <alert *ngIf="showAlert()" type="danger">
               A valid email address is required.
             </alert>
+            <div class="input-group">
+              <span class="input-group-text" id="at"><fa-icon [icon]="iat"></fa-icon></span>
+              <input type="email" [class]="styleControl()" id="email" formControlName="email" placeholder="name@example.com" aria-labelledby="name@exmple.com" aria-describedby="at">
+            </div>
           </div>
-          <div class="row form-group">
-            <button *ngIf="!submitted" type="submit" class="form-control btn btn-primary submit px-3" [disabled]="!forgotForm.valid">Forgot</button>
-            <button *ngIf="submitted" type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
-              <i class="fa fa-cog fa-spin fa-fw"></i>
-              Verifying email...
-            </button>
+          <div class="row">
+            <div class="input-group">
+              <button *ngIf="!submitted; else verifying" type="submit" class="form-control btn btn-primary submit" [disabled]="!forgotForm.valid">Forgot</button>
+            </div>
           </div>
-          <div class="row form-group d-md-flex">
-            <a routerLink="/Login" class="form-control btn btn-primary submit px-3">Return to login</a>
+          <div class="row d-md-flex">
+            <div class="input-group">
+              <a routerLink="/Login" class="form-control btn btn-primary submit px-3">Return to login</a>
+            </div>
           </div>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<ng-template #verifying>
+  <button type="submit" class="form-control btn btn-primary submit" [disabled]=true>
+    <i class="fa fa-cog fa-spin fa-fw"></i>
+    Verifying email...
+  </button>
+</ng-template>

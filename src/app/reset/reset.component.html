@@ -17,29 +17,29 @@
         <div class="d-grid gap-3">
           <div class="row">
             <h1 class="h3 mb-3 fw-normal">Reset your password:</h1>
-            <alert *ngIf="error" type="danger" [dismissible]="true" (onClose)="closeError()" class="px-0 py-1">
+            <alert *ngIf="error" type="danger" [dismissible]="true" (onClose)="closeError()">
               <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
               {{error}}
             </alert>
           </div>
           <div class="row">
-            <alert *ngIf="showAlert(resetForm.controls['password'])" type="danger">
+            <alert *ngIf="showAlert(password)" type="danger">
               <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
               A password of at least 8 characters is required.
             </alert>
             <div class="input-group">
               <span class="input-group-text" id="key1"><fa-icon [icon]="ikey"></fa-icon></span>
-              <input type="password" [class]="styleControl(resetForm.controls['password'])" id="password" formControlName="password" placeholder="Password" aria-label="Password" aria-describedby="key1">
+              <input type="password" [class]="styleControl(password)" id="password" formControlName="password" placeholder="Password" aria-label="Password" aria-describedby="key1">
             </div>
           </div>
-          <div class="row py-0">
+          <div class="row">
             <alert *ngIf="showFormAlert()" type="danger">
               <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
               A valid matching password is required.
             </alert>
             <div class="input-group">
               <span class="input-group-text" id="key2"><fa-icon [icon]="ikey"></fa-icon></span>
-              <input type="password" [class]="styleControl(resetForm.controls['confirmPassword'], resetForm.errors?.['passwordNoMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
+              <input type="password" [class]="styleControl(confirmPassword, resetForm.errors?.['passwordNoMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
             </div>
           </div>
           <div class="input-group">
@@ -51,7 +51,7 @@
               <div class="d-flex justify-content-center">
               <ol class="list-group list-group-flush list-group-numbered">
                 <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;At least 8 characters</li>
-                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Made up of letters, numbers, and symbols</li>
+                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Contains letters, numbers, or symbols</li>
                 <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Contains no whitespace characters</li>
               </ol>
               </div>

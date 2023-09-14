@@ -514,7 +514,7 @@ export class BakerApiService implements IAuthService {
     } else {
         console.error(`Backend returned code ${error.status}, body was: `, error.error);
     }
-	  return throwError(() => new Error(error.error || 'Server Error'));
+	  return throwError(() => new Error(error.message || 'Server Error'));
   }
 
 }

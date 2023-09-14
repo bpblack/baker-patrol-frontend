@@ -15,39 +15,51 @@
     <div class="col-md-6 col-lg-4">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="d-grid gap-3">
-          <div class="row form-group">
+          <div class="row">
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-            <alert *ngFor="let error of errors" type="danger" [dismissible]="true" (onClose)="closeError()" class="px-0 py-1">
-              <fa-icon [icon]="triangle"></fa-icon> Email or password is incorrect
+            <alert *ngIf="error" type="danger" [dismissible]="true" (onClose)="closeError()">
+              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+              {{error}}
             </alert>
           </div>
-          <div class="row form-group">
-            <!-- Using #username, we can identify this input to get the value on the form's submit event -->
-            <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com" (focus)="emailFocused()" (blur)="emailBlurred()">
-            <alert *ngIf="emailBlur && email.invalid && (email.dirty || email.touched)" type="danger" class="px-0 py-1">
-              <fa-icon [icon]="triangle"></fa-icon> A valid email address is required.
+          <div class="row">
+            <alert *ngIf="showAlert(email)" type="danger">
+              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+              A valid email address is required.
             </alert>
+            <div class="input-group">
+              <span class="input-group-text" id="at"><fa-icon [icon]="iat"></fa-icon></span>
+              <input type="email" [class]="styleControl(email)" id="email" formControlName="email" placeholder="name@example.com" aria-labelledby="name@exmple.com" aria-describedby="at">
+            </div>
           </div>
-          <div class="row form-group">
-            <!-- Using #password we can identify this input to get its value -->
-            <input type="password" class="form-control" formControlName="password" placeholder="Password">
-            <alert *ngIf="password.invalid && (password.dirty || password.touched)" type="danger" class="px-0 py-1">
-              <fa-icon [icon]="triangle"></fa-icon> A valid password is required.
+          <div class="row">
+            <alert *ngIf="showAlert(password)" type="danger">            
+              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+              A valid password is required.
             </alert>
+            <div class="input-group">
+              <span class="input-group-text" id="key"><fa-icon [icon]="ikey"></fa-icon></span>
+              <input type="password" [class]="styleControl(password)" formControlName="password" placeholder="Password" aria-labelledby="Password" aria-describedby="key">
+            </div>
           </div>
-          <div class="row form-group">
-            <button *ngIf="!submitted" type="submit" class="form-control btn btn-primary submit px-3" [disabled]="!loginForm.valid">Sign In</button>
-            <button *ngIf="submitted" type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
-              <fa-icon [icon]="gear" [spin]="true"></fa-icon>
-              Logging in...
-            </button>
+          <div class="nput-group">
+            <button *ngIf="!submitted; else loggingin" type="submit" class="form-control btn btn-primary submit px-3" [disabled]="!loginForm.valid">Sign In</button>
           </div>
-          <div class="row form-group d-md-flex">
-            <a routerLink="/Forgot" class="form-control btn btn-primary submit px-3">Forgot Password</a>
+          <div class="row d-md-flex">
+            <div class="input-group">
+              <a routerLink="/Forgot" class="form-control btn btn-primary submit px-3">Forgot Password</a>
+            </div>
           </div>
         </div>
       </form>
     </div>
   </div>
 </div>
+
+<ng-template #loggingin>
+  <button type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+    Logging in...
+  </button>
+</ng-template>
   
