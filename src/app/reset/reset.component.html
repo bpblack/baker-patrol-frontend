@@ -15,31 +15,47 @@
     <div *ngIf="!wasSuccess(); else success" class="col-md-6 col-lg-4">
       <form [formGroup]="resetForm" (ngSubmit)="onSubmit()">
         <div class="d-grid gap-3">
-          <div class="row form-group">
+          <div class="row">
             <h1 class="h3 mb-3 fw-normal">Reset your password:</h1>
             <alert *ngIf="error" type="danger" [dismissible]="true" (onClose)="closeError()" class="px-0 py-1">
               <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
               {{error}}
             </alert>
           </div>
-          <div class="row form-group">
-            <!-- Using #username, we can identify this input to get the value on the form's submit event -->
-            <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password">
-            <alert *ngIf="showAlert(resetForm.controls['password'])" type="danger" class="px-0 py-1">
+          <div class="row">
+            <alert *ngIf="showAlert(resetForm.controls['password'])" type="danger">
               <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
               A password of at least 8 characters is required.
             </alert>
+            <div class="input-group">
+              <span class="input-group-text" id="key1"><fa-icon [icon]="ikey"></fa-icon></span>
+              <input type="password" [class]="styleControl(resetForm.controls['password'])" id="password" formControlName="password" placeholder="Password" aria-label="Password" aria-describedby="key1">
+            </div>
           </div>
-          <div class="row form-group">
-            <!-- Using #password we can identify this input to get its value -->
-            <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirm Password">
-            <alert *ngIf="(resetForm.errors?.['passwordNoMatch']) || showAlert(resetForm.controls['confirmPassword'])" type="danger" class="px-0 py-1">
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;A valid matching password is required.
+          <div class="row py-0">
+            <alert *ngIf="showFormAlert()" type="danger">
+              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+              A valid matching password is required.
             </alert>
+            <div class="input-group">
+              <span class="input-group-text" id="key2"><fa-icon [icon]="ikey"></fa-icon></span>
+              <input type="password" [class]="styleControl(resetForm.controls['confirmPassword'], resetForm.errors?.['passwordNoMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
+            </div>
           </div>
-          <div class="row form-group">
-            
-            <button *ngIf="!submitted; else submitting" type="submit" class="form-control btn btn-primary submit px-3" [disabled]="!resetForm.valid">Sign In</button>
+          <div class="input-group">
+            <button *ngIf="!submitted; else submitting" type="submit" class="form-control btn btn-primary submit px-3" [disabled]="!resetForm.valid">Reset Pasword</button>
+          </div>
+          <div class="row">
+            <alert type="info">
+              <h4>Password requirements:</h4>
+              <div class="d-flex justify-content-center">
+              <ol class="list-group list-group-flush list-group-numbered">
+                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;At least 8 characters</li>
+                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Made up of letters, numbers, and symbols</li>
+                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Contains no whitespace characters</li>
+              </ol>
+              </div>
+            </alert>
           </div>
         </div>
       </form>
@@ -59,6 +75,6 @@
 <ng-template #submitting>
   <button type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
     <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-    Logging in...
+    Resetting password...
   </button>
 </ng-template>

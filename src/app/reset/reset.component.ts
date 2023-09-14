@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors,
 import { BakerApiService } from '../shared/services/baker-api.service';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, finalize } from 'rxjs';
-import { IconDefinition, faCircleCheck, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faCircleCheck, faGear, faKey, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 var passwordRegexp = "^[a-zA-Z0-9!#$%&'\"*+\/=?^_`{|}~.-]{8,72}$";
 
@@ -28,11 +28,12 @@ export class ResetComponent {
   public success: boolean;
   public error: string | null = null;
   public submitted: boolean = false;
+  public ikey: IconDefinition = faKey;
   public igear: IconDefinition = faGear;
   public icircle: IconDefinition = faCircleCheck;
   public itriangle: IconDefinition = faTriangleExclamation;
   public resetForm: FormGroup = this._fb.group({
-            password: new FormControl('', { validators: [Validators.required, Validators.pattern(passwordRegexp)], updateOn: 'blur' }),
+            password: new FormControl('', { validators: [Validators.required, Validators.pattern(passwordRegexp)]/*, updateOn: 'blur'*/ }),
             confirmPassword: new FormControl('', [Validators.required, Validators.pattern(passwordRegexp)]),
             
     }, {
@@ -65,7 +66,24 @@ export class ResetComponent {
     return this.success === true;
   }
 
-  showAlert(c: AbstractControl) {
-    return c.invalid && (!c.pristine || this.submitted);
+  styleControl(c: AbstractControl, invalid: boolean = false): string {
+    if (!c.pristine) {
+      const fe = this.resetForm.errors?.['passwordNoMatch'];
+      if (c.valid && !invalid) {
+        return 'form-control is-valid';
+      }
+      return 'form-control is-invalid'
+    }
+    return 'form-control';
+  } 
+
+  showAlert(c: AbstractControl): boolean {
+    return c.invalid && !c.pristine && c.touched;
+  }
+
+  showFormAlert(): boolean {
+    const cw = this.resetForm.controls['confirmPassword'];
+    this._api.log(this.resetForm.errors?.['passwordNoMatch'], cw.invalid)
+    return (this.resetForm.errors?.['passwordNoMatch'] || (cw.invalid && !cw.pristine)) && cw.touched; 
   }
 }
