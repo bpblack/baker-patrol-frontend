@@ -6,7 +6,7 @@
     <div *ngIf="dutyDays.length > 0; else nodisplay" class="card-body">
       <div class="container">
         <div class="row">
-          <baker-search *ngIf="dutyDays && dutyDays.length > 0" (update)="searchTerm = $event"></baker-search>
+          <baker-search *ngIf="dutyDays.length > 0" (update)="searchTerm = $event"></baker-search>
         </div>
         <div class="row">
           <div class="table-responsive">
@@ -22,7 +22,7 @@
                   <td data-title="Date">
                     <a routerLink="../DutyDay/{{dd.id}}">{{dd.date}}</a>
                   </td>
-                  <td data-title="Team">{{dd.team.name}}</td>
+                  <td data-title="Team">{{dd.team!.name}}</td>
                 </tr>
               </tbody>
             </table>

@@ -3,7 +3,7 @@ import { DutyDay } from '../../shared/services/baker-api.service';
 
 @Pipe({name: 'searchDutyDays'})
 export class SearchDutyDaysPipe implements PipeTransform {
-  transform(dutyDays: Array<DutyDay>, search: string): any {
+  transform(dutyDays: DutyDay[], search: string): any {
     if (!search || search.length === 0) {
       return dutyDays;
     } else {

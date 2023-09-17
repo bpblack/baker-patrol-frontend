@@ -9,7 +9,7 @@ import { BakerApiService, DutyDay, Season } from 'src/app/shared/services/baker-
 })
 export class SeasonComponent {
   public seasonName: string;
-  public searchTerm: string;
+  public searchTerm: string = '';
   public dutyDays: Observable<DutyDay[]>;
   public igear: IconDefinition = faGear;
   public itriangle: IconDefinition = faTriangleExclamation;
