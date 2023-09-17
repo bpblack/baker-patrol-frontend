@@ -14,7 +14,6 @@ import { BakerApiService, Role, User } from '../../shared/services/baker-api.ser
 })
 export class DashComponent implements OnInit, OnDestroy {
   public isAdmin: boolean = false;
-  public isStaff: boolean = false;
   public isCollapsed: boolean = false;
   public user: Observable<User>;
   public igear: IconDefinition = faGear;
@@ -44,9 +43,7 @@ export class DashComponent implements OnInit, OnDestroy {
       (user: User) => {
         if (user.name !== undefined) {
           user.roles.forEach((r: Role) => {
-            if (r.role === 'staff') {
-              this.isStaff = true;
-            } else if (this._adminRoles.has(r.role)) {
+            if (this._adminRoles.has(r.role)) {
               this.isAdmin = true;
             }
           });

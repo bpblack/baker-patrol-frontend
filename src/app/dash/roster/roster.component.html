@@ -1,5 +1,5 @@
 <div class="pt-3">
-  <div  *ngIf="(roster | async) as roster" class="card">
+  <div  *ngIf="(roster | async) as roster; else loading" class="card">
     <div class="card-header">
       <h2>{{seasonName}} Roster</h2>
     </div>

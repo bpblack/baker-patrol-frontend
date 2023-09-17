@@ -11,10 +11,6 @@ export interface APIError {
   error: string;
 }
 
-export interface RequestOptions {
-    headers?: HttpHeaders
-}
-
 export interface UserToken {
     jwt: string;
 }
@@ -481,11 +477,11 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-  private defaultOptions() : RequestOptions {
+  private defaultOptions() {
     let headers = new HttpHeaders({
 	    'Content-Type': 'application/json'
 	  });
-    return {headers: headers};
+    return {headers: headers, responseType: 'json' as const};
   }
 
   private currentUserId() : number {

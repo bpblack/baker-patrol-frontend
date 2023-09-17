@@ -9,16 +9,16 @@
     </button>
     <div *ngIf="(user | async) as user" class="collapse navbar-collapse" id="navbarSupportedContent" [collapse]="isCollapsed">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li *ngIf="!isStaff" [routerLinkActive]="['active']" class="nav-item">
+        <li [routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./Team">Team</a>
         </li>
-        <li *ngIf="!isStaff"[routerLinkActive]="['active']" class="nav-item">
+        <li [routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./">Duty Days</a>
         </li>
         <li [routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./Roster">Roster</a>
         </li>
-        <li *ngIf="isAdmin || isStaff" [routerLinkActive]="['active']" class="nav-item">
+        <li *ngIf="isAdmin" [routerLinkActive]="['active']" class="nav-item">
           <a class="nav-link" routerLink="./Season">Season</a>
         </li>
         <li class="nav-item dropdown" dropdown>

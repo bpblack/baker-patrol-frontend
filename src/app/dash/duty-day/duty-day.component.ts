@@ -22,7 +22,6 @@ export class DutyDayComponent {
   public available: string[];
   public isAdmin: boolean = false;
   public isLeader: boolean = false;
-  public isStaff: boolean = false;
   public patrolling: string[] = [];
   public hosting: string[] = [];
   public swapRow: number = -1;
@@ -51,7 +50,7 @@ export class DutyDayComponent {
         ([dd, ra]: [DutyDayDetail, Role[]]) => {
           this.updateRoles(ra, dd.season_id, dd.team.id);
           this.updateDutyDay(dd);
-          return (this.isAdmin || this.isLeader || this.isStaff) ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
+          return (this.isAdmin || this.isLeader) ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
         }
       )
     ).subscribe((a: string[]) => {
@@ -63,7 +62,7 @@ export class DutyDayComponent {
       switchMap(() => forkJoin(
         [
           this._api.getDutyDay(this._id), 
-          (this.isAdmin || this.isLeader || this.isStaff)? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
+          (this.isAdmin || this.isLeader)? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
         ])
       )
     ).subscribe( 
@@ -95,7 +94,7 @@ export class DutyDayComponent {
   }
 
   rowColor(patrollerId: number, latestSub: LatestSub) : string {
-    if (this.isLeader || this.isAdmin || this.isStaff) {
+    if (this.isLeader || this.isAdmin) {
       if (latestSub) {
         if (latestSub.accepted) {
           return 'table-success';
@@ -183,15 +182,13 @@ export class DutyDayComponent {
           this.isAdmin = true;
         } else if (r.role === 'leader') {
           this.isLeader = r.season_id === seasonId && r.team_id === teamId;
-        } else if (r.role === 'staff'){
-          this.isStaff = true;
         }
       }
     });
   }
 
   private updateDutyDay(dd: DutyDayDetail) {
-    const needsEmails = this.isAdmin || this.isLeader || this.isStaff;
+    const needsEmails = this.isAdmin || this.isLeader;
     this.dutyDay = dd;
     let up: string[] = [];
     let uh: string[] = [];
