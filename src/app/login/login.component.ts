@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from
 import { finalize } from 'rxjs';
 import { faTriangleExclamation, faGear, faKey, faAt } from '@fortawesome/free-solid-svg-icons';
 import { BakerApiService } from '../shared/services/baker-api.service';
+import { styleControl } from '../shared/validations/validations';
 
 @Component({
   selector: 'baker-patrol-login',
@@ -40,13 +41,7 @@ export class LoginComponent {
   get password() { return this.loginForm.controls['password']; }
 
   styleControl(c: AbstractControl): string {
-    if (!c.pristine) {
-      if (c.valid) {
-        return 'form-control is-valid';
-      }
-      return 'form-control is-invalid'
-    }
-    return 'form-control';
+    return styleControl(c);
   }
 
   showAlert(c: AbstractControl): boolean {

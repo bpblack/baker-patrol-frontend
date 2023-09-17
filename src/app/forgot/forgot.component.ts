@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BakerApiService } from '../shared/services/baker-api.service';
 import { faAt, faCircleCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { styleControl } from '../shared/validations/validations';
 
 @Component({
   selector: 'baker-patrol-forgot',
@@ -42,13 +43,7 @@ export class ForgotComponent {
   clearError() { this.error = null; }
 
   styleControl(): string {
-    if (!this.email.pristine) {
-      if (this.email.valid) {
-        return 'form-control is-valid';
-      }
-      return 'form-control is-invalid'
-    }
-    return 'form-control';
+    return styleControl(this.email);
   }
 
   showAlert(): boolean {

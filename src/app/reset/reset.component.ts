@@ -2,20 +2,9 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { BakerApiService } from '../shared/services/baker-api.service';
 import { ActivatedRoute } from '@angular/router';
-import { catchError, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { IconDefinition, faCircleCheck, faGear, faKey, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-
-var passwordRegexp = "^[a-zA-Z0-9!#$%&'\"*+\/=?^_`{|}~.-]{8,72}$";
-
-const confirmPasswordValidator: ValidatorFn = (f: AbstractControl): ValidationErrors | null => {
-  const pw = f.get('password');
-  const cpw = f.get('confirmPassword');
-    if (pw && cpw && pw.value !== cpw.value) {
-      return { passwordNoMatch: true };
-    } else {
-      return null;
-    }
-  };
+import { matchValidator, passwordRegexp, styleControl } from '../shared/validations/validations';
 
 @Component({
   selector: 'baker-patrol-reset',
@@ -31,11 +20,11 @@ export class ResetComponent {
   public icircle: IconDefinition = faCircleCheck;
   public itriangle: IconDefinition = faTriangleExclamation;
   public resetForm: FormGroup = this._fb.group({
-            password: new FormControl('', { validators: [Validators.required, Validators.pattern(passwordRegexp)]/*, updateOn: 'blur'*/ }),
+            password: new FormControl('', { validators: [Validators.required, Validators.pattern(passwordRegexp)] }),
             confirmPassword: new FormControl('', [Validators.required, Validators.pattern(passwordRegexp)]),
             
     }, {
-      validators: confirmPasswordValidator, updateOn: 'change'
+      validators: matchValidator('password', 'confirmPassword'), updateOn: 'change'
     });
 
   private _token: string;
@@ -63,16 +52,6 @@ export class ResetComponent {
 
   wasSuccess() {
     return this.success === true;
-  }
-
-  styleControl(c: AbstractControl, invalid: boolean = false): string {
-    if (!c.pristine) {
-      if (c.valid && !invalid) {
-        return 'form-control is-valid';
-      }
-      return 'form-control is-invalid'
-    }
-    return 'form-control';
   } 
 
   get password() { return this.resetForm.controls['password']; }
@@ -83,8 +62,12 @@ export class ResetComponent {
     return c.invalid && !c.pristine && c.touched;
   }
 
+  styleControl(c: AbstractControl, isValid: boolean = false) {
+    return styleControl(c, isValid);
+  }
+
   showFormAlert(): boolean {
     const cw = this.confirmPassword;
-    return (this.resetForm.errors?.['passwordNoMatch'] || (cw.invalid && !cw.pristine)) && cw.touched; 
+    return (this.resetForm.errors?.['noMatch'] || (cw.invalid && !cw.pristine)) && cw.touched; 
   }
 }

@@ -241,6 +241,7 @@ export class BakerApiService implements IAuthService {
   private didLogin: boolean = false;
   private jwtHelper: JwtHelperService = new JwtHelperService();
   private _currentUser: ReplaySubject<User>;
+  private _currentUserActual: User;
 
   constructor(private http: HttpClient) {
     this._currentUser = new ReplaySubject(1);
@@ -426,24 +427,25 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   updateUser(form: UserNameForm | UserEmailForm | UserPhoneForm | UserPasswordForm, userId: number = this.currentUserId()): Observable<boolean> {
-//     let body = JSON.stringify(form);
-//     return this.http.patch(this.url + '/users/' + userId, body, this.defaultOptions()).map(
-//       res => {
-//         if((<UserNameForm>form).first_name !== undefined) {
-//           this._currentUserActual.name = (<UserNameForm>form).first_name + ' ' + (<UserNameForm>form).last_name;
-//           this.setCurrentUser(this._currentUserActual);
-//         } else if ((<UserEmailForm>form).email !== undefined) {
-//           this._currentUserActual.email = (<UserEmailForm>form).email;
-//           this.setCurrentUser(this._currentUserActual);
-//         } else if ((<UserPhoneForm>form).phone !== undefined) {
-//           this._currentUserActual.phone = (<UserPhoneForm>form).phone;
-//           this.setCurrentUser(this._currentUserActual);
-//         }
-//         return res.ok;
-//       }
-//     ).catch(this.handleError);
-//   }
+  updateUser(form: UserNameForm | UserEmailForm | UserPhoneForm | UserPasswordForm, userId: number = this.currentUserId()): Observable<boolean> {
+    let body = JSON.stringify(form);
+    return this.http.patch(this.url + '/users/' + userId, body, this.defaultOptions()).pipe(
+      map (res => {
+        if((<UserNameForm>form).first_name !== undefined) {
+          this._currentUserActual.name = (<UserNameForm>form).first_name + ' ' + (<UserNameForm>form).last_name;
+          this._currentUser.next(this._currentUserActual);
+        } else if ((<UserEmailForm>form).email !== undefined) {
+          this._currentUserActual.email = (<UserEmailForm>form).email;
+          this._currentUser.next(this._currentUserActual);
+        } else if ((<UserPhoneForm>form).phone !== undefined) {
+          this._currentUserActual.phone = (<UserPhoneForm>form).phone;
+          this._currentUser.next(this._currentUserActual);
+        }
+        return true;
+      }),
+      catchError(this.handleError)
+    );
+  }
 
 //   authorizeGoogleCalendar(): Observable<GoogleAuth> {
 //     return this.http.get(this.url + '/google_calendars/authorize', this.defaultOptions()).map(
@@ -492,7 +494,10 @@ export class BakerApiService implements IAuthService {
   private getCurrentUser() {
     this.http.get<User>(this.url + '/users/' + this.currentUserId() + '/extra', this.defaultOptions()).pipe(
       catchError(this.handleError)
-    ).subscribe(this._currentUser);
+    ).subscribe(res => {
+      this._currentUserActual = res;
+      this._currentUser.next(res);
+    });
   }
 
 //   private setCurrentUserSeasons(seasons: Array<Season>) {

@@ -1,1 +1,20 @@
-<p>account works!</p>
+<div class="pt-3">
+  <div *ngIf="(user | async) as u; else loading" class="card">
+    <div class="card-header">
+      <h2>Account overview</h2>
+    </div>
+    <div class="card-body">
+      <baker-update-email [email]="u.email"></baker-update-email>
+      <baker-update-phone [phone]="u.phone"></baker-update-phone>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="card">
+    <div class="card-body">
+      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      Loading user data...
+    </div>
+  </div>
+</ng-template>

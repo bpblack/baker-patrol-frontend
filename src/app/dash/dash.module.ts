@@ -29,6 +29,12 @@ import { CreateAssignFormComponent } from './shared-forms/create-assign-form/cre
 import { AssignFormComponent } from './shared-forms/assign-form/assign-form.component';
 import { PatrolsTabComponent } from './patrols/patrols-tab/patrols-tab.component';
 import { RequestsTabComponent } from './patrols/requests-tab/requests-tab.component';
+import { UpdateEmailComponent } from './account/update-email/update-email.component';
+import { UpdatePasswordComponent } from './account/update-password/update-password.component';
+import { UpdateNameComponent } from './account/update-name/update-name.component';
+import { UpdatePhoneComponent } from './account/update-phone/update-phone.component';
+import { GoogleCalendarComponent } from './account/google-calendar/google-calendar.component';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 
 @NgModule({
   declarations: [
@@ -46,7 +52,12 @@ import { RequestsTabComponent } from './patrols/requests-tab/requests-tab.compon
     CreateAssignFormComponent,
     AssignFormComponent,
     PatrolsTabComponent,
-    RequestsTabComponent
+    RequestsTabComponent,
+    UpdateEmailComponent,
+    UpdatePasswordComponent,
+    UpdateNameComponent,
+    UpdatePhoneComponent,
+    GoogleCalendarComponent
   ],
   imports: [
     CommonModule,
@@ -58,8 +69,11 @@ import { RequestsTabComponent } from './patrols/requests-tab/requests-tab.compon
     CollapseModule.forRoot(),
     ModalModule.forRoot(),
     TabsModule.forRoot(),
+    NgxMaskDirective,
+    NgxMaskPipe,
     FontAwesomeModule,
     DashRoutingModule
-  ]
+  ],
+  providers: [provideNgxMask()]
 })
 export class DashModule { }

@@ -24,13 +24,13 @@ export class DashComponent implements OnInit, OnDestroy {
   private _logoutPoll: Subscription;
   private _adminRoles: Set<string> = new Set(['admin', 'leader']);
 
-  constructor(private _apiService: BakerApiService, private _modalService: BsModalService, private _router: Router) {  }
+  constructor(private _api: BakerApiService, private _modalService: BsModalService, private _router: Router) {  }
 
   ngOnInit(): void {
     // initialize the logout poll
     this._logoutPoll = interval(6000).pipe(
       startWith(0),
-      switchMap(() => of(this._apiService.isLoggedIn()))
+      switchMap(() => of(this._api.isLoggedIn()))
     ).subscribe( (p: boolean) => {
       if (!p) {
         this.logoutRef = this._modalService.show(this.logoutElement, {animated: true, ignoreBackdropClick: true});
@@ -38,7 +38,7 @@ export class DashComponent implements OnInit, OnDestroy {
       }
     });
     // initialize the user subscription
-    this.user = this._apiService.currentUser;
+    this.user = this._api.currentUser;
     this.user.subscribe(
       (user: User) => {
         if (user.name !== undefined) {
@@ -62,7 +62,7 @@ export class DashComponent implements OnInit, OnDestroy {
     if (this.logoutRef !== undefined) {
       this.logoutRef.hide();
     }
-    this._apiService.logout();
+    this._api.logout();
     this._router.navigate(['Login']);
   }
 

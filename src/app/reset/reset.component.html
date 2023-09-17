@@ -39,7 +39,7 @@
             </alert>
             <div class="input-group">
               <span class="input-group-text" id="key2"><fa-icon [icon]="ikey"></fa-icon></span>
-              <input type="password" [class]="styleControl(confirmPassword, resetForm.errors?.['passwordNoMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
+              <input type="password" [class]="styleControl(confirmPassword, resetForm.errors?.['noMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
             </div>
           </div>
           <div class="input-group">
