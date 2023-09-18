@@ -1,0 +1,94 @@
+import { Component, Input } from '@angular/core';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
+import { catchError, finalize, map, of } from 'rxjs';
+import { BakerApiService } from 'src/app/shared/services/baker-api.service';
+import { differenceValidator, styleControl } from 'src/app/shared/validations/validations';
+
+interface Result {
+  type: string;
+  msg: string;
+}
+
+function nameValidator(fn: string, ln: string): ValidatorFn {
+  return (f: AbstractControl): ValidationErrors | null => {
+    const fp = f.get('first_name');
+    const lp = f.get('last_name');
+    if ((fn+ln) === (fp?.value+lp?.value)) {
+      console.log("Has error");
+      return {nameMatch: true}
+    } else {
+      return null;
+    }
+  }
+}
+
+@Component({
+  selector: 'baker-update-name',
+  templateUrl: './update-name.component.html'
+})
+export class UpdateNameComponent {
+  public message: Result | null = null;
+  public submitted: boolean = false;
+  public updateName: FormGroup;
+  public igear: IconDefinition = faGear;
+  @Input() firstName: string = '';
+  @Input() lastName: string = '';
+
+  constructor(private _api: BakerApiService, private _fb: FormBuilder) { }
+
+  ngOnInit() {
+    this.updateName = this._fb.group({
+      first_name: new FormControl('', Validators.compose([Validators.required, Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")])),
+      last_name: new FormControl('', Validators.compose([Validators.required,Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")]))
+    }, {
+      validators: nameValidator(this.firstName, this.lastName)
+    });
+  }
+
+  get firstNameInput() { return this.updateName.controls['first_name']; }
+
+  get lastNameInput() { return this.updateName.controls['last_name']}
+
+  clearMessage() {
+    this.message = null;
+  }
+
+  styleControl(a: AbstractControl) {
+    return styleControl(a, this.updateName.errors?.['nameMatch']);
+  }
+
+  showAlert() {
+    return !this.firstNameInput.pristine && !this.lastNameInput.pristine && this.updateName.errors?.['nameMatch'];
+  }
+
+  submit() {
+    this.submitted = true;
+    this.message = null;
+    this._api.updateUser(this.updateName.value).pipe(
+      finalize(() => this.submitted = false),
+      map(r => {
+        const m: Result = {type: 'success', msg: 'Successfully updated your name.'};
+        return m;
+      }),
+      catchError((e: Error) => {
+        const m: Result = {type: 'danger', msg: e.message};
+        return of(m);
+      })
+    ).subscribe({
+      next: (m: Result) => { 
+        if (m.type === 'success') {
+          this.updateName.reset();
+        }
+        this.message = m; 
+      }
+    });
+  }
+
+  blur(a: AbstractControl) {
+    if (a.value === '') {
+      a.reset();
+      a.setValue('');
+    }
+  }
+}

@@ -32,7 +32,7 @@ export class LoginComponent {
     );
     api.subscribe({
       next: s => this._router.navigate(['/Dash']),
-      error:(e: Error) => this.error = e.message
+      error:(e: Error) => { this.error = e.message; }
     });
   }
 

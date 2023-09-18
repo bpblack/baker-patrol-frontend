@@ -29,7 +29,8 @@ export interface Role {
 }
 
 export interface User {
-  name: string;
+  first_name: string;
+  last_name: string;
   phone: string;
   email: string;
   seasons: Season[];
@@ -432,7 +433,8 @@ export class BakerApiService implements IAuthService {
     return this.http.patch(this.url + '/users/' + userId, body, this.defaultOptions()).pipe(
       map (res => {
         if((<UserNameForm>form).first_name !== undefined) {
-          this._currentUserActual.name = (<UserNameForm>form).first_name + ' ' + (<UserNameForm>form).last_name;
+          this._currentUserActual.first_name = (<UserNameForm>form).first_name;
+          this._currentUserActual.last_name = (<UserNameForm>form).last_name;
           this._currentUser.next(this._currentUserActual);
         } else if ((<UserEmailForm>form).email !== undefined) {
           this._currentUserActual.email = (<UserEmailForm>form).email;
@@ -515,7 +517,7 @@ export class BakerApiService implements IAuthService {
     } else {
         console.error(`Backend returned code ${error.status}, body was: `, error.error);
     }
-	  return throwError(() => new Error(error.message || 'Server Error'));
+	  return throwError(() => new Error(error.error || 'Server Error'));
   }
 
 }

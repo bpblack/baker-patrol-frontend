@@ -41,7 +41,7 @@ export class DashComponent implements OnInit, OnDestroy {
     this.user = this._api.currentUser;
     this.user.subscribe(
       (user: User) => {
-        if (user.name !== undefined) {
+        if (user.first_name !== undefined) {
           user.roles.forEach((r: Role) => {
             if (this._adminRoles.has(r.role)) {
               this.isAdmin = true;

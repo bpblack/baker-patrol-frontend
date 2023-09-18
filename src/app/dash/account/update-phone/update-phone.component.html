@@ -1,0 +1,29 @@
+<div class="card">
+  <div class="card-header">
+    <h4>Update Phone</h4>
+  </div>
+  <div class="card-body">
+    <alert *ngIf="message" [type]="message.type" [dismissible]="true" click="clearMessage()">
+      {{message.msg}}
+    </alert>
+    <form [formGroup]="updatePhone" (ngSubmit)="submit()">
+      <alert *ngIf="phoneValid()" type="danger">
+        A valid phone address that does not match your current address is required.
+      </alert>
+      <div class="input-group">
+        <span class="input-group-text" id="at"><fa-icon [icon]="iphone"></fa-icon></span>
+        <input type="tel" [class]="styleControl()" mask="(000)000-0000" [specialCharacters]="['(',')','-']" [dropSpecialCharacters]="false" id="phone" formControlName="phone" placeholder="{{phone}}" aria-describedby="at" (blur)="blur()">
+      </div>
+      <div class="input-group py-2">
+        <button *ngIf="!submitted; else updatingPhone" type="submit" class="form-control btn btn-primary submit" [disabled]="!updatePhone.valid">Update phone</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-template #updatingPhone>
+  <button type="submit" class="form-control btn btn-primary submit" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Updating phone...
+  </button>
+</ng-template>

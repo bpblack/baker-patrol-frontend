@@ -4,8 +4,20 @@
       <h2>Account overview</h2>
     </div>
     <div class="card-body">
-      <baker-update-email [email]="u.email"></baker-update-email>
-      <baker-update-phone [phone]="u.phone"></baker-update-phone>
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col">
+          <baker-update-name [firstName]="u.first_name" [lastName]="u.last_name"></baker-update-name>
+        </div>
+        <div class="col">
+          <baker-update-password></baker-update-password>
+        </div>
+        <div class="col">
+          <baker-update-email [email]="u.email"></baker-update-email>
+        </div>
+        <div class="col">
+          <baker-update-phone [phone]="u.phone"></baker-update-phone>
+        </div>
+      </div>
     </div>
   </div>
 </div>

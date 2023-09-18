@@ -14,10 +14,22 @@ export function matchValidator(val1: string, val2: string): ValidatorFn {
   };
 }
 
+export function noMatchValidator(val1: string, val2: string): ValidatorFn {
+  return (f: AbstractControl): ValidationErrors | null => {
+    const m1 = f.get(val1);
+    const m2 = f.get(val2);
+    if (m1 && m2 && m1.value === m2.value) {
+      return { match: true };
+    } else {
+      return null;
+    }
+  };
+}
+
 export function differenceValidator(val: string): ValidatorFn {
   return (c: AbstractControl): ValidationErrors | null => {
     const cmp: string = c.value;
-    return (cmp && cmp === val) ? { match: true } : null; 
+    return (cmp && cmp.toLowerCase() === val.toLowerCase()) ? { match: true } : null; 
   }
 }
 
