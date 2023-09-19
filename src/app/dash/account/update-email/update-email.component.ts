@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IconDefinition, faAt, faGear } from '@fortawesome/free-solid-svg-icons';
-import { catchError, finalize, map, of } from 'rxjs';
+import { finalize } from 'rxjs';
 import { BakerApiService } from 'src/app/shared/services/baker-api.service';
 import { differenceValidator, styleControl } from 'src/app/shared/validations/validations';
 
@@ -47,22 +47,13 @@ export class UpdateEmailComponent {
     this.submitted = true;
     this.message = null;
     this._api.updateUser(this.updateEmail.value).pipe(
-      finalize(() => this.submitted = false),
-      map(r => {
-        const m: Result = {type: 'success', msg: 'Successfully updated your email.'};
-        return m;
-      }),
-      catchError((e: Error) => {
-        const m: Result = {type: 'danger', msg: e.message};
-        return of(m);
-      })
+      finalize(() => this.submitted = false)
     ).subscribe({
-      next: (m: Result) => { 
-        if (m.type === 'success') {
-          this.updateEmail.reset();
-        }
-        this.message = m; 
-      }
+      next: (b: boolean) => { 
+        this.updateEmail.reset();
+        this.message = {type: 'success', msg: 'Successfully updated your email.'}; 
+      }, 
+      error: (e: Error) => this.message = {type: 'danger', msg: e.message}
     })
   }
 

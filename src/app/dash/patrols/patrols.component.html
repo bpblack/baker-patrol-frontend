@@ -29,12 +29,12 @@
 </ng-template>
 
 <ng-template #createSub>
-  <div class="modal-header">
+  <div *ngIf="modalPatrol" class="modal-header">
     <h4 class="modal-title">Request a Sub for {{modalPatrol!.duty_day.date}}</h4>
     <button type="button" class="btn-close" (click)="hideCreateSub()" aria-label="Close" [disabled]="disableClose.createSub">
     </button>
   </div>
-  <div class="modal-body">
+  <div *ngIf="modalPatrol" class="modal-body">
     <tabset>
       <tab heading="Group Email" (select)="clearError()">
         TODO
@@ -48,12 +48,12 @@
 </ng-template>
 
 <ng-template #manageSub>
-  <div class="modal-header">
+  <div *ngIf="modalPatrol" class="modal-header">
     <h4 class="modal-title">Manage Sub request for {{modalPatrol!.duty_day.date}}</h4>
     <button type="button" class="btn-close" (click)="hideManageSub()" aria-label="Close" [disabled]="disableClose.manageSub">
     </button>
   </div>
-  <div class="modal-body">
+  <div *ngIf="modalPatrol" class="modal-body">
     <tabset>
       <tab heading="Assign" (select)="clearError()">
         <baker-assign-sub-form [patrolId]="modalPatrol!.id" [sub]="modalPatrolSub()" (assign)="onAssignSub($event)"></baker-assign-sub-form>
@@ -79,12 +79,12 @@
 </ng-template>
 
 <ng-template #manageRequest>
-  <div class="modal-header">
+  <div *ngIf="modalRequest" class="modal-header">
     <h4 class="modal-title">Respond to request from {{modalRequest!.sub_for!.name}} for {{modalRequest!.duty_day.date}}</h4>
     <button type="button" class="btn-closet" (click)="hideManageSub()" aria-label="Close" [disabled]="disableClose.manageRequest">
     </button>
   </div>
-  <div class="modal-body">
+  <div *ngIf="modalRequest" class="modal-body">
     <tabset>
       <tab heading="Accept" (select)="clearError()">
         TODO

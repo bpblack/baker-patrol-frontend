@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
-import { catchError, finalize, map, of } from 'rxjs';
+import { finalize } from 'rxjs';
 import { BakerApiService } from 'src/app/shared/services/baker-api.service';
-import { differenceValidator, styleControl } from 'src/app/shared/validations/validations';
+import { styleControl } from 'src/app/shared/validations/validations';
 
 interface Result {
   type: string;
@@ -15,7 +15,6 @@ function nameValidator(fn: string, ln: string): ValidatorFn {
     const fp = f.get('first_name');
     const lp = f.get('last_name');
     if ((fn+ln) === (fp?.value+lp?.value)) {
-      console.log("Has error");
       return {nameMatch: true}
     } else {
       return null;
@@ -66,21 +65,14 @@ export class UpdateNameComponent {
     this.submitted = true;
     this.message = null;
     this._api.updateUser(this.updateName.value).pipe(
-      finalize(() => this.submitted = false),
-      map(r => {
-        const m: Result = {type: 'success', msg: 'Successfully updated your name.'};
-        return m;
-      }),
-      catchError((e: Error) => {
-        const m: Result = {type: 'danger', msg: e.message};
-        return of(m);
-      })
+      finalize(() => this.submitted = false)
     ).subscribe({
-      next: (m: Result) => { 
-        if (m.type === 'success') {
-          this.updateName.reset();
-        }
-        this.message = m; 
+      next: (b: boolean) => { 
+        this.updateName.reset();
+        this.message = {type: 'success', msg: 'Successfully updated your name.'}; 
+      },
+      error: (e: Error) => {
+        this.message = {type: 'danger', msg: e.message};
       }
     });
   }

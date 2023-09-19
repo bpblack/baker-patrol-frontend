@@ -1,16 +1,18 @@
 <form [formGroup]="swapForm" ngClass="form-inline" (ngSubmit)="onSwapSubmit()">
-  <div *ngIf="responsibilities" class="form-group">
-    <select formControlName="with">
-      <option *ngFor="let r of responsibilities" value="{{r.patrolId}}">{{r.name}}</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <button *ngIf="!submitted; else disabled" type="submit" class="btn btn-primary btn-sm" [disabled]="!swapForm.valid || swapForm.controls['with'].value == patrolId">
-      <fa-icon [icon]="icheck"></fa-icon>
-    </button>
-    <button type="button" class="btn btn-default btn-sm" (click)="onClose()" [disabled]="submitted">
-      <fa-icon [icon]="ixmark"></fa-icon>
-    </button>
+  <div class="row gx-1">
+    <div class="col-auto">
+      <select *ngIf="responsibilities" class="form-select form-select-sm" formControlName="with">
+        <option *ngFor="let r of responsibilities" value="{{r.patrolId}}">{{r.name}}</option>
+      </select>
+    </div>
+    <div class="col">
+      <button *ngIf="!submitted; else disabled" type="submit" class="btn btn-primary btn-sm" [disabled]="!swapForm.valid || swapForm.controls['with'].value == patrolId">
+        <fa-icon [icon]="icheck"></fa-icon>
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm ms-1" (click)="onClose()" [disabled]="submitted">
+        <fa-icon [icon]="ixmark"></fa-icon>
+      </button>
+    </div>
   </div>
 </form>
 

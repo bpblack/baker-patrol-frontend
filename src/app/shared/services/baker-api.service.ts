@@ -114,10 +114,6 @@ export interface SubHistory {
   sub: RosterUser;
 }
 
-interface SubHistoryAPI {
-  sub_history: SubHistory[];
-}
-
 export interface AssignSuccess {
   sub_id: number;
 }
@@ -137,7 +133,7 @@ export interface GoogleCalendar {
 
 export interface Google {
   current: string;
-  calendars: Array<GoogleCalendar>;
+  calendars: GoogleCalendar[];
 }
 
 export interface DutyDay {
@@ -169,14 +165,6 @@ export interface Substitutions {
   requests: Substitution[];
   substitutions: Substitution[];
   timestamp: string;
-}
-
-interface AssignableUsersAPI {
-  assignable_users: RosterUser[];
-}
-
-interface PatrolsAPI {
-  patrols: PatrolDetails[]
 }
 
 // in use?
@@ -309,7 +297,7 @@ export class BakerApiService implements IAuthService {
   }
 
   getPatrols(seasonId: number, userId: number = this.currentUserId()) : Observable<PatrolDetails[]> {
-    return this.http.get<PatrolsAPI>(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols', this.defaultOptions()).pipe(
+    return this.http.get<{patrols: PatrolDetails[]}>(this.url + '/users/' + userId + '/seasons/' + seasonId + '/patrols', this.defaultOptions()).pipe(
       map(res => res.patrols),
       catchError(this.handleError)
     );
@@ -362,7 +350,7 @@ export class BakerApiService implements IAuthService {
   }
 
   getAssignableUsers(patrolId: number) : Observable<RosterUser[]> {
-    return this.http.get<AssignableUsersAPI>(this.url + '/patrols/' + patrolId + '/assignable', this.defaultOptions()).pipe(
+    return this.http.get<{assignable_users: RosterUser[]}>(this.url + '/patrols/' + patrolId + '/assignable', this.defaultOptions()).pipe(
       map(res => res.assignable_users),
       catchError(this.handleError)
     );
@@ -415,7 +403,7 @@ export class BakerApiService implements IAuthService {
 //   }
 
   getSubHistory(id: number) : Observable<SubHistory[]> {
-    return this.http.get<SubHistoryAPI>(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).pipe(
+    return this.http.get<{sub_history: SubHistory[]}>(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).pipe(
       map(sh => sh.sub_history),
       catchError(this.handleError)
     );
@@ -449,11 +437,11 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   authorizeGoogleCalendar(): Observable<GoogleAuth> {
-//     return this.http.get(this.url + '/google_calendars/authorize', this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  authorizeGoogleCalendar(): Observable<GoogleAuth> {
+    return this.http.get<GoogleAuth>(this.url + '/google_calendars/authorize', this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 //   createGoogleCalendar(token: string): Observable<Google> {
 //     let body = JSON.stringify({code: token});
@@ -462,24 +450,27 @@ export class BakerApiService implements IAuthService {
 //     ).catch(this.handleError);
 //   }
 
-//   getGoogleCalendar(): Observable<Google> {
-//     return this.http.get(this.url + '/google_calendars/calendars', this.defaultOptions()).map(
-//       res => res.json().google
-//     ).catch(this.handleError);
-//   }
+  getGoogleCalendar(): Observable<Google | null> {
+    return this.http.get<{google: Google}>(this.url + '/google_calendars/calendars', this.defaultOptions()).pipe(
+      map(res => res.google),
+      catchError(this.handleError)
+    );
+  }
 
-//   selectGoogleCalendar(form: GoogleCalendarForm): Observable<boolean> {
-//     let body = JSON.stringify(form);
-//     return this.http.post(this.url + '/google_calendars/select', body, this.defaultOptions()).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  selectGoogleCalendar(form: GoogleCalendarForm): Observable<boolean> {
+    let body = JSON.stringify(form);
+    return this.http.post(this.url + '/google_calendars/select', body, this.defaultOptions()).pipe(
+      map(res => true),
+      catchError(this.handleError)
+    );
+  }
 
-//   removeGoogleCalendar(): Observable<boolean> {
-//     return this.http.delete(this.url + '/google_calendars/destroy', this.defaultOptions()).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  removeGoogleCalendar(): Observable<boolean> {
+    return this.http.delete(this.url + '/google_calendars/destroy', this.defaultOptions()).pipe(
+      map(res => true),
+      catchError(this.handleError)
+    );
+  }
 
   private defaultOptions() {
     let headers = new HttpHeaders({

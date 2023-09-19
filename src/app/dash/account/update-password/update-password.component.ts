@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Icon } from '@fortawesome/fontawesome-svg-core';
 import { IconDefinition, faGear, faKey } from '@fortawesome/free-solid-svg-icons';
-import { catchError, finalize, map, of } from 'rxjs';
+import { finalize } from 'rxjs';
 import { BakerApiService } from 'src/app/shared/services/baker-api.service';
 import { matchValidator, noMatchValidator, passwordRegexp, styleControl } from 'src/app/shared/validations/validations';
 
@@ -60,21 +59,14 @@ export class UpdatePasswordComponent {
     this.submitted = true;
     this.message = null;
     this._api.updateUser(this.updatePass.value).pipe(
-      finalize(() => this.submitted = false),
-      map(r => {
-        const m: Result = {type: 'success', msg: 'Successfully updated your password.'};
-        return m;
-      }),
-      catchError((e: Error) => {
-        const m: Result = {type: 'danger', msg: e.message};
-        return of(m);
-      })
+      finalize(() => this.submitted = false)
     ).subscribe({
-      next: (m: Result) => { 
-        if (m.type === 'success') {
-          this.updatePass.reset();
-        }
-        this.message = m; 
+      next: (b: boolean) => { 
+        this.updatePass.reset();
+        this.message = {type: 'success', msg: 'Successfully updated your password.'}; 
+      }, 
+      error: (e: Error) => {
+        this.message = {type: 'danger', msg: e.message};
       }
     });
   }

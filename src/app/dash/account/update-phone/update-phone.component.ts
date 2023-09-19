@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IconDefinition, faGear, faPhone } from '@fortawesome/free-solid-svg-icons';
-import { catchError, finalize, map, of } from 'rxjs';
+import { finalize } from 'rxjs';
 import { BakerApiService } from 'src/app/shared/services/baker-api.service';
 import { differenceValidator, styleControl } from 'src/app/shared/validations/validations';
 
@@ -51,21 +51,14 @@ export class UpdatePhoneComponent {
     this.submitted = true;
     this.message = null;
     this._api.updateUser(this.updatePhone.value).pipe(
-      finalize(() => this.submitted = false),
-      map(r => {
-        const m: Result = {type: 'success', msg: 'Successfully updated your phone number.'};
-        return m;
-      }),
-      catchError((e: Error) => {
-        const m: Result = {type: 'danger', msg: e.message};
-        return of(m);
-      })
+      finalize(() => this.submitted = false)
     ).subscribe({
-      next: (m: Result) => {
-        if (m.type === 'success') {
-          this.updatePhone.reset();
-        } 
-        this.message = m; 
+      next: (m: boolean) => {
+        this.updatePhone.reset();
+        this.message = {type: 'success', msg: 'Successfully updated your phone number.'};
+      },
+      error: (e: Error) => {
+        this.message = {type: 'danger', msg: e.message};
       }
     })
   }

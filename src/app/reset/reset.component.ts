@@ -20,9 +20,8 @@ export class ResetComponent {
   public icircle: IconDefinition = faCircleCheck;
   public itriangle: IconDefinition = faTriangleExclamation;
   public resetForm: FormGroup = this._fb.group({
-            password: new FormControl('', { validators: [Validators.required, Validators.pattern(passwordRegexp)] }),
-            confirmPassword: new FormControl('', [Validators.required, Validators.pattern(passwordRegexp)]),
-            
+      password: new FormControl('', { validators: [Validators.required, Validators.pattern(passwordRegexp)] }),
+      confirmPassword: new FormControl('', [Validators.required, Validators.pattern(passwordRegexp)]),      
     }, {
       validators: matchValidator('password', 'confirmPassword'), updateOn: 'change'
     });

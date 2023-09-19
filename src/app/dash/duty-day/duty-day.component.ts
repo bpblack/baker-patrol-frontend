@@ -45,19 +45,25 @@ export class DutyDayComponent {
       this._route.params.forEach((params: Params) => this._id = +params['id']);
     }
     // initialize our role flags, duty day, and (if admin or leader) available emails
-    forkJoin([this._api.getDutyDay(this._id), this._api.currentUser.pipe(map(u => u.roles))]).pipe(
+    let x: Role[];
+    this._api.currentUser.pipe(map(u => u.roles)).pipe(
       concatMap(
-        ([dd, ra]: [DutyDayDetail, Role[]]) => {
-          this.updateRoles(ra, dd.season_id, dd.team.id);
-          this.updateDutyDay(dd);
-          return (this.isAdmin || this.isLeader) ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
+        (ra: Role[]) => {
+          x = ra;
+          return this._api.getDutyDay(this._id);
         }
       )
+    ).pipe(
+      concatMap((dd: DutyDayDetail) => {
+        this.updateRoles(x, dd.season_id, dd.team.id);
+        this.updateDutyDay(dd);
+        return (this.isAdmin || this.isLeader) ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
+      })
     ).subscribe((a: string[]) => {
       this.available = a;
     });
 
-    // poss once a minute for updated data and emails
+    // poll once a minute for updated data and emails
     this._poll = interval(60000).pipe(
       switchMap(() => forkJoin(
         [

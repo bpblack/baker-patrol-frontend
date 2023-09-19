@@ -2,19 +2,15 @@
   <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
     {{error}}
   </alert>
-  <div class="form-group">
-    <label for="reason">Reason:</label>
-    <input type="text" maxlength="50" class="form-control" formControlName="reason" placeholder="Reason (50 chars or less)">
+  <div class="input-group mb-3 pt-3">
+    <span class="input-group-text" id="rsn">Reason</span>
+    <input type="text" maxlength="50" class="form-control" formControlName="reason" aria-describedby="rsn" placeholder="Reason (50 chars or less)">
   </div>
-  
-  <div *ngIf="assignables" class="form-group">
-    <label for="message">Assign To:</label>
-    <select formControlName="assigned_id">
-      <option value="0" disabled selected>Please select a substitute</option>
-      <option *ngFor="let assignable of assignables" value="{{assignable.id}}">{{assignable.name}}</option>
-    </select>
-  </div>
-  <div class="form-group">
+  <select class="form-select mb-3" formControlName="assigned_id">
+    <option value="0" disabled selected>Please select a substitute</option>
+    <option *ngFor="let assignable of assignables" value="{{assignable.id}}">{{assignable.name}}</option>
+  </select>
+  <div class="input-group">
     <button *ngIf="!submitted; else submitting" type="submit" class="btn btn-primary btn-block" [disabled]="!createAssignForm.valid">Create & Assign</button>
   </div>
 </form>

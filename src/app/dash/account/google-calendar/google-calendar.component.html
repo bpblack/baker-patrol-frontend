@@ -1,1 +1,62 @@
-<p>google-calendar works!</p>
+<div class="card">
+  <div class="card-header">
+    Google Calendar
+  </div>
+  <div *ngIf="initialized; else loading" class="card-body">
+    <alert *ngIf="message" [type]="message.type" [dismissible]="true" click="clearMessage()">
+      {{message.msg}}
+    </alert>
+    <form *ngIf="google; else add" [formGroup]="updateCalendar" class="form-inline" (ngSubmit)="onSubmit()">
+      <select class="form-select" [style]="styleControl()" formControlName="calendar_id">
+        <option *ngIf="!google.current" value="null">Please select a calendar</option>
+        <option *ngFor="let c of google.calendars" value="{{c.id}}">{{c.name}}</option>
+      </select>
+      <div class="input-group">
+        <div class="col">
+          <button *ngIf="!changed; else changing" type="submit" class="form-control btn btn-primary submit" [disabled]="validSelection() || removed">
+            Change Calendar
+          </button>
+        </div>
+        <div class="col">
+          <button *ngIf="!removed; else removing" type="submit" class="form-control btn btn-secondary submit" [disabled]="changed">
+            Remove Calendar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="card-body">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Loading Google calendars...
+  </div>
+</ng-template>
+
+<ng-template #add>
+  <button *ngIf="!added; else adding" class="form-control btn btn-secondary submit" (click)="addCalendar()">
+    Link Calendar
+  </button>
+</ng-template>
+
+<ng-template #adding>
+  <button class="form-control btn btn-secondary submit" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Linking Calendar...
+  </button>
+</ng-template>
+
+<ng-template #changing>
+  <button type="submit" class="form-control btn btn-primary submit" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Changing Calendar...
+  </button>
+</ng-template>
+
+<ng-template #removing>
+  <button type="submit" class="form-control btn btn-secondary submit" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Removing Calendar...
+  </button>
+</ng-template>
