@@ -90,22 +90,16 @@
 <ng-template #manageModal>
   <div class="modal-header">
     <h4 id="dialog-static-name" class="modal-title pull-left">Manage patrol {{managePatrol.responsibility.name}} {{dutyDay.date}}</h4>
-    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeManageModal()">
+    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="closeManageModal()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div *ngIf="(history | async) as history; loadingSub" class="modal-body">
     <tabset>
-      <tab *ngIf="(history.length === 0 || history[0].accepted) && (isAdmin || isLeader)" heading="Create & Assign" id="tab1" (selectTab)="clearCreateError();clearSubError()">
-        <alert *ngIf="createError" type="danger" [dismissible]="true" (click)="clearCreateError()">
-          {{createError}}
-        </alert>
+      <tab *ngIf="(history.length === 0 || history[0].accepted) && (isAdmin || isLeader)" heading="Create & Assign" id="tab1">
         <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)"></baker-create-assign-sub-form>
       </tab>
-      <tab *ngIf="history.length > 0" heading="Sub History" (selectTab)="clearCreateError();clearSubError()">
-        <alert *ngIf="subError" type="danger" [dismissible]="true" (click)="clearSubError()">
-          {{subError}}
-        </alert>
+      <tab *ngIf="history.length > 0" heading="Sub History">
         <!-- BPB TODO: auto width columns -->
         <div class="table-responsive">
           <table class="table table-bordered table-hover">

@@ -14,7 +14,7 @@ import { BakerApiService, Role, User } from '../../shared/services/baker-api.ser
 })
 export class DashComponent implements OnInit, OnDestroy {
   public isAdmin: boolean = false;
-  public isCollapsed: boolean = false;
+  public isCollapsed: boolean = true;
   public user: Observable<User>;
   public igear: IconDefinition = faGear;
   public ipower: IconDefinition = faPowerOff;

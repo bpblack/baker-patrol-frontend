@@ -6,10 +6,13 @@
     <span class="input-group-text" id="rsn">Reason</span>
     <input type="text" maxlength="50" class="form-control" formControlName="reason" aria-describedby="rsn" placeholder="Reason (50 chars or less)">
   </div>
-  <select class="form-select mb-3" formControlName="assigned_id">
-    <option value="0" disabled selected>Please select a substitute</option>
-    <option *ngFor="let assignable of assignables" value="{{assignable.id}}">{{assignable.name}}</option>
-  </select>
+  <div class="input-group mb-3">
+    <span class="input-group-text" id="asn">Assign to</span>
+    <select class="form-select" formControlName="assigned_id" id="asn">
+      <option value="0" disabled selected>Please select a substitute</option>
+      <option *ngFor="let assignable of assignables" value="{{assignable.id}}">{{assignable.name}}</option>
+    </select>
+  </div>
   <div class="input-group">
     <button *ngIf="!submitted; else submitting" type="submit" class="btn btn-primary btn-block" [disabled]="!createAssignForm.valid">Create & Assign</button>
   </div>

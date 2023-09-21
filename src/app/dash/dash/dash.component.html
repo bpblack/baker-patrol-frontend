@@ -1,47 +1,53 @@
-<nav class="navbar navbar-expand-lg navbar-fixed-top bg-body-tertiary" data-bs-theme="dark" role="navigation">
-  <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/Dash">
-      <img src="/assets/MBSA.png" alt="Logo" width="auto" height="30" class="d-inline-block align-text-top">
-      Volunteer Patrol
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAlt" aria-controls="navbarSupportedContent" [attr.aria-expanded]="!isCollapsed" aria-label="Toggle navigation" (click)="collapseClick()">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div *ngIf="(user | async) as user" class="collapse navbar-collapse" id="navbarSupportedContent" [collapse]="isCollapsed">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li [routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="./Team">Team</a>
-        </li>
-        <li [routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="./">Duty Days</a>
-        </li>
-        <li [routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="./Roster">Roster</a>
-        </li>
-        <li *ngIf="isAdmin" [routerLinkActive]="['active']" class="nav-item">
-          <a class="nav-link" routerLink="./Season">Season</a>
-        </li>
-        <li class="nav-item dropdown" dropdown>
-          <a dropdownToggle [routerLinkActive]="['active']" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {{user.first_name}} {{user.last_name}}
-          </a>
-          <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" routerLink="./Account">
-                <fa-icon [icon]="igear"></fa-icon>&nbsp;
-                Settings
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" routerLink="/Login" (click)="logout()">
-                <fa-icon [icon]="ipower"></fa-icon>&nbsp;
-                Logout
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>   
+<nav class="navbar navbar-expand-md navbar-fixed-top bg-body-tertiary pb-md-0" data-bs-theme="dark" role="navigation">
+  <div class="container d-flex justify-content-between align-items-center align-items-md-end">
+    <div class="d-flex flex-grow-1">
+      <a class="navbar-brand" routerLink="/Dash">
+        <img src="/assets/MBSA.png" alt="Logo" width="auto" height="30" class="d-inline-block align-text-top">
+        Volunteer Patrol
+      </a>
+    </div>
+    <div class="d-flex flex-grow-1 justify-content-end">
+      <button class="navbar-toggler" type="button" (click)="collapseClick()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse flex-grow-1 justify-content-end" patrolNavbar [collapse]="isCollapsed">
+      <div *ngIf="(user | async) as user">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" routerLinkActive="active" routerLink="./Patrols">Duty Days</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLinkActive="active" routerLink="./Team">Team</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLinkActive="active" routerLink="./Roster">Roster</a>
+          </li>
+          <li *ngIf="isAdmin" class="nav-item">
+            <a class="nav-link" routerLinkActive="active" routerLink="./Season">Season</a>
+          </li>
+          <li class="nav-item dropdown" dropdown>
+            <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{user.first_name}} {{user.last_name}}
+            </a>
+            <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" routerLinkActive="active" routerLink="./Account">
+                  <fa-icon [icon]="igear"></fa-icon>&nbsp;
+                  Settings
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" routerLink="/Login" (click)="logout()">
+                  <fa-icon [icon]="ipower"></fa-icon>&nbsp;
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>  
+      </div>
+    </div>
   </div>
 </nav>
 <div class="container">

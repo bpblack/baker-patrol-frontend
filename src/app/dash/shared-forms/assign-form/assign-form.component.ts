@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { IconDefinition, faCheck, faGear, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Observable, catchError, finalize, of, EMPTY} from 'rxjs';
-import { BakerApiService, RosterUser } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, RosterUser, SubAssignment } from 'src/app/shared/services/baker-api.service';
 import { idSelectionValidator } from 'src/app/shared/validations/validations';
+import { AssignmentSuccessEvent, FormSubmittedEvent } from '../form-types';
 
 interface Substitute {
   id: number;
@@ -28,7 +29,7 @@ export class AssignFormComponent {
   @Input() public patrolId: number = 0;
   @Input() public sub: Substitute;
   @Input() public inline: boolean = false;
-  @Output() public assign = new EventEmitter();
+  @Output() public assign = new EventEmitter<AssignmentSuccessEvent | FormSubmittedEvent>();
 
   constructor(private _api: BakerApiService, private _fb: FormBuilder) {}
 
@@ -50,19 +51,19 @@ export class AssignFormComponent {
   onAssignSubmit() {
     this.submitted = true;
     if (!this.inline) {
-      this.assign.emit(null);
+      this.assign.emit({submitted: true});
     }
     this._api.assignSubRequest(this.sub.id, this.assignForm.value).pipe(
       finalize(() => {
         this.submitted = false;
-        this.assign.emit({sub_id: +this.assignForm.value})
-      }),
-      catchError(e => {
-        this.assign.emit({error: e});
-        this.error = e.message;
-        return EMPTY;
+        if (!this.inline) {
+          this.assign.emit({submitted: false});
+        }
       })
-    )
+    ).subscribe({
+      next: (s: SubAssignment) => this.assign.emit({success: s}),
+      error: (e: Error) => this.error = e.message
+    })
   }
 
   clearError() {

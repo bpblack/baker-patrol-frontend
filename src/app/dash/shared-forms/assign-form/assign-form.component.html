@@ -1,13 +1,18 @@
 <form *ngIf="(assignables | async) as assignables" [formGroup]="assignForm" [ngClass]="{'form-inline': inline}" (ngSubmit)="onAssignSubmit()">
-  <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
-    {{error}}
-  </alert>
-  <select class="form-select mb-3 pt-3" formControlName="assigned_id">
-    <option *ngIf="sub.sub_id == 0 && !inline" value="0" disabled selected>Please select a substitute</option>
-    <option *ngIf="inline" value="0">No one</option>
-    <option *ngIf="sub.sub_id != 0" value="{{sub.sub_id}}" disabled selected>{{sub.sub_name}}</option>
-    <option *ngFor="let a of assignables" value="{{a.id}}">{{a.name}}</option>
-  </select>
+  <div class="mt=3">
+    <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
+      {{error}}
+    </alert>
+  </div>
+  <div class="input-group mb-3 mt-3">
+    <label class="input-group-text" for="selectSub">Assign to:</label>
+    <select class="form-select " formControlName="assigned_id" id="selectSub">
+      <option *ngIf="sub.sub_id == 0 && !inline" value="0" disabled selected>Please select a substitute</option>
+      <option *ngIf="inline" value="0">No one</option>
+      <option *ngIf="sub.sub_id != 0" value="{{sub.sub_id}}" disabled selected>{{sub.sub_name}}</option>
+      <option *ngFor="let a of assignables" value="{{a.id}}">{{a.name}}</option>
+    </select>
+  </div>
   <div *ngIf="inline; else regular" class="input-group">
     <button *ngIf="!submitted" type="submit" class="btn btn-primary btn-sm" [disabled]="!assignForm.valid || assignForm.controls['assigned_id'].value == sub.sub_id">
       <fa-icon [icon]="icheck"></fa-icon>

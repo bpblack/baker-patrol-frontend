@@ -2,11 +2,20 @@ import { Component, ViewChild } from '@angular/core';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Subscription, concatMap, interval, startWith, switchMap } from 'rxjs';
-import { BakerApiService, PatrolDetails, Season, Substitution, Substitutions } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, PatrolDetails, Season, SubAssignment, Substitution, Substitutions } from 'src/app/shared/services/baker-api.service';
+import { isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
 
 interface ITab {
   active: boolean,
   disabled: boolean
+}
+
+interface FormSubmittedEvent {
+  submitted: boolean;
+}
+
+interface AssignmentSuccessEvent {
+  success: SubAssignment;
 }
 
 @Component({
@@ -15,14 +24,18 @@ interface ITab {
 })
 export class PatrolsComponent {
   public tabs: ITab[];
-  public season: Season;
-  public modalPatrol: PatrolDetails | null = null;
-  public patrols: PatrolDetails[];
-  public modalRequest: Substitution | null = null;
-  public subs: Substitutions;
+  public deleted: boolean = false;
+  public accepted: boolean = false;
+  public error: string | null = null;
   public disableClose = {createSub: false, manageSub: false, manageRequest: false};
   public igear: IconDefinition = faGear;
 
+  public season: Season;
+  public subs: Substitutions;
+  public patrols: PatrolDetails[];
+  public modalPatrol: PatrolDetails | null = null;
+  public modalRequest: Substitution | null = null;
+  
   @ViewChild('createSub') createSub: any;
   @ViewChild('manageSub') manageSub: any;
   @ViewChild('manageRequest') manageRequest: any;
@@ -80,7 +93,7 @@ export class PatrolsComponent {
         // r.substitutions are the requests directed at user
         // r.requests is current user's requests directed at others
         this.subs = r;
-        this.tabs[1].disabled = (this.subs.requests.length === 0);
+        this.tabs[1].disabled = (this.subs.substitutions.length === 0);
         this._lastPollTime = this.subs.timestamp;
       }
     )
@@ -88,9 +101,6 @@ export class PatrolsComponent {
 
   selectTab(i: number) {
     this.tabs[i].active = true;
-    // if (i === 0) {
-    //   this.updatePatrols();
-    // }
   }
 
   showCreateSub($event: number) {
@@ -103,10 +113,13 @@ export class PatrolsComponent {
     this._createSubRef.hide();
   }
 
-  onCreateSub($event: any) {
-    this.disableClose.createSub = true;
-    //TODO stuff
-    this.disableClose.createSub = false;
+  onCreateSub($event: FormSubmittedEvent | AssignmentSuccessEvent) {
+    if(isAssignmentSuccessEvent($event)) {
+      this.modalPatrol!.pending_substitution = $event.success;
+      this.hideCreateSub();
+    } else if(isFormSubmittedEvent($event)) {
+      this.disableClose.createSub = $event.submitted;
+    }
   }
 
   showManageSub($event: number) {
@@ -119,6 +132,19 @@ export class PatrolsComponent {
     this._manageSubRef.hide();
   }
 
+  onAssignSub($event: FormSubmittedEvent | AssignmentSuccessEvent) {
+    if(isAssignmentSuccessEvent($event)) {
+      this.modalPatrol!.pending_substitution = $event.success;
+      this.hideManageSub();
+    } else if(isFormSubmittedEvent($event)) {
+      this.disableClose.manageSub = $event.submitted;
+    }
+  }
+
+  onSubDelete() {
+    //TODO
+  }
+
   modalPatrolSub() {
     let id = this.modalPatrol!.pending_substitution!.id;
     let sub_id = this.modalPatrol!.pending_substitution!.sub_id;
@@ -126,17 +152,27 @@ export class PatrolsComponent {
     return {id: id ? id : 0, sub_id: sub_id ? sub_id : 0, sub_name: sub_name ? sub_name : ''};
   }
 
-  onAssignSub($event: any) {
-    this.disableClose.manageSub = true;
-    //TODO stuff
-    this.disableClose.manageSub = false;
-  }
-
-  showManageRequest($event: any) {
+  showManageRequest($event: number) {
+    this.modalRequest = this.subs.substitutions[$event]
     this._manageRequestRef = this._modal.show(this.manageRequest, this._modalConfig);
   } 
 
   hideManageRequest() {
+    this._manageRequestRef.hide();
+  }
+
+  onRequestAccept() {
+    //TODO
+  }
+
+  onRequestReject($event: FormSubmittedEvent | boolean) {
+    this._api.log("finalizing reject");
+    this.subs.substitutions.forEach( (item, index) => {
+      if (item === this.modalRequest) {
+        this._api.log("  -> Removing request at index", index);
+        this.subs.substitutions.splice(index, 1);
+      }
+    });
     this._manageRequestRef.hide();
   }
 

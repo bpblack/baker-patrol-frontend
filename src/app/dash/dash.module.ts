@@ -35,6 +35,8 @@ import { UpdateNameComponent } from './account/update-name/update-name.component
 import { UpdatePhoneComponent } from './account/update-phone/update-phone.component';
 import { GoogleCalendarComponent } from './account/google-calendar/google-calendar.component';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { CreateFormComponent } from './patrols/create-form/create-form.component';
+import { EmailFormComponent } from './patrols/email-form/email-form.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,9 @@ import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
     UpdatePasswordComponent,
     UpdateNameComponent,
     UpdatePhoneComponent,
-    GoogleCalendarComponent
+    GoogleCalendarComponent,
+    CreateFormComponent,
+    EmailFormComponent
   ],
   imports: [
     CommonModule,

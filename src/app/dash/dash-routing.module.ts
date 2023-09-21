@@ -18,7 +18,8 @@ const routes: Routes = [
       path: '',
       canActivateChild: [AuthGuard],
       children: [
-        { path: '', component: PatrolsComponent },
+        { path: '', redirectTo: 'Patrols', pathMatch: 'full'},
+        { path: 'Patrols', component: PatrolsComponent },
         { path: 'Account', component: AccountComponent },
         { path: 'DutyDay/:id', component: DutyDayComponent },
         { path: 'Roster', component: RosterComponent },

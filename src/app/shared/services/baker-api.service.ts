@@ -114,14 +114,6 @@ export interface SubHistory {
   sub: RosterUser;
 }
 
-export interface AssignSuccess {
-  sub_id: number;
-}
-
-export function isAssignSuccess(o: any): o is AssignSuccess {
-  return 'sub_id' in o;
-}
-
 export interface GoogleAuth {
   uri: string;
 }
@@ -335,12 +327,12 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   createSubEmailRequest(patrolId: number, cs: EmailForm) : Observable<any> {
-//     let body = JSON.stringify(cs);
-//     return this.http.post(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).map(
-//       res => res.json()
-//     ).catch(this.handleError);
-//   }
+  createSubEmailRequest(patrolId: number, cs: EmailForm) : Observable<SubAssignment> {
+    let body = JSON.stringify(cs);
+    return this.http.post<SubAssignment>(this.url + '/patrols/' + patrolId + '/substitutions', body, this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   createSubAssignRequest(patrolId: number, cs: AssignForm) : Observable<SubAssignment> {
     let body = JSON.stringify(cs);
@@ -362,21 +354,23 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   remindSubRequest(substitutionId: number, r: EmailForm, toId: number = null) : Observable<any> { //Reject contains just a message, should work fine
-//     if (toId > 0) {
-//       r.to_id = toId;
-//     }
-//     let body = JSON.stringify(r);
-//     return this.http.post(this.url + '/substitutions/' + substitutionId + '/remind', body, this.defaultOptions()).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  remindSubRequest(substitutionId: number, r: EmailForm, toId: number = -1) : Observable<boolean> { //Reject contains just a message, should work fine
+    if (toId > 0) {
+      r.to_id = toId;
+    }
+    let body = JSON.stringify(r);
+    return this.http.post(this.url + '/substitutions/' + substitutionId + '/remind', body, this.defaultOptions()).pipe(
+      map(r => true),
+      catchError(this.handleError)
+    );
+  }
 
-//   deleteSubRequest(substitutionId: number) : Observable<any> {
-//     return this.http.delete(this.url + '/substitutions/' + substitutionId).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  deleteSubRequest(substitutionId: number) : Observable<boolean> {
+    return this.http.delete(this.url + '/substitutions/' + substitutionId).pipe(
+      map(res => true),
+      catchError(this.handleError)
+    );
+  }
 
   getSubstitutions(seasonId:number, params: string[][], userId: number = this.currentUserId()) : Observable<Substitutions> {
     let paramsStr = '';
@@ -389,18 +383,20 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   acceptSubRequest(id: number) : Observable<boolean> {
-//     return this.http.patch(this.url + '/substitutions/' + id + '/accept', '', this.defaultOptions()).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  acceptSubRequest(id: number) : Observable<boolean> {
+    return this.http.patch(this.url + '/substitutions/' + id + '/accept', '', this.defaultOptions()).pipe(
+      map(res => true),
+      catchError(this.handleError)
+    );
+  }
 
-//   rejectSubRequest(id: number, r: EmailForm) : Observable<boolean> {
-//     let body = JSON.stringify(r);
-//     return this.http.patch(this.url + '/substitutions/' + id + '/reject', body, this.defaultOptions()).map(
-//       res => res.ok
-//     ).catch(this.handleError);
-//   }
+  rejectSubRequest(id: number, r: EmailForm) : Observable<boolean> {
+    let body = JSON.stringify(r);
+    return this.http.patch(this.url + '/substitutions/' + id + '/reject', body, this.defaultOptions()).pipe(
+      map(r => true),
+      catchError(this.handleError)
+    );
+  }
 
   getSubHistory(id: number) : Observable<SubHistory[]> {
     return this.http.get<{sub_history: SubHistory[]}>(this.url + '/admin/patrols/' + id + '/substitutions', this.defaultOptions()).pipe(
@@ -492,14 +488,6 @@ export class BakerApiService implements IAuthService {
       this._currentUser.next(res);
     });
   }
-
-//   private setCurrentUserSeasons(seasons: Array<Season>) {
-//     this._currentUserSeasons = seasons;
-//   }
-
-//   private setCurrentUserRoles(roles: Array<Role>) {
-//     this._currentUserRoles = roles;
-//   }
 
   private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {

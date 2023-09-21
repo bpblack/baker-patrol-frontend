@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { EMPTY, Observable, catchError, finalize } from 'rxjs';
-import { BakerApiService, RosterUser } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, RosterUser, SubAssignment } from 'src/app/shared/services/baker-api.service';
 import { idSelectionValidator } from 'src/app/shared/validations/validations';
+import { AssignmentSuccessEvent, FormSubmittedEvent } from '../form-types';
 
 @Component({
   selector: 'baker-create-assign-sub-form',
@@ -17,7 +18,7 @@ export class CreateAssignFormComponent {
   public igear: IconDefinition = faGear;
 
   @Input() public patrolId: number = 0;
-  @Output() public create = new EventEmitter();
+  @Output() public create = new EventEmitter<FormSubmittedEvent | AssignmentSuccessEvent>();
 
   constructor(private _api: BakerApiService, private _fb: FormBuilder) {}
 
@@ -38,13 +39,12 @@ export class CreateAssignFormComponent {
     this._api.createSubAssignRequest(this.patrolId, this.createAssignForm.value).pipe(
       finalize(() => {
         this.submitted = false;
-        this.create.emit({sub_id: +this.createAssignForm.value})
-      }),
-      catchError(e => {
-        this.error = e.message;
-        return EMPTY;
+        this.create.emit({submitted: false})
       })
-    );
+    ).subscribe({
+      next: (s: SubAssignment) => this.create.emit({success: s}),
+      error: (e: Error) => this.error = e.message
+    });
   }
 
   clearError() {

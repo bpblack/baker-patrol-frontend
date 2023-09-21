@@ -5,7 +5,8 @@ import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
-import { APIError, BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, AssignSuccess, isAssignSuccess } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory } from 'src/app/shared/services/baker-api.service';
+import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
 
 export interface PatrolResponsibility {
   patrolId: number;
@@ -22,13 +23,12 @@ export class DutyDayComponent {
   public available: string[];
   public isAdmin: boolean = false;
   public isLeader: boolean = false;
+  public disable: boolean = false;
   public patrolling: string[] = [];
   public hosting: string[] = [];
   public swapRow: number = -1;
   public managePatrol: Patrol;
   public responsibilities = new Map<string, PatrolResponsibility[]>();
-  public createError: string | null = null;
-  public subError: string | null = null;
   public patrolRow = new Map<number, number>();
   public history: Observable<SubHistory[]>;
   public igear: IconDefinition = faGear;
@@ -155,30 +155,22 @@ export class DutyDayComponent {
     }
   }
 
-  onSubCreateAssign($event: APIError | AssignSuccess) {
-    if (isAssignSuccess($event)) {
-      this.managePatrol.latest_substitution.sub_id = $event.sub_id;
+  onSubCreateAssign($event: FormSubmittedEvent | AssignmentSuccessEvent) {
+    if (isAssignmentSuccessEvent($event)) {
+      this.managePatrol.latest_substitution.id = $event.success.id!;
       this.manageRef!.hide();
-    } else {
-      this.createError = $event.error;
+    } else if (isFormSubmittedEvent($event)){
+      this.disable = $event.submitted;
     }
   }
 
-  clearCreateError() {
-    this.createError = null;
-  }
-
-  onSubAssign($event: APIError | AssignSuccess) {
-    if (isAssignSuccess($event)) {
-      this.managePatrol.latest_substitution.sub_id = $event.sub_id;
+  onSubAssign($event: FormSubmittedEvent | AssignmentSuccessEvent) {
+    if (isAssignmentSuccessEvent($event)) {
+      this.managePatrol.latest_substitution.id = $event.success.id!;
       this.manageRef!.hide();
     } else {
-      this.subError = $event.error;
+      this.disable = $event.submitted
     }
-  }
-
-  clearSubError() {
-    this.subError = null;
   }
 
   private updateRoles(ra: Role[], seasonId: number, teamId: number) {
