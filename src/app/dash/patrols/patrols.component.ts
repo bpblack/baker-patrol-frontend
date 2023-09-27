@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { Subscription, concatMap, interval, startWith, switchMap } from 'rxjs';
-import { BakerApiService, PatrolDetails, Season, SubAssignment, Substitution, Substitutions } from 'src/app/shared/services/baker-api.service';
+import { Subscription, concatMap, finalize, interval, startWith, switchMap } from 'rxjs';
+import { BakerApiService, PatrolDetails, PatrolDutyDay, Season, SubAssignment, Substitution, Substitutions } from 'src/app/shared/services/baker-api.service';
 import { isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
 
 interface ITab {
@@ -92,7 +92,14 @@ export class PatrolsComponent {
       (r: Substitutions) => {
         // r.substitutions are the requests directed at user
         // r.requests is current user's requests directed at others
+        // remove any patrols if r.requests accepted is true
         this.subs = r;
+        this.subs.requests.forEach((r: Substitution) => {
+          if(this.patrols && r.accepted) {
+            const pi = this.patrols.findIndex((p: PatrolDetails) => p.id === r.patrol_id);
+            this.patrols.splice(pi, 1);
+          }
+        })
         this.tabs[1].disabled = (this.subs.substitutions.length === 0);
         this._lastPollTime = this.subs.timestamp;
       }
@@ -103,6 +110,10 @@ export class PatrolsComponent {
     this.tabs[i].active = true;
   }
 
+  deselectTab(i: number) {
+    this.tabs[i].active = false;
+  }
+
   showCreateSub($event: number) {
     this.modalPatrol = this.patrols[$event];
     this._createSubRef = this._modal.show(this.createSub, this._modalConfig);
@@ -111,6 +122,7 @@ export class PatrolsComponent {
   hideCreateSub() {
     this.modalPatrol = null;
     this._createSubRef.hide();
+    this.clearError();
   }
 
   onCreateSub($event: FormSubmittedEvent | AssignmentSuccessEvent) {
@@ -130,6 +142,7 @@ export class PatrolsComponent {
   hideManageSub() {
     this.modalPatrol = null;
     this._manageSubRef.hide();
+    this.clearError();
   }
 
   onAssignSub($event: FormSubmittedEvent | AssignmentSuccessEvent) {
@@ -142,7 +155,16 @@ export class PatrolsComponent {
   }
 
   onSubDelete() {
-    //TODO
+    this.disableClose.manageSub = true;
+    this._api.deleteSubRequest(this.modalPatrol!.pending_substitution!.id!).pipe(
+      finalize(() => this.disableClose.manageSub = false)
+    ).subscribe({
+      next: (b: boolean) => {
+        this.modalPatrol!.pending_substitution = null;
+        this.hideManageSub();
+      },
+      error: (e: Error) => this.error = e.message
+    })
   }
 
   modalPatrolSub() {
@@ -159,17 +181,52 @@ export class PatrolsComponent {
 
   hideManageRequest() {
     this._manageRequestRef.hide();
+    this.clearError();
   }
 
   onRequestAccept() {
-    //TODO
+    this.disableClose.manageRequest = true;
+    this._api.acceptSubRequest(this.modalRequest!.id).pipe(
+      finalize(() => this.disableClose.manageRequest = false)
+    ).subscribe({
+      next: (b: boolean) => {
+        // remove the accepted request from the list of subs
+        this.subs.substitutions.forEach((item, index) => {
+          if (item === this.modalRequest) {
+            this.subs.substitutions.splice(index, 1);
+          }
+        });
+        // update the list of assigned patrols
+        // array is already sorted, so create a new patrol detail, find the first patrol after that date
+        // and splice in the new patrol detail at that index. saves an api call until the next poll
+        const dd: PatrolDutyDay = {
+          id: this.modalRequest!.duty_day.id, 
+          season_id: this.season.id,
+          date: this.modalRequest!.duty_day.date, 
+          team: this.modalRequest!.duty_day.team!
+        };
+        const apd: PatrolDetails = {
+          id: this.modalRequest!.patrol_id, 
+          swapable: true, 
+          pending_substitution: null, 
+          duty_day: dd, 
+          responsibility: this.modalRequest!.responsibility!
+        };
+        const adate = new Date(apd.duty_day.date);
+        const idx = this.patrols.findIndex(p => {
+          const pdate = new Date(p.duty_day.date);
+          return pdate.getTime() > adate.getTime();
+        })
+        this.patrols.splice(idx, 0, apd);
+        this._manageRequestRef.hide();
+      },
+      error: (e: Error) => this.error = e.message
+    });
   }
 
   onRequestReject($event: FormSubmittedEvent | boolean) {
-    this._api.log("finalizing reject");
-    this.subs.substitutions.forEach( (item, index) => {
+    this.subs.substitutions.forEach((item, index) => {
       if (item === this.modalRequest) {
-        this._api.log("  -> Removing request at index", index);
         this.subs.substitutions.splice(index, 1);
       }
     });
@@ -177,7 +234,7 @@ export class PatrolsComponent {
   }
 
   clearError() {
-    //TODO
+    this.error = null;
   }
 }
 

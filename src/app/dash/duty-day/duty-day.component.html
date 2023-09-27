@@ -88,21 +88,21 @@
 </ng-template>
 
 <ng-template #manageModal>
-  <div class="modal-header">
+  <div *ngIf="managePatrol" class="modal-header">
     <h4 id="dialog-static-name" class="modal-title pull-left">Manage patrol {{managePatrol.responsibility.name}} {{dutyDay.date}}</h4>
     <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="closeManageModal()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div *ngIf="(history | async) as history; loadingSub" class="modal-body">
-    <tabset>
+    <tabset *ngIf="managePatrol">
       <tab *ngIf="(history.length === 0 || history[0].accepted) && (isAdmin || isLeader)" heading="Create & Assign" id="tab1">
-        <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)"></baker-create-assign-sub-form>
+        <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)" [allowEmpty]="true"></baker-create-assign-sub-form>
       </tab>
       <tab *ngIf="history.length > 0" heading="Sub History">
         <!-- BPB TODO: auto width columns -->
         <div class="table-responsive">
-          <table class="table table-bordered table-hover">
+          <table class="table table-bordered table-hover table-sm">
             <thead>
               <tr>
                 <th>Name</th>
@@ -111,12 +111,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let sub of history; let i = index" [ngClass]="{'danger': !sub.accepted && !sub.sub.id, 'warning': !sub.accepted && sub.sub.id, 'success': sub.accepted && i === 0}">
+              <tr *ngFor="let sub of history; let i = index" [ngClass]="{'table-danger': !sub.accepted && !sub.sub.id, 'table-warning': !sub.accepted && sub.sub.id, 'table-success': sub.accepted && i === 0}">
                 <td data-title="Name">{{sub.subbed.name}}</td>
                 <td *ngIf="i == 0 && !history[0]!.accepted && (isAdmin || isLeader)" data-title="Sub Name">
-                  <span class="editable-container editable-inline">
-                    <baker-assign-sub-form [patrolId]="managePatrol.id" [sub]="{id: sub.id, sub_id: sub.id, sub_name: sub.sub.name}" [inline]="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>
-                  </span>
+                  <baker-assign-sub-form [patrolId]="managePatrol.id" [sub]="{id: sub.id, sub_id: sub.sub.id ? sub.sub.id : 0, sub_name: sub.sub.name}" [inline]="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>
                 </td>
                 <td *ngIf="i > 0 || history[0]!.accepted" data-title="Sub Name">{{sub.sub.name}}</td>
                 <td data-title="Reason">{{sub.reason}}</td>

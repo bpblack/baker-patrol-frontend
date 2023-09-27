@@ -5,10 +5,10 @@
     </div>
     <div class="card-body">
       <tabset>
-        <tab [active]="tabs[0].active" (select)="selectTab(0)" (deselect)="tabs[0].active = false" [disabled]="tabs[0].disabled" heading="Patrols">
+        <tab [active]="tabs[0].active" (select)="selectTab(0)" (deselect)="deselectTab(0)" [disabled]="tabs[0].disabled" heading="Patrols">
           <baker-patrols-tab [patrols]="patrols" (createSub)="showCreateSub($event)" (manageSub)="showManageSub($event)"></baker-patrols-tab>
         </tab>
-        <tab [active]="tabs[1].active" (select)="selectTab(1)" (deselect)="tabs[1].active = false" [disabled]="tabs[1].disabled">
+        <tab [active]="tabs[1].active" (select)="selectTab(1)" (deselect)="deselectTab(1)" [disabled]="tabs[1].disabled">
           <ng-template tabHeading>
             <span class="badge badge-secondary bg-secondary">{{this.subs ? this.subs.substitutions.length: 0}}</span>&nbsp;Sub Requests
           </ng-template>
@@ -61,11 +61,15 @@
         <baker-email-sub-form [sub]="modalPatrolSub()" [buttonText]="'Remind'" (email)="hideManageSub()"></baker-email-sub-form>
       </tab>
       <tab heading="Delete" select="clearError()">
-        <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
-          {{error}}
-        </alert>
-        Do you really want to delete this request? 
-        <button *ngIf="!deleted; else deleting" class="btn btn-primary" (click)="onSubDelete()">Delete</button>
+        <div class="mt-3">
+          <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
+            {{error}}
+          </alert>
+        </div>
+        <div class="my-3">
+          Do you really want to delete this request? 
+          <button *ngIf="!deleted; else deleting" class="btn btn-primary" (click)="onSubDelete()">Delete</button>
+        </div>
       </tab>
     </tabset>
   </div>
@@ -87,11 +91,15 @@
   <div *ngIf="modalRequest" class="modal-body">
     <tabset>
       <tab heading="Accept" (select)="clearError()">
-        <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
-          {{error}}
-        </alert>
-        Do you really want to Accept this request? 
-        <button *ngIf="!accepted; else accepting" class="btn btn-primary" (click)="onRequestAccept()">Accept</button>
+        <div class="mt-3">
+          <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
+            {{error}}
+          </alert>
+        </div>
+        <div class="my-3">
+          Do you really want to Accept this request? 
+          <button *ngIf="!accepted; else accepting" class="btn btn-primary" (click)="onRequestAccept()">Accept</button>
+        </div>
       </tab>
       <tab heading="Reject" (select)="clearError()">
         <baker-email-sub-form [sub]="{id: modalRequest.id, sub_name: modalRequest.sub_for!.name!}" [reject]="true" [buttonText]="'Reject'" (email)="onRequestReject($event)"></baker-email-sub-form>

@@ -1,15 +1,17 @@
 <form *ngIf="(assignables | async) as assignables; else loading" [formGroup]="createAssignForm" (ngSubmit)="onCreateEmailSubmit()">
-  <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
-    {{error}}
-  </alert>
-  <div class="input-group mb-3 pt-3">
+  <div class="mt-3">
+    <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
+      {{error}}
+    </alert>
+  </div>
+  <div class="input-group my-3">
     <span class="input-group-text" id="rsn">Reason</span>
     <input type="text" maxlength="50" class="form-control" formControlName="reason" aria-describedby="rsn" placeholder="Reason (50 chars or less)">
   </div>
   <div class="input-group mb-3">
     <span class="input-group-text" id="asn">Assign to</span>
     <select class="form-select" formControlName="assigned_id" id="asn">
-      <option value="0" disabled selected>Please select a substitute</option>
+      <option value="0" selected>{{defaultOption}}</option>
       <option *ngFor="let assignable of assignables" value="{{assignable.id}}">{{assignable.name}}</option>
     </select>
   </div>

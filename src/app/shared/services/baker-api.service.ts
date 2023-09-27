@@ -66,7 +66,7 @@ export interface Team {
 export interface LatestSub {
   id: number;
   accepted: boolean;
-  sub_id: number;
+  sub_id: number | null;
 }
 
 export interface Responsibility {
@@ -84,7 +84,7 @@ export interface Patrol {
 }
 
 export interface PatrolDutyDay {
-  id: Date;
+  id: number;
   season_id: number;
   date: string;
   team: Team;
@@ -143,7 +143,6 @@ export interface SubAssignment {
 
 export interface Substitution {
   id: number;
-  date: string;
   accepted: boolean;
   reason: string;
   patrol_id: number;

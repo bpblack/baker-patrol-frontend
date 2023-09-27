@@ -21,10 +21,9 @@ export class AssignFormComponent {
   public error: string | null = null;
   public assignForm: FormGroup;
   public submitted: boolean = false;
-  public assignables: Observable<RosterUser[]>;
+  public assignables: RosterUser[];
   public igear: IconDefinition = faGear;
   public icheck: IconDefinition = faCheck;
-  public ixmark: IconDefinition = faXmark;
 
   @Input() public patrolId: number = 0;
   @Input() public sub: Substitute;
@@ -43,9 +42,22 @@ export class AssignFormComponent {
       this.sub.sub_id = 0;
       this.sub.sub_name = 'No One';
     }
-    this.assignables = this._api.getAssignableUsers(this.patrolId).pipe(
-      catchError((e) => {this.error = e.message; return EMPTY;})
-    );
+    this._api.getAssignableUsers(this.patrolId).subscribe({
+      next: (rus: RosterUser[]) => {
+        this.assignables = rus;
+        if (this.inline) {
+          this.assignables.unshift({id: 0, name: 'Assign to no one'});
+          if (this.sub.sub_id !== 0) {
+            this.assignables.unshift({id: this.sub.sub_id, name: this.sub.sub_name})
+          }
+        } else if (this.sub.sub_id === 0) {
+          this.assignables.unshift({id: 0, name: 'Please select a substitute'})
+        } else {
+          this.assignables.unshift({id: this.sub.sub_id, name: this.sub.sub_name})
+        }
+      },
+      error: (e: Error) => this.error = e.message
+    });
   }
 
   onAssignSubmit() {
@@ -75,5 +87,17 @@ export class AssignFormComponent {
       return 'Loading...';
     }
     return 'Loading assignable users...';
+  }
+
+  errorClass() {
+    return this.inline ? "my-1" : "mt-3";
+  }
+
+  formClass() {  
+    return this.inline ? "input-group w-50" : "input-group my-3";
+  }
+
+  selectClass() {
+    return this.inline ? "form-select form-select-sm" : "form-select";
   }
 }

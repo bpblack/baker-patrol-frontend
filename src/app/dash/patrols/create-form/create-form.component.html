@@ -1,8 +1,10 @@
 <form [formGroup]="createAndEmail" (ngSubmit)="submit()">
-  <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
-    {{error}}
-  </alert>
-  <div class="input-group mb-3 pt-3">
+  <div class="mt-3">
+    <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
+      {{error}}
+    </alert>
+  </div>
+  <div class="input-group my-3">
     <span class="input-group-text" id="rsn">Reason</span>
     <input type="text" maxlength="50" class="form-control" formControlName="reason" aria-describedby="rsn" placeholder="Reason (50 chars or less)">
   </div>
@@ -10,7 +12,7 @@
     <span class="input-group-text" id="msg">Message</span>
     <textarea class="form-control" rows="4" formControlName="message" aria-describedby="rsn" placeholder="Message to send in email"></textarea>
   </div>
-  <div class="form-group">
+  <div class="input-group">
     <button *ngIf="!submitted; else submitting" type="submit" class="btn btn-primary btn-block">Email Request</button>
   </div>
 </form>

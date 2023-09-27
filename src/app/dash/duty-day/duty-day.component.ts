@@ -27,7 +27,7 @@ export class DutyDayComponent {
   public patrolling: string[] = [];
   public hosting: string[] = [];
   public swapRow: number = -1;
-  public managePatrol: Patrol;
+  public managePatrol: Patrol | null = null;
   public responsibilities = new Map<string, PatrolResponsibility[]>();
   public patrolRow = new Map<number, number>();
   public history: Observable<SubHistory[]>;
@@ -125,6 +125,7 @@ export class DutyDayComponent {
   }
 
   closeManageModal() {
+    this.managePatrol = null;
     this.manageRef.hide();
   }
 
@@ -155,10 +156,12 @@ export class DutyDayComponent {
     }
   }
 
+
   onSubCreateAssign($event: FormSubmittedEvent | AssignmentSuccessEvent) {
     if (isAssignmentSuccessEvent($event)) {
-      this.managePatrol.latest_substitution.id = $event.success.id!;
-      this.manageRef!.hide();
+      const x: LatestSub = {id: $event.success.id!, accepted: false, sub_id: $event.success.sub_id};
+      this.managePatrol!.latest_substitution = x;
+      this.closeManageModal();
     } else if (isFormSubmittedEvent($event)){
       this.disable = $event.submitted;
     }
@@ -166,8 +169,9 @@ export class DutyDayComponent {
 
   onSubAssign($event: FormSubmittedEvent | AssignmentSuccessEvent) {
     if (isAssignmentSuccessEvent($event)) {
-      this.managePatrol.latest_substitution.id = $event.success.id!;
-      this.manageRef!.hide();
+      const x: LatestSub = {id: $event.success.id!, accepted: false, sub_id: $event.success.sub_id};
+      this.managePatrol!.latest_substitution = x;
+      this.closeManageModal()
     } else {
       this.disable = $event.submitted
     }

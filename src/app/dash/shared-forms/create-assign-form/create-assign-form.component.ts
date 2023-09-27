@@ -18,6 +18,7 @@ export class CreateAssignFormComponent {
   public igear: IconDefinition = faGear;
 
   @Input() public patrolId: number = 0;
+  @Input() public allowEmpty: boolean = false;
   @Output() public create = new EventEmitter<FormSubmittedEvent | AssignmentSuccessEvent>();
 
   constructor(private _api: BakerApiService, private _fb: FormBuilder) {}
@@ -25,7 +26,7 @@ export class CreateAssignFormComponent {
   ngOnInit() {
     this.createAssignForm = this._fb.group({
       reason: new FormControl(''),
-      assigned_id: new FormControl(0, idSelectionValidator())
+      assigned_id: new FormControl(0, this.allowEmpty ? null : idSelectionValidator())
     });
 
     this.assignables = this._api.getAssignableUsers(this.patrolId).pipe(
@@ -49,5 +50,9 @@ export class CreateAssignFormComponent {
 
   clearError() {
     this.error = null;
+  }
+
+  get defaultOption() {
+    return this.allowEmpty ? "Assign to no one" : "Please select a substitute";
   }
 }
