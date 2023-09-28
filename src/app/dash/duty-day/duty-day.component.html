@@ -67,7 +67,7 @@
 </ng-template>
 
 <ng-template let-patrol="patrol" #noSwapCell>
-  {{patrol.responsibility.name}} v{{patrol.responsibility.version}}
+  {{patrol.responsibility.name}}
 </ng-template>
 
 <ng-template let-patrol="patrol" let-i="i" #swapCell>
@@ -76,7 +76,7 @@
 
 <ng-template let-patrol="patrol" let-i="i" #swapLink>
   <a *ngIf="swapRow !== i; else swapForm" (click)="setSwapRow(i)" class="baker-inline">
-    {{patrol.responsibility.name}} v{{patrol.responsibility.version}}
+    {{patrol.responsibility.name}}
   </a>
 </ng-template>
 
@@ -99,8 +99,13 @@
       <tab *ngIf="(history.length === 0 || history[0].accepted) && (isAdmin || isLeader)" heading="Create & Assign" id="tab1">
         <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)" [allowEmpty]="true"></baker-create-assign-sub-form>
       </tab>
-      <tab *ngIf="history.length > 0" heading="Sub History">
-        <!-- BPB TODO: auto width columns -->
+      <tab *ngIf="history.length > 0" heading="Sub History" (deselect)="clearError()">
+        <div *ngIf="error" class="my-3">
+          <!-- inline assign form emits error string for cleaner display here -->
+          <alert type="danger" [dismissible]="true" (click)="clearError()">
+            {{error}}
+          </alert>
+        </div>
         <div class="table-responsive">
           <table class="table table-bordered table-hover table-sm">
             <thead>
@@ -112,12 +117,12 @@
             </thead>
             <tbody>
               <tr *ngFor="let sub of history; let i = index" [ngClass]="{'table-danger': !sub.accepted && !sub.sub.id, 'table-warning': !sub.accepted && sub.sub.id, 'table-success': sub.accepted && i === 0}">
-                <td data-title="Name">{{sub.subbed.name}}</td>
-                <td *ngIf="i == 0 && !history[0]!.accepted && (isAdmin || isLeader)" data-title="Sub Name">
+                <td class="col-3" data-title="Name">{{sub.subbed.name}}</td>
+                <td *ngIf="i == 0 && !history[0]!.accepted && (isAdmin || isLeader)" class="col-4" data-title="Sub Name">
                   <baker-assign-sub-form [patrolId]="managePatrol.id" [sub]="{id: sub.id, sub_id: sub.sub.id ? sub.sub.id : 0, sub_name: sub.sub.name}" [inline]="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>
                 </td>
-                <td *ngIf="i > 0 || history[0]!.accepted" data-title="Sub Name">{{sub.sub.name}}</td>
-                <td data-title="Reason">{{sub.reason}}</td>
+                <td *ngIf="i > 0 || history[0]!.accepted" class="col-3" data-title="Sub Name">{{sub.sub.name}}</td>
+                <td class="w-auto" data-title="Reason">{{sub.reason}}</td>
               </tr>
             </tbody>
           </table>

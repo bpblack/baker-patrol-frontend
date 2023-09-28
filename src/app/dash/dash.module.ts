@@ -37,6 +37,7 @@ import { GoogleCalendarComponent } from './account/google-calendar/google-calend
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { CreateFormComponent } from './patrols/create-form/create-form.component';
 import { EmailFormComponent } from './patrols/email-form/email-form.component';
+import { OpenTabComponent } from './patrols/open-tab/open-tab.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { EmailFormComponent } from './patrols/email-form/email-form.component';
     UpdatePhoneComponent,
     GoogleCalendarComponent,
     CreateFormComponent,
-    EmailFormComponent
+    EmailFormComponent,
+    OpenTabComponent
   ],
   imports: [
     CommonModule,

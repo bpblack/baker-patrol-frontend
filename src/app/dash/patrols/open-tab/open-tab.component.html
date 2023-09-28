@@ -1,0 +1,40 @@
+<div *ngIf="openRequests; else loading" class="table-responsive">
+  <table *ngIf="openRequests.length > 0; else noRequests" class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Patroller</th>
+        <th>Team</th>
+        <th>Responsibility</th>
+        <th>Contact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of openRequests; let i = index">
+        <td data-title="Date" class="col-2">
+          <a routerLink="../DutyDay/{{o.duty_day_id}}">{{o.date}}</a>
+        </td>
+        <td data-title="For">{{o.name}}</td>
+        <td data-title="Team" class="col-2">{{o.team}}</td>
+        <td data-title="Responsibility">{{o.responsibility}}</td>
+        <td data-title="Contact" class="col-2">
+          <a class="btn btn-primary" [href]="contactClick(i)">Send a message</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #loading>
+  <div>
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Loading unassigned requests...
+  </div>
+</ng-template>
+
+<ng-template #noRequests>
+  <div>
+    <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+    There are no open sub requests that you are available to fill at this time.
+  </div>
+</ng-template>

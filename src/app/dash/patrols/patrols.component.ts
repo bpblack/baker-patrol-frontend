@@ -2,20 +2,12 @@ import { Component, ViewChild } from '@angular/core';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Subscription, concatMap, finalize, interval, startWith, switchMap } from 'rxjs';
-import { BakerApiService, PatrolDetails, PatrolDutyDay, Season, SubAssignment, Substitution, Substitutions } from 'src/app/shared/services/baker-api.service';
-import { isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
+import { BakerApiService, PatrolDetails, PatrolDutyDay, Season, Substitution, Substitutions } from 'src/app/shared/services/baker-api.service';
+import { AssignmentSuccessEvent, isAssignmentSuccessEvent, FormSubmittedEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
 
 interface ITab {
   active: boolean,
   disabled: boolean
-}
-
-interface FormSubmittedEvent {
-  submitted: boolean;
-}
-
-interface AssignmentSuccessEvent {
-  success: SubAssignment;
 }
 
 @Component({
@@ -35,6 +27,7 @@ export class PatrolsComponent {
   public patrols: PatrolDetails[];
   public modalPatrol: PatrolDetails | null = null;
   public modalRequest: Substitution | null = null;
+  public openCount: number = 0;
   
   @ViewChild('createSub') createSub: any;
   @ViewChild('manageSub') manageSub: any;
@@ -56,6 +49,11 @@ export class PatrolsComponent {
       },
       {
         //requests tab
+        active: false,
+        disabled: true
+      },
+      {
+        //season requests tab
         active: false,
         disabled: true
       }
@@ -114,6 +112,13 @@ export class PatrolsComponent {
     this.tabs[i].active = false;
   }
 
+  onOpenRequests($event: number) {
+    this.openCount = $event;
+    if (this.openCount > 0) {
+      this.tabs[2].disabled = false;
+    }
+  }
+
   showCreateSub($event: number) {
     this.modalPatrol = this.patrols[$event];
     this._createSubRef = this._modal.show(this.createSub, this._modalConfig);
@@ -127,7 +132,7 @@ export class PatrolsComponent {
 
   onCreateSub($event: FormSubmittedEvent | AssignmentSuccessEvent) {
     if(isAssignmentSuccessEvent($event)) {
-      this.modalPatrol!.pending_substitution = $event.success;
+      this.modalPatrol!.pending_substitution = $event.success!;
       this.hideCreateSub();
     } else if(isFormSubmittedEvent($event)) {
       this.disableClose.createSub = $event.submitted;
@@ -145,12 +150,14 @@ export class PatrolsComponent {
     this.clearError();
   }
 
-  onAssignSub($event: FormSubmittedEvent | AssignmentSuccessEvent) {
+  onAssignSub($event: FormSubmittedEvent | AssignmentSuccessEvent | string) {
     if(isAssignmentSuccessEvent($event)) {
-      this.modalPatrol!.pending_substitution = $event.success;
+      this.modalPatrol!.pending_substitution = $event.success!;
       this.hideManageSub();
     } else if(isFormSubmittedEvent($event)) {
       this.disableClose.manageSub = $event.submitted;
+    } else {
+      console.error('Inline form error reported here? ' + $event);
     }
   }
 

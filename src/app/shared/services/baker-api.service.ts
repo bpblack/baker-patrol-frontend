@@ -78,7 +78,7 @@ export interface Responsibility {
 
 export interface Patrol {
   id: number;
-  latest_substitution: LatestSub;
+  latest_substitution: LatestSub | null;
   patroller: RosterUser;
   responsibility: Responsibility;
 }
@@ -158,7 +158,14 @@ export interface Substitutions {
   timestamp: string;
 }
 
-// in use?
+export interface OpenRequest {
+  duty_day_id: number;
+  date: string;
+  team: string;
+  responsibility: string;
+  name: string;
+  email: string;
+}
 
 interface UserNameForm {
   first_name: string;
@@ -371,13 +378,20 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-  getSubstitutions(seasonId:number, params: string[][], userId: number = this.currentUserId()) : Observable<Substitutions> {
+  getSubstitutions(seasonId: number, params: string[][], userId: number = this.currentUserId()) : Observable<Substitutions> {
     let paramsStr = '';
     for (let pair of params) {
       paramsStr += paramsStr.length === 0 ? '?' : '&';
       paramsStr += pair[0] + '=' + pair[1];
     }
     return this.http.get<Substitutions>(this.url + '/users/' + userId + '/seasons/' + seasonId + '/substitutions' + paramsStr, this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getOpenSubRequests(seasonId: number): Observable<OpenRequest[]> {
+    return this.http.get<{open_subs: OpenRequest[]}>(this.url + '/seasons/' + seasonId + '/open_requests').pipe(
+      map(res => res.open_subs),
       catchError(this.handleError)
     );
   }

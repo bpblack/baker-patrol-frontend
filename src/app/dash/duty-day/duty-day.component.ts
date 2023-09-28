@@ -1,11 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Observable, Subscription, concatMap, forkJoin, interval, map, of, switchMap } from 'rxjs';
+import { Observable, Subscription, catchError, combineLatest, concatMap, forkJoin, interval, map, of, switchMap } from 'rxjs';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
-import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, User } from 'src/app/shared/services/baker-api.service';
 import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
 
 export interface PatrolResponsibility {
@@ -21,6 +21,7 @@ export interface PatrolResponsibility {
 export class DutyDayComponent {
   public dutyDay: DutyDayDetail;
   public available: string[];
+  public error: string | null = null;
   public isAdmin: boolean = false;
   public isLeader: boolean = false;
   public disable: boolean = false;
@@ -45,38 +46,30 @@ export class DutyDayComponent {
       this._route.params.forEach((params: Params) => this._id = +params['id']);
     }
     // initialize our role flags, duty day, and (if admin or leader) available emails
-    let x: Role[];
-    this._api.currentUser.pipe(map(u => u.roles)).pipe(
-      concatMap(
-        (ra: Role[]) => {
-          x = ra;
-          return this._api.getDutyDay(this._id);
-        }
-      )
-    ).pipe(
-      concatMap((dd: DutyDayDetail) => {
-        this.updateRoles(x, dd.season_id, dd.team.id);
-        this.updateDutyDay(dd);
+    combineLatest({
+      ra: this._api.currentUser.pipe(map((u: User) => u.roles)),
+      dd: this._api.getDutyDay(this._id)
+    }).pipe(
+      concatMap((x: {ra: Role[], dd: DutyDayDetail}) => {
+        this.updateRoles(x.ra, x.dd.season_id, x.dd.team.id);
+        this.updateDutyDay(x.dd)
         return (this.isAdmin || this.isLeader) ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
       })
-    ).subscribe((a: string[]) => {
-      this.available = a;
-    });
+    ).subscribe({
+      next: (a: string[]) => this.available = a,
+      error: (e: Error) => this.error = e.message
+    })
 
     // poll once a minute for updated data and emails
     this._poll = interval(60000).pipe(
-      switchMap(() => forkJoin(
-        [
-          this._api.getDutyDay(this._id), 
-          (this.isAdmin || this.isLeader)? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
-        ])
-      )
-    ).subscribe( 
-      ([dd, a]: [DutyDayDetail, string[]]) => {
-        this.updateDutyDay(dd);
-        this.available = a;
-      }
-    );
+      switchMap(() => forkJoin({
+        dd: this._api.getDutyDay(this._id), 
+        a: (this.isAdmin || this.isLeader)? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
+    }))
+    ).subscribe((x: {dd: DutyDayDetail, a: string[]}) => {
+      this.updateDutyDay(x.dd);
+      this.available = x.a;
+    });
   }
 
   ngOnDestroy() {
@@ -99,7 +92,7 @@ export class DutyDayComponent {
     return "mailto:?cc=" + this.patrolling.join(",") + "," +this.hosting.join(",") + "&subject=" + this.dutyDay.team.name + " Duty Day " + this.dutyDay.date;
   }
 
-  rowColor(patrollerId: number, latestSub: LatestSub) : string {
+  rowColor(patrollerId: number, latestSub: LatestSub | null) : string {
     if (this.isLeader || this.isAdmin) {
       if (latestSub) {
         if (latestSub.accepted) {
@@ -127,6 +120,11 @@ export class DutyDayComponent {
   closeManageModal() {
     this.managePatrol = null;
     this.manageRef.hide();
+    this.clearError();
+  }
+
+  clearError() {
+    this.error = null;
   }
 
   onPatrolSwap(swap: SwapResult) {
@@ -156,24 +154,32 @@ export class DutyDayComponent {
     }
   }
 
-
   onSubCreateAssign($event: FormSubmittedEvent | AssignmentSuccessEvent) {
     if (isAssignmentSuccessEvent($event)) {
-      const x: LatestSub = {id: $event.success.id!, accepted: false, sub_id: $event.success.sub_id};
-      this.managePatrol!.latest_substitution = x;
+      if ($event.success) {
+        const x: LatestSub = {id: $event.success.id!, accepted: false, sub_id: $event.success.sub_id};
+        this.managePatrol!.latest_substitution = x;
+      }
       this.closeManageModal();
     } else if (isFormSubmittedEvent($event)){
       this.disable = $event.submitted;
     }
   }
 
-  onSubAssign($event: FormSubmittedEvent | AssignmentSuccessEvent) {
+  onSubAssign($event: FormSubmittedEvent | AssignmentSuccessEvent | string) {
     if (isAssignmentSuccessEvent($event)) {
-      const x: LatestSub = {id: $event.success.id!, accepted: false, sub_id: $event.success.sub_id};
-      this.managePatrol!.latest_substitution = x;
+      if ($event.success) {
+        const x: LatestSub = {id: $event.success.id!, accepted: false, sub_id: $event.success.sub_id};
+        this.managePatrol!.latest_substitution = x;
+      } else {
+        this.managePatrol!.latest_substitution = null;
+      }
       this.closeManageModal()
-    } else {
+    } else if (isFormSubmittedEvent($event)){
       this.disable = $event.submitted
+    } else {
+      //inline error
+      this.error = $event;
     }
   }
 

@@ -14,6 +14,12 @@
           </ng-template>
           <baker-requests-tab [requests]="subs.substitutions" (manageRequest)="showManageRequest($event)"></baker-requests-tab>
         </tab>
+        <tab [active]="tabs[2].active" (select)="selectTab(2)" (deselect)="deselectTab(2)" [disabled]="tabs[2].disabled">
+          <ng-template tabHeading>
+            <span class="badge badge-secondary bg-secondary">{{openCount}}</span>&nbsp;Unassigned requests
+          </ng-template>
+          <baker-open-tab [seasonId]="season.id" (count)="onOpenRequests($event)"></baker-open-tab>
+        </tab>
       </tabset>
     </div>
   </div>

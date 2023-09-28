@@ -1,7 +1,7 @@
 import { SubAssignment } from "src/app/shared/services/baker-api.service";
 
 export interface AssignmentSuccessEvent {
-  success: SubAssignment;
+  success: SubAssignment | null;
 }
 
 export function isAssignmentSuccessEvent(e: any): e is AssignmentSuccessEvent {

@@ -5,6 +5,7 @@
       <tr>
         <th>Date</th>
         <th>Patroller</th>
+        <th>Team</th>
         <th>Responsibility</th>
         <th>Response</th>
       </tr>
@@ -15,7 +16,8 @@
           <a routerLink="../DutyDay/{{request.duty_day.id}}">{{request.duty_day.date}}</a>
         </td>
         <td data-title="Patroller">{{request.sub_for!.name}}</td>
-        <td data-title="Responsibility">{{request.responsibility!.name}} v{{request.responsibility!.version}}</td>
+        <td data-title="Team">{{request.duty_day.team!.name}}</td>
+        <td data-title="Responsibility">{{request.responsibility!}}</td>
         <td data-title="Response">
           <button class="btn btn-primary" (click)="manageClick(i)">Accept/Reject</button>
         </td>

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, Subscription, interval, of, startWith, switchMap } from 'rxjs';
+import { Observable, Subject, Subscription, forkJoin, interval, of, startWith, switchMap } from 'rxjs';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { IconDefinition, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
@@ -44,7 +44,9 @@ export class DashComponent implements OnInit, OnDestroy {
         if (user.first_name !== undefined) {
           user.roles.forEach((r: Role) => {
             if (this._adminRoles.has(r.role)) {
-              this.isAdmin = true;
+              if (!('season_id' in r) || +r.season_id! === +user.seasons[0].id) {
+                this.isAdmin = true;
+              }
             }
           });
         }

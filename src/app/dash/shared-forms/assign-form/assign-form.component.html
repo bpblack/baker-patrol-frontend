@@ -1,40 +1,27 @@
-<form *ngIf="assignables" [formGroup]="assignForm" [ngClass]="{'row gx-3': inline}" (ngSubmit)="onAssignSubmit()">
-  <div *ngIf="error" [class]="errorClass()">
+<form *ngIf="!inline; else inlined" [formGroup]="assignForm" [ngClass]="{'row gx-3': inline}" (ngSubmit)="onAssignSubmit()">
+  <div *ngIf="error" class="mt-3">
     <alert type="danger" [dismissible]="true" (click)="clearError()">
       {{error}}
     </alert>
   </div>
-  <div [class]="formClass()">
-    <label *ngIf="!inline" class="input-group-text" for="selectSub">Assign to:</label>
-    <select [class]="selectClass()" formControlName="assigned_id" id="selectSub">
+  <div *ngIf="assignables; else loading" class="input-group my-3">
+    <label class="input-group-text" for="selectSub">Assign to:</label>
+    <select class="form-select" formControlName="assigned_id" id="selectSub">
       <option *ngFor="let a of assignables" value="{{a.id}}">{{a.name}}</option>
     </select>
-    <div *ngIf="inline" class="ms-2">
-      <button *ngIf="!submitted; else isubmitting" type="submit" class="btn btn-primary btn-sm" [disabled]="!assignForm.valid || assignForm.controls['assigned_id'].value == sub.sub_id">
-        <fa-icon [icon]="icheck"></fa-icon>
-      </button>
-    </div>
   </div>
-  <div *ngIf="!inline" class="input-group">
-    <div class="input-group">
-      <button *ngIf="!submitted; else submitting" type="submit" class="btn btn-primary btn-block" [disabled]="!assignForm.valid || assignForm.controls['assigned_id'].value == sub.sub_id">
-        Assign
-      </button>
-    </div>
+  <div class="input-group">
+    <button *ngIf="!submitted; else submitting" type="submit" class="btn btn-primary btn-block" [disabled]="!assignForm.valid || assignForm.controls['assigned_id'].value == sub.sub_id">
+      Assign
+    </button>
   </div>
 </form>
 
 <ng-template #loading>
   <div>
     <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-    {{loadingMessage()}}
+    {{loadingMessage}}
   </div>
-</ng-template>
-
-<ng-template #isubmitting>
-  <button type="submit" class="btn btn-primary btn-sm" [disabled]=true>
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
-  </button>
 </ng-template>
 
 <ng-template #submitting>
@@ -43,3 +30,38 @@
     Assigning...
   </button>
 </ng-template>
+
+<ng-template #inlined>
+  <form [formGroup]="assignForm" class="row row-cols-auto gx-1 align-items-start" (ngSubmit)="onAssignSubmit()">
+    <div class="col">
+      <div *ngIf="assignables; else loading"  class="input-group">
+        <select class="form-select form-select-sm" formControlName="assigned_id">
+          <option *ngFor="let a of assignables" [value]="a.id">{{a.name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col">
+      <button *ngIf="!submitted; else isubmitting" type="submit" class="btn btn-primary btn-sm" [disabled]="disableSubmit || deleted">
+        <fa-icon [icon]="icheck"></fa-icon>
+      </button>
+    </div>
+    <div class="col">
+      <button *ngIf="!deleted; else deleting" class="btn btn-secondary btn-sm" (click)="deleteSub()">
+        <fa-icon [icon]="ixmark"></fa-icon>
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #isubmitting>
+  <button type="submit" class="btn btn-primary btn-sm" [disabled]=true>
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+  </button>
+</ng-template>
+
+<ng-template #deleting>
+  <button type="submit" class="btn btn-secondary btn-sm" [disabled]=true>
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+  </button>
+</ng-template>
+
