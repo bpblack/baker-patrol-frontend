@@ -452,12 +452,13 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-//   createGoogleCalendar(token: string): Observable<Google> {
-//     let body = JSON.stringify({code: token});
-//     return this.http.post(this.url + '/google_calendars', body, this.defaultOptions()).map(
-//       res => res.json().google
-//     ).catch(this.handleError);
-//   }
+  createGoogleCalendar(token: string): Observable<Google> {
+    let body = JSON.stringify({code: token});
+    return this.http.post<{google: Google}>(this.url + '/google_calendars', body, this.defaultOptions()).pipe(
+      map(res => res.google),
+      catchError(this.handleError)
+    )
+  }
 
   getGoogleCalendar(): Observable<Google | null> {
     return this.http.get<{google: Google}>(this.url + '/google_calendars/calendars', this.defaultOptions()).pipe(

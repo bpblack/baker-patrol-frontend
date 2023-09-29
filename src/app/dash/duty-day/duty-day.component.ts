@@ -65,7 +65,7 @@ export class DutyDayComponent {
       switchMap(() => forkJoin({
         dd: this._api.getDutyDay(this._id), 
         a: (this.isAdmin || this.isLeader)? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
-    }))
+      }))
     ).subscribe((x: {dd: DutyDayDetail, a: string[]}) => {
       this.updateDutyDay(x.dd);
       this.available = x.a;

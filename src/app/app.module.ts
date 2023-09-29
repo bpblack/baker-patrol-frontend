@@ -17,6 +17,7 @@ import { ForgotComponent } from './forgot/forgot.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { ResetComponent } from './reset/reset.component';
+import { GoogleCalendarComponent } from './google-calendar/google-calendar.component';
 
 export function tokenGetter() {
   return localStorage.getItem("id_token");
@@ -27,7 +28,8 @@ export function tokenGetter() {
     AppComponent,
     LoginComponent,
     ForgotComponent,
-    ResetComponent
+    ResetComponent,
+    GoogleCalendarComponent
   ],
   imports: [
     BrowserModule,
