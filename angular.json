@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mtbakervoly-frontend": {
+    "baker-patrol-frontend": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/mtbakervoly-frontend",
+            "outputPath": "dist/baker-patrol-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -68,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "mtbakervoly-frontend:build:production"
+              "browserTarget": "baker-patrol-frontend:build:production"
             },
             "development": {
-              "browserTarget": "mtbakervoly-frontend:build:development"
+              "browserTarget": "baker-patrol-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -79,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mtbakervoly-frontend:build"
+            "browserTarget": "baker-patrol-frontend:build"
           }
         },
         "test": {
