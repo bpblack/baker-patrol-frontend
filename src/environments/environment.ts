@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://mtbakervolyapi.herokuapp.com/api',
-    allowedDomains: ['volypatrol.mtbaker.us', 'mtbakervolyapi.herokuapp.com']
+    apiUrl: 'https://mtbakervolyapi-06e43d72d3ac.herokuapp.com/api',
+    allowedDomains: ['mtbakervolyapi-06e43d72d3ac.herokuapp.com']
 };
