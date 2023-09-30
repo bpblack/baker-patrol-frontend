@@ -100,7 +100,7 @@ export class GoogleCalendarComponent {
     return styleControl(this.updateCalendar.controls['calendar_id']);
   }
 
-  validSelection() {
-    return this.updateCalendar.controls['calendar_id'].valid
+  inValidSelection() {
+    return this.updateCalendar.controls['calendar_id'].invalid
   }
 }

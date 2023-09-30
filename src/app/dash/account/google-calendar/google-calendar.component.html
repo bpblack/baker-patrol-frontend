@@ -7,8 +7,6 @@
       {{message.msg}}
     </alert>
     <form *ngIf="google; else add" [formGroup]="updateCalendar" (ngSubmit)="onSubmit()">
-      {{this.updateCalendar.controls['calendar_id'].value === ''}}
-      {{this.updateCalendar.controls['calendar_id'].value === google.current}}
       <div class="input-group mb-2">
         <select class="form-select" [style]="styleControl()" formControlName="calendar_id">
           <option *ngFor="let c of google.calendars" value="{{c.id}}">{{c.name}}</option>
@@ -16,7 +14,7 @@
       </div>
       <div class="row g-2">
         <div class="col">
-          <button *ngIf="!changed; else changing" type="submit" class="form-control btn btn-primary submit" [disabled]="validSelection() || removed">
+          <button *ngIf="!changed; else changing" type="submit" class="form-control btn btn-primary submit" [disabled]="inValidSelection() || removed">
             Change Calendar
           </button>
         </div>
