@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
-import { catchError, finalize, of } from 'rxjs';
+import { finalize} from 'rxjs';
 import { BakerApiService, Google, GoogleAuth } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
@@ -40,7 +40,16 @@ export class GoogleCalendarComponent {
     this._api.getGoogleCalendar().pipe(
       finalize(() => this.initialized = true )
     ).subscribe({
-      next: (g: Google | null) => this.google = g,
+      next: (g: Google | null) => {
+        this.google = g;
+        if (this.google !== null) {
+          if (this.google.current === null) {
+            this.google.calendars.unshift({name: 'Please select a calendar', id: null});
+          } else {
+            this.updateCalendar.controls['calendar_id'].setValue(this.google.current);
+          }
+        }
+      }, 
       error: (e: Error) => this.message = {type: 'danger', msg: e.message}
     });
   }

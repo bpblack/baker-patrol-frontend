@@ -9,17 +9,16 @@
     <form *ngIf="google; else add" [formGroup]="updateCalendar" (ngSubmit)="onSubmit()">
       <div class="row mb-2">
         <select class="form-select" [style]="styleControl()" formControlName="calendar_id">
-          <option *ngIf="!google.current" value="null">Please select a calendar</option>
           <option *ngFor="let c of google.calendars" value="{{c.id}}">{{c.name}}</option>
         </select>
       </div>
-      <div class="row g-2">
-        <div class="col">
+      <div class="row">
+        <div class="col me-1">
           <button *ngIf="!changed; else changing" type="submit" class="form-control btn btn-primary submit" [disabled]="validSelection() || removed">
             Change Calendar
           </button>
         </div>
-        <div class="col">
+        <div class="col ms-1">
           <button *ngIf="!removed; else removing" class="form-control btn btn-secondary submit" (click)="removeCalendar()" [disabled]="changed">
             Remove Calendar
           </button>

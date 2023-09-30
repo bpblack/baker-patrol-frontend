@@ -120,7 +120,7 @@ export interface GoogleAuth {
 
 export interface GoogleCalendar {
   name: string;
-  id: string;
+  id: string | null;
 }
 
 export interface Google {
