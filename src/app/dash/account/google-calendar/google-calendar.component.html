@@ -7,7 +7,7 @@
       {{message.msg}}
     </alert>
     <form *ngIf="google; else add" [formGroup]="updateCalendar" (ngSubmit)="onSubmit()">
-      <div class="row mb-2">
+      <div class="input-group mb-2">
         <select class="form-select" [style]="styleControl()" formControlName="calendar_id">
           <option *ngFor="let c of google.calendars" value="{{c.id}}">{{c.name}}</option>
         </select>
