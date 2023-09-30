@@ -9,26 +9,28 @@ import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './google-calendar.component.html'
 })
 export class GoogleCalendarComponent {
+  public error: string;
   public igear: IconDefinition = faGear;
 
   constructor(private _api: BakerApiService, private _router: Router, private _route: ActivatedRoute) { }
 
   ngOnInit() {
-    this._api.log("Got calendar redirect");
     this._route.queryParams.pipe(
       concatMap((params: Params) => {
         if (params['code']) {
-          this._api.log("Got code", params['code']);
           return this._api.createGoogleCalendar(params['code'])
+        } else {
+          return EMPTY;
         }
-        return EMPTY;
       })
-    ).pipe(
-      finalize(() => this._router.navigate(['/Dash/Account']))
     ).subscribe({
-      next: (res) => {},
-      error: (e) => {}
+      next: (res) => this.returnToAccount(),
+      error: (e: Error) => this.error = e.message
     })
+  }
+
+  returnToAccount() {
+    this._router.navigate(['/Dash/Account']);
   }
 
 }

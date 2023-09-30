@@ -10,10 +10,20 @@
 </nav>
 <div class="container">
   <div  class="card p-3 m-3">
-    <div class="card-body">
+    <div *ngIf="!error; else erroring" class="card-body">
       <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
       Connecting your Google calendar ...
     </div>
   </div>
 </div>
+
+<ng-template #erroring>
+  <div class="card-body">
+    <alert type="danger" [dismissible]="true" (click)="returnToAccount()">
+      An error occured connecting your Google account. Closing this alert will return you to your account page.
+      <br><br>
+      Error: {{error}}
+    </alert>
+  </div>
+</ng-template>
  
