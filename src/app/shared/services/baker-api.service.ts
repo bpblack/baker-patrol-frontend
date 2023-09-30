@@ -124,7 +124,7 @@ export interface GoogleCalendar {
 }
 
 export interface Google {
-  current: string;
+  current: string | null;
   calendars: GoogleCalendar[];
 }
 

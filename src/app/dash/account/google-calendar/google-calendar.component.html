@@ -7,13 +7,13 @@
       {{message.msg}}
     </alert>
     <form *ngIf="google; else add" [formGroup]="updateCalendar" (ngSubmit)="onSubmit()">
-      <div class="input-group mb-2">
+      <div class="row mb-2">
         <select class="form-select" [style]="styleControl()" formControlName="calendar_id">
           <option *ngIf="!google.current" value="null">Please select a calendar</option>
           <option *ngFor="let c of google.calendars" value="{{c.id}}">{{c.name}}</option>
         </select>
       </div>
-      <div class="input-group g-2">
+      <div class="row g-2">
         <div class="col">
           <button *ngIf="!changed; else changing" type="submit" class="form-control btn btn-primary submit" [disabled]="validSelection() || removed">
             Change Calendar
