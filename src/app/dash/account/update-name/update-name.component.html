@@ -10,11 +10,11 @@
       A new first and last name that does not match {{this.firstName}} {{this.lastName}} is required.
     </alert>
     <form [formGroup]="updateName" (ngSubmit)="submit()">
-      <div class="input-group pb-2">
+      <div class="input-group mb-2">
         <span class="input-group-text" id="fn">First</span>
         <input type="text" [class]="styleControl(firstNameInput)" id="first" formControlName="first_name" placeholder="{{firstName}}" aria-describedby="fn" (blur)="blur(firstNameInput)">
       </div>
-      <div class="input-group pb-2">
+      <div class="input-group mb-2">
         <span class="input-group-text" id="ln">Last</span>
         <input type="text" [class]="styleControl(lastNameInput)" id="last" formControlName="last_name" placeholder="{{lastName}}" aria-describedby="ln" (blur)="blur(lastNameInput)">
       </div>

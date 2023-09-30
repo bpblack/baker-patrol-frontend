@@ -14,7 +14,7 @@
         <span class="input-group-text" id="at"><fa-icon [icon]="iat"></fa-icon></span>
         <input type="email" [class]="styleControl()" id="email" formControlName="email" placeholder="{{email}}" aria-describedby="at" (blur)="blur()">
       </div>
-      <div class="input-group py-2">
+      <div class="input-group my-2">
         <button *ngIf="!submitted; else updatingEmail" type="submit" class="form-control btn btn-primary submit" [disabled]="!updateEmail.valid">Update email</button>
       </div>
     </form>

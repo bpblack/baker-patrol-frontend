@@ -10,11 +10,11 @@
       <alert *ngIf="phoneValid()" type="danger">
         A valid phone address that does not match your current address is required.
       </alert>
-      <div class="input-group">
+      <div class="input-group mb-2">
         <span class="input-group-text" id="at"><fa-icon [icon]="iphone"></fa-icon></span>
         <input type="tel" [class]="styleControl()" mask="(000)000-0000" [specialCharacters]="['(',')','-']" [dropSpecialCharacters]="false" id="phone" formControlName="phone" placeholder="{{phone}}" aria-describedby="at" (blur)="blur()">
       </div>
-      <div class="input-group py-2">
+      <div class="input-group">
         <button *ngIf="!submitted; else updatingPhone" type="submit" class="form-control btn btn-primary submit" [disabled]="!updatePhone.valid">Update phone</button>
       </div>
     </form>
