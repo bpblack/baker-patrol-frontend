@@ -24,7 +24,7 @@ function validateSelectionNotNull(g: Google | null): ValidatorFn {
 }
 
 @Component({
-  selector: 'baker-google-calendar',
+  selector: 'baker-google-calendar-manage',
   templateUrl: './google-calendar.component.html'
 })
 export class GoogleCalendarComponent {
