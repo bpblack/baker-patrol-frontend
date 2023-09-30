@@ -20,7 +20,7 @@
           </button>
         </div>
         <div class="col">
-          <button *ngIf="!removed; else removing" class="form-control btn btn-secondary submit" (click)="removeCalendar()" q[disabled]="changed">
+          <button *ngIf="!removed; else removing" class="form-control btn btn-secondary submit" (click)="removeCalendar()" [disabled]="changed">
             Remove Calendar
           </button>
         </div>
