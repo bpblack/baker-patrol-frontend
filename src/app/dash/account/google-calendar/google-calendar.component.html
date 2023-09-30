@@ -12,13 +12,13 @@
           <option *ngFor="let c of google.calendars" value="{{c.id}}">{{c.name}}</option>
         </select>
       </div>
-      <div class="row">
-        <div class="col me-1">
+      <div class="row g-2">
+        <div class="col">
           <button *ngIf="!changed; else changing" type="submit" class="form-control btn btn-primary submit" [disabled]="validSelection() || removed">
             Change Calendar
           </button>
         </div>
-        <div class="col ms-1">
+        <div class="col">
           <button *ngIf="!removed; else removing" class="form-control btn btn-secondary submit" (click)="removeCalendar()" [disabled]="changed">
             Remove Calendar
           </button>
