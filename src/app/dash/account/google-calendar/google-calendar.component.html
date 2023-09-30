@@ -6,7 +6,7 @@
     <alert *ngIf="message" [type]="message.type" [dismissible]="true" click="clearMessage()">
       {{message.msg}}
     </alert>
-    <form *ngIf="google; else add" [formGroup]="updateCalendar" class="row row-cols-auto gx-1 align-items-start" (ngSubmit)="onSubmit()">
+    <form *ngIf="google; else add" [formGroup]="updateCalendar" class="row row-cols-auto gx-2 align-items-start" (ngSubmit)="onSubmit()">
       <div class="input-group mb-2">
         <select class="form-select" [style]="styleControl()" formControlName="calendar_id">
           <option *ngIf="!google.current" value="null">Please select a calendar</option>
