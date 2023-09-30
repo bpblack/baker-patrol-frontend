@@ -47,7 +47,7 @@ export class GoogleCalendarComponent {
           } else {
             x = this.google.current;
           }
-          this._fb.group({
+          this.updateCalendar = this._fb.group({
             calendar_id: new FormControl(x, validateSelectionNotNull(this.google))  
           })
         }
