@@ -29,9 +29,7 @@ export class GoogleCalendarComponent {
   public message: Result | null = null;
   public google: Google | null = null;
   public igear: IconDefinition = faGear;
-  public updateCalendar: FormGroup = this._fb.group({
-    calendar_id: new FormControl('', validateSelectionNotNull(this.google))  
-  })
+  public updateCalendar: FormGroup; 
   @Input() email: string = '';
 
   constructor(private _api: BakerApiService, private _fb: FormBuilder) { }
@@ -43,11 +41,15 @@ export class GoogleCalendarComponent {
       next: (g: Google | null) => {
         this.google = g;
         if (this.google !== null) {
+          let x: string | null = null;
           if (this.google.current === null) {
             this.google.calendars.unshift({name: 'Please select a calendar', id: null});
           } else {
-            this.updateCalendar.controls['calendar_id'].setValue(this.google.current);
+            x = this.google.current;
           }
+          this._fb.group({
+            calendar_id: new FormControl(x, validateSelectionNotNull(this.google))  
+          })
         }
       }, 
       error: (e: Error) => this.message = {type: 'danger', msg: e.message}
