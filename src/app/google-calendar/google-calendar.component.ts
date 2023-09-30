@@ -14,9 +14,11 @@ export class GoogleCalendarComponent {
   constructor(private _api: BakerApiService, private _router: Router, private _route: ActivatedRoute) { }
 
   ngOnInit() {
+    this._api.log("Got calendar redirect");
     this._route.queryParams.pipe(
       concatMap((params: Params) => {
         if (params['code']) {
+          this._api.log("Got code", params['code']);
           return this._api.createGoogleCalendar(params['code'])
         }
         return EMPTY;
