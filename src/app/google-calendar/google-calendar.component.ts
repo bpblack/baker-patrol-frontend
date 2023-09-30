@@ -25,7 +25,10 @@ export class GoogleCalendarComponent {
       })
     ).pipe(
       finalize(() => this._router.navigate(['/Dash/Account']))
-    )
+    ).subscribe({
+      next: (res) => {},
+      error: (e) => {}
+    })
   }
 
 }
