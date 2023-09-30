@@ -8,19 +8,18 @@
         <tab [active]="tabs[0].active" (select)="selectTab(0)" (deselect)="deselectTab(0)" [disabled]="tabs[0].disabled" heading="Patrols">
           <baker-patrols-tab [patrols]="patrols" (createSub)="showCreateSub($event)" (manageSub)="showManageSub($event)"></baker-patrols-tab>
         </tab>
-        <tab [active]="tabs[1].active" (select)="selectTab(1)" (deselect)="deselectTab(1)" [disabled]="tabs[1].disabled">
+        <tab [active]="tabs[1].active" (select)="selectTab(1)" (deselect)="deselectTab(1)">
           <ng-template tabHeading>
             <span class="badge badge-secondary bg-secondary">{{this.subs ? this.subs.substitutions.length: 0}}</span>&nbsp;Sub Requests
           </ng-template>
           <baker-requests-tab [requests]="subs.substitutions" (manageRequest)="showManageRequest($event)"></baker-requests-tab>
         </tab>
-        <!-- COMMENTING OUT UNTIL THE BACKEND UPDATES ARE COMPLETED. -->
-        <!-- <tab [active]="tabs[2].active" (select)="selectTab(2)" (deselect)="deselectTab(2)" [disabled]="tabs[2].disabled">
+        <tab [active]="tabs[2].active" (select)="selectTab(2)" (deselect)="deselectTab(2)">
           <ng-template tabHeading>
             <span class="badge badge-secondary bg-secondary">{{openCount}}</span>&nbsp;Unassigned requests
           </ng-template>
           <baker-open-tab [seasonId]="season.id" (count)="onOpenRequests($event)"></baker-open-tab>
-        </tab> -->
+        </tab>
       </tabset>
     </div>
   </div>
