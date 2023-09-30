@@ -13,7 +13,7 @@ interface Result {
 function validateSelectionNotNull(g: Google | null): ValidatorFn {
   return (c: AbstractControl): ValidationErrors | null => {
     const cval = c.value;
-    if (cval === 'null' || cval === '') {
+    if (cval === '') {
       return {valid: false};
     }
     if (g !== null && cval === g.current) {
@@ -51,7 +51,8 @@ export class GoogleCalendarComponent {
         })
         if (this.google !== null) {
           if (this.google.current === null) {
-            this.google.calendars.unshift({name: 'Please select a calendar', id: null});
+            this.google.current = '';
+            this.google.calendars.unshift({name: 'Please select a calendar', id: ''});
           } else {
             this.updateCalendar.controls['calendar_id'].setValue(this.google.current);
           }
