@@ -38,6 +38,8 @@ import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { CreateFormComponent } from './patrols/create-form/create-form.component';
 import { EmailFormComponent } from './patrols/email-form/email-form.component';
 import { OpenTabComponent } from './patrols/open-tab/open-tab.component';
+import { CprClassesComponent } from './cpr/cprclasses.component';
+import { StudentsComponent } from './cpr/students.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +65,9 @@ import { OpenTabComponent } from './patrols/open-tab/open-tab.component';
     GoogleCalendarComponent,
     CreateFormComponent,
     EmailFormComponent,
-    OpenTabComponent
+    OpenTabComponent,
+    CprClassesComponent,
+    StudentsComponent
   ],
   imports: [
     CommonModule,

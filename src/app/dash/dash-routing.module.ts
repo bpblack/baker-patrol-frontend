@@ -8,6 +8,9 @@ import { RosterComponent } from './roster/roster.component';
 import { AccountComponent } from './account/account.component';
 import { SeasonComponent } from './season/season.component';
 import { DutyDayComponent } from './duty-day/duty-day.component';
+import { CprClassesComponent } from './cpr/cprclasses.component';
+import { StudentsComponent } from './cpr/students.component';
+import { CprInstructorGuard } from '../shared/guards/cprinstructor.guard';
 
 const routes: Routes = [
   {
@@ -24,7 +27,15 @@ const routes: Routes = [
         { path: 'DutyDay/:id', component: DutyDayComponent },
         { path: 'Roster', component: RosterComponent },
         { path: 'Season', component: SeasonComponent },
-        { path: 'Team', component: TeamComponent },
+        { path: 'Team', component: TeamComponent }
+      ]
+    },
+    {
+      path: 'Cpr',
+      canActivateChild: [AuthGuard, CprInstructorGuard],
+      children: [
+        { path: 'Classes', component: CprClassesComponent },
+        { path: 'Students', component: StudentsComponent }
       ]
     }]
   }

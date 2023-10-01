@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, Subject, Subscription, forkJoin, interval, of, startWith, switchMap } from 'rxjs';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { IconDefinition, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faChalkboardUser, faGear, faPowerOff, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
 import { BakerApiService, Role, User } from '../../shared/services/baker-api.service';
 
 @Component({
@@ -14,10 +14,13 @@ import { BakerApiService, Role, User } from '../../shared/services/baker-api.ser
 })
 export class DashComponent implements OnInit, OnDestroy {
   public isAdmin: boolean = false;
+  public cprAdmin: boolean = false;
   public isCollapsed: boolean = true;
   public user: Observable<User>;
   public igear: IconDefinition = faGear;
   public ipower: IconDefinition = faPowerOff;
+  public ischool: IconDefinition = faSchoolFlag;
+  public ichalkboard: IconDefinition = faChalkboardUser;
   @ViewChild('logoutModal') logoutElement: any;
 
   private logoutRef: BsModalRef;
@@ -43,6 +46,9 @@ export class DashComponent implements OnInit, OnDestroy {
       (user: User) => {
         if (user.first_name !== undefined) {
           user.roles.forEach((r: Role) => {
+            if (r.role === 'admin' || r.role === 'cprinstructor') {
+              this.cprAdmin = true;
+            }
             if (this._adminRoles.has(r.role)) {
               if (!('season_id' in r) || +r.season_id! === +user.seasons[0].id) {
                 this.isAdmin = true;

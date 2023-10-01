@@ -1,0 +1,63 @@
+<div class="pt-3">
+  <div *ngIf="cprClasses; else loading" class="card">
+    <div class="card-header">
+      <div class="row gx-2">
+        <div class="col-auto">
+          <div class="input-group">
+            <span class="input-group-text" id="crs">Show Roster:</span>
+            <select class="form-select" (change)="selectClass($event)" id="crs">
+              <option *ngFor="let c of cprClasses; let i = index" value="{{i}}">{{getClassTitle(i)}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col">
+          <a class="btn btn-primary" [href]="classMailLink()">Email Class</a>
+        </div>
+        <div class="col">
+          <form [formGroup]="resize" class="d-flex" (ngSubmit)="onResize()">
+            <div class="input-group me-2">
+              <span class="input-group-text" id="newsize">Resize:</span>
+              <input type="text" [class]="styleResize()" id="newsize" formControlName="size">
+            </div>
+            <button *ngIf="!resized; else resizing" type="submit" class="btn btn-primary" [disabled]="resize.invalid">
+              <fa-icon [icon]="icheck"></fa-icon>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of this.cprClasses[selected].students">
+              <td class="col-6" data-title="Student">{{s.name}}</td>
+              <td data-title="Email"><a href="mailto:{{s.email}}">{{s.email}}</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="card">
+    <div class="card-body">
+      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      Loading cpr class data...
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #resizing>
+  <button type="submit" class="btn btn-primary" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+  </button>
+</ng-template>

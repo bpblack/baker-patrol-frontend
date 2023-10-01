@@ -167,6 +167,21 @@ export interface OpenRequest {
   email: string;
 }
 
+export interface Student {
+  id: number;
+  email: string;
+  name: string;
+}
+
+export interface CprClass {
+  id: number;
+  time: string;
+  students_count: number;
+  class_size: number;
+  location: string;
+  students: Student[];
+}
+
 interface UserNameForm {
   first_name: string;
   last_name: string;
@@ -478,6 +493,21 @@ export class BakerApiService implements IAuthService {
   removeGoogleCalendar(): Observable<boolean> {
     return this.http.delete(this.url + '/google_calendars/destroy', this.defaultOptions()).pipe(
       map(res => true),
+      catchError(this.handleError)
+    );
+  }
+
+  getCprClasses(): Observable<CprClass[]> {
+    return this.http.get<{classes: CprClass[]}>(this.url + '/admin/cpr_classes', this.defaultOptions()).pipe(
+      map(c => c.classes),
+      catchError(this.handleError)
+    );
+  }
+
+  resizeCprClass(classId: number, form: {size: string}): Observable<boolean> {
+    let body = JSON.stringify(form);
+    return this.http.patch<any>(this.url + '/admin/cpr_classes/' + classId + '/resize', body, this.defaultOptions()).pipe(
+      map(r => true),
       catchError(this.handleError)
     );
   }
