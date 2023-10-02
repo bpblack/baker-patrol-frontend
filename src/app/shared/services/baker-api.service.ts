@@ -500,7 +500,7 @@ export class BakerApiService implements IAuthService {
 
   getCprClasses(includeStudents: boolean = false): Observable<CprClass[]> {
     const extra = (includeStudents === true) ? '?students' : '';
-    return this.http.get<{classes: CprClass[]}>(this.url + '/admin/cpr_classes?' + extra, this.defaultOptions()).pipe(
+    return this.http.get<{classes: CprClass[]}>(this.url + '/admin/cpr_classes' + extra, this.defaultOptions()).pipe(
       map(c => c.classes),
       catchError(this.handleError)
     );

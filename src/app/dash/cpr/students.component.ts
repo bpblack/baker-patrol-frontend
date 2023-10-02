@@ -14,11 +14,13 @@ export class StudentsComponent {
   public cprClasses: CprClass[];
   public cprStudents: CprStudent[];
   public cprClassMap: Map<number, string>;
+  public cprStudentMap: Map<number, CprStudent>;
   public searchTerm: string = '';
   public error: string | null = null;
   public disable: boolean = false;
   public igear: IconDefinition = faGear;
   public itriangle: IconDefinition = faTriangleExclamation;
+  public classNameFn: (i: number | null, m: Map<number, string>) => string = StudentsComponent.getClassNameS;
 
   // modals
   public addStudentRef: BsModalRef;
@@ -33,7 +35,8 @@ export class StudentsComponent {
   ngOnInit() {
     forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents()}).pipe(
       finalize(() => {
-        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.location]))
+        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.location]));
+        this.cprStudentMap = new Map<number, CprStudent>(this.cprStudents.map(s => [s.id, s]));
       })  
     ).subscribe({
       next: (r: {c: CprClass[], s: CprStudent[]}) => {
@@ -44,8 +47,12 @@ export class StudentsComponent {
     })
   }
 
-  getClassName(id: number | null) {
-    return id === null ? "Unregistered" : this.cprClassMap.get(id);
+  getClassName(id: number | null): string {
+    return this.classNameFn(id, this.cprClassMap);//id === null ? "Unregistered" : this.cprClassMap.get(id)!;
+  }
+
+  static getClassNameS(id: number | null, cm: Map<number, string>) {
+    return id === null ? "Unregistered" : cm.get(id)!;
   }
 
   showAddStudent() {

@@ -34,7 +34,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let s of cprStudents | searchStudents:searchTerm">
+            <tr *ngFor="let s of cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn">
               <td data-title="Name" class="col-3">{{s.name}}</td>
               <td data-title="Email" class="col-3>">{{s.email}}</td>
               <td data-title="Class" class="col-3">{{getClassName(s.cpr_class_id)}}</td>

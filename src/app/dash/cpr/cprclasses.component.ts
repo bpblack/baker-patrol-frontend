@@ -8,7 +8,7 @@ import { styleControl } from 'src/app/shared/validations/validations';
 function classSizeValidator(val: number): ValidatorFn {
   return (c: AbstractControl): ValidationErrors | null => {
     const cmp: number = +c.value;
-    return (cmp && cmp <= val) ? { sizeTooSmall: true } : null; 
+    return (cmp && cmp < val) ? { sizeTooSmall: true } : null; 
   }
 }
 
@@ -32,7 +32,7 @@ export class CprClassesComponent {
       finalize(() => {
         const cur = this.cprClasses[this.selected];
         this.resize = this._fb.group({
-          size: new FormControl(cur.class_size, [Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.class_size!)])
+          size: new FormControl(cur.class_size, [Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.students_count!)])
         });
       })
     ).subscribe({
@@ -51,7 +51,7 @@ export class CprClassesComponent {
     const cur = this.cprClasses[this.selected];
     this.resize.controls['size'].setValue(cur.class_size);
     this.resize.controls['size'].clearValidators();
-    this.resize.controls['size'].setValidators([Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.class_size!)]);
+    this.resize.controls['size'].setValidators([Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.students_count!)]);
     this.resize.controls['size'].markAsPristine();
   }
 
