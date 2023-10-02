@@ -40,6 +40,7 @@ import { EmailFormComponent } from './patrols/email-form/email-form.component';
 import { OpenTabComponent } from './patrols/open-tab/open-tab.component';
 import { CprClassesComponent } from './cpr/cprclasses.component';
 import { StudentsComponent } from './cpr/students.component';
+import { SearchStudentsPipe } from './cpr/student-search.pipe';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { StudentsComponent } from './cpr/students.component';
     EmailFormComponent,
     OpenTabComponent,
     CprClassesComponent,
+    SearchStudentsPipe,
     StudentsComponent
   ],
   imports: [

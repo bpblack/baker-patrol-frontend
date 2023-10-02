@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { IconDefinition, faCheck, faCheckCircle, faGear } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';
-import { BakerApiService, CprClass, Student } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, CprClass, CprStudent } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
 function classSizeValidator(val: number): ValidatorFn {
@@ -28,11 +28,11 @@ export class CprClassesComponent {
   constructor(private _api: BakerApiService, private _fb: FormBuilder) {}
 
   ngOnInit() {
-    this._api.getCprClasses().pipe(
+    this._api.getCprClasses(true).pipe(
       finalize(() => {
         const cur = this.cprClasses[this.selected];
         this.resize = this._fb.group({
-          size: new FormControl(cur.class_size, [Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.class_size)])
+          size: new FormControl(cur.class_size, [Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.class_size!)])
         });
       })
     ).subscribe({
@@ -51,12 +51,12 @@ export class CprClassesComponent {
     const cur = this.cprClasses[this.selected];
     this.resize.controls['size'].setValue(cur.class_size);
     this.resize.controls['size'].clearValidators();
-    this.resize.controls['size'].setValidators([Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.class_size)]);
+    this.resize.controls['size'].setValidators([Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.class_size!)]);
     this.resize.controls['size'].markAsPristine();
   }
 
   classMailLink() {
-    return 'mailto:?bcc=' + this.cprClasses[this.selected].students.map((s: Student) => s.email).join(',');
+    return 'mailto:?bcc=' + this.cprClasses[this.selected].students!.map((s: CprStudent) => s.email).join(',');
   }
 
   onResize() {

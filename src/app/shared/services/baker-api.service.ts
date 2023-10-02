@@ -167,19 +167,20 @@ export interface OpenRequest {
   email: string;
 }
 
-export interface Student {
+export interface CprStudent {
   id: number;
   email: string;
   name: string;
+  cpr_class_id?: number | null;
 }
 
 export interface CprClass {
   id: number;
   time: string;
-  students_count: number;
-  class_size: number;
+  students_count?: number;
+  class_size?: number;
   location: string;
-  students: Student[];
+  students?: CprStudent[];
 }
 
 interface UserNameForm {
@@ -497,8 +498,9 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-  getCprClasses(): Observable<CprClass[]> {
-    return this.http.get<{classes: CprClass[]}>(this.url + '/admin/cpr_classes', this.defaultOptions()).pipe(
+  getCprClasses(includeStudents: boolean = false): Observable<CprClass[]> {
+    const extra = (includeStudents === true) ? '?students' : '';
+    return this.http.get<{classes: CprClass[]}>(this.url + '/admin/cpr_classes?' + extra, this.defaultOptions()).pipe(
       map(c => c.classes),
       catchError(this.handleError)
     );
@@ -508,6 +510,13 @@ export class BakerApiService implements IAuthService {
     let body = JSON.stringify(form);
     return this.http.patch<any>(this.url + '/admin/cpr_classes/' + classId + '/resize', body, this.defaultOptions()).pipe(
       map(r => true),
+      catchError(this.handleError)
+    );
+  }
+
+  getCprStudents(): Observable<CprStudent[]>{
+    return this.http.get<{students: CprStudent[]}>(this.url + '/admin/students', this.defaultOptions()).pipe(
+      map(r => r.students),
       catchError(this.handleError)
     );
   }

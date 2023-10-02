@@ -1,6 +1,7 @@
 <div class="pt-3">
   <div *ngIf="cprClasses; else loading" class="card">
     <div class="card-header">
+      <!-- TODO: this might need to be a navbar? -->
       <div class="row gx-2">
         <div class="col-auto">
           <div class="input-group">
@@ -36,7 +37,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let s of this.cprClasses[selected].students">
+            <tr *ngFor="let s of this.cprClasses[selected].students!">
               <td class="col-6" data-title="Student">{{s.name}}</td>
               <td data-title="Email"><a href="mailto:{{s.email}}">{{s.email}}</a></td>
             </tr>

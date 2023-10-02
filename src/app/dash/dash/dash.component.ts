@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subject, Subscription, forkJoin, interval, of, startWith, switchMap } from 'rxjs';
+import { Observable, Subscription, interval, of, startWith, switchMap } from 'rxjs';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { IconDefinition, faChalkboardUser, faGear, faPowerOff, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +9,6 @@ import { BakerApiService, Role, User } from '../../shared/services/baker-api.ser
 @Component({
   selector: 'baker-patrol-dash',
   templateUrl: './dash.component.html',
-  //styleUrls: ['./dash.component.css'],
   providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
 })
 export class DashComponent implements OnInit, OnDestroy {

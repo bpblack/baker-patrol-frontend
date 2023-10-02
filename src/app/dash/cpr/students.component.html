@@ -1,1 +1,89 @@
-<p>students works!</p>
+<div class="pt-3">
+  <div *ngIf="cprClasses; else loading" class="card">
+    <div class="card-header">
+      <div class="row gx-2">
+        <div class="col-auto">
+          <h2>CPR Students</h2>
+        </div>
+        <div class="col">
+          <div class="btn-group" dropdown>
+            <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
+              Actions&nbsp;<span class="caret"></span>
+            </button>
+            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+                role="menu" aria-labelledby="button-basic">
+              <li role="menuitem"><a class="dropdown-item" (click)="showAddStudent()">Add a student</a></li>
+              <li role="menuitem"><a class="dropdown-item" (click)="showSendReminders()">Send reminders</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="container">
+        <div *ngIf="cprStudents.length > 0; else nodisplay" class="row">
+          <baker-search *ngIf="cprStudents.length > 0" (update)="searchTerm = $event"></baker-search>
+        </div>
+        <div class="row"></div>
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th class="col-md-3">Name</th>
+              <th class="col-md-3">Email</th>
+              <th class="col-md-3">Class</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of cprStudents | searchStudents:searchTerm">
+              <td data-title="Name" class="col-3">{{s.name}}</td>
+              <td data-title="Email" class="col-3>">{{s.email}}</td>
+              <td data-title="Class" class="col-3">{{getClassName(s.cpr_class_id)}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="card">
+    <div class="card-body">
+      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      Loading cpr class data...
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #nodisplay>
+  <div class="row">
+    <alert type="danger">
+      <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+     Student roster is empty!
+    </alert>
+  </div>
+</ng-template>
+
+<ng-template #addStudentModal>
+  <div class="modal-header">
+    <h4 id="dialog-static-name" class="modal-title pull-left">Add a student</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="hideAddStudent()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    TODO Add student form goes here
+  </div>
+</ng-template>
+
+<ng-template #sendRemindersModal>
+  <div class="modal-header">
+    <h4 id="dialog-static-name" class="modal-title pull-left">Send reminder emails</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="hideSendReminders()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    TODO send reminders button
+  </div>
+</ng-template>
