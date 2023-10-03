@@ -75,7 +75,7 @@
 </ng-template>
 
 <ng-template let-patrol="patrol" let-i="i" #swapLink>
-  <a *ngIf="swapRow !== i; else swapForm" (click)="setSwapRow(i)" class="baker-inline">
+  <a *ngIf="swapRow !== i; else swapForm" class="link-secondary" (click)="setSwapRow(i)">
     {{patrol.responsibility.name}}
   </a>
 </ng-template>
