@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';
@@ -29,20 +29,21 @@ function nameValidator(fn: string, ln: string): ValidatorFn {
 export class UpdateNameComponent {
   public message: Result | null = null;
   public submitted: boolean = false;
-  public updateName: FormGroup;
   public igear: IconDefinition = faGear;
   @Input() firstName: string = '';
   @Input() lastName: string = '';
 
+  //forms
+  public updateName: FormGroup = this._fb.group({
+    first_name: new FormControl('', Validators.compose([Validators.required, Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")])),
+    last_name: new FormControl('', Validators.compose([Validators.required,Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")]))
+  });
+
   constructor(private _api: BakerApiService, private _fb: FormBuilder) { }
 
-  ngOnInit() {
-    this.updateName = this._fb.group({
-      first_name: new FormControl('', Validators.compose([Validators.required, Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")])),
-      last_name: new FormControl('', Validators.compose([Validators.required,Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")]))
-    }, {
-      validators: nameValidator(this.firstName, this.lastName)
-    });
+  ngOnChanges(c: SimpleChanges) {
+    this.updateName.clearValidators();
+    this.updateName.addValidators(nameValidator(this.firstName, this.lastName));
   }
 
   get firstNameInput() { return this.updateName.controls['first_name']; }
@@ -65,7 +66,9 @@ export class UpdateNameComponent {
     this.submitted = true;
     this.message = null;
     this._api.updateUser(this.updateName.value).pipe(
-      finalize(() => this.submitted = false)
+      finalize(() => {
+        this.submitted = false;
+      })
     ).subscribe({
       next: (b: boolean) => { 
         this.updateName.reset();

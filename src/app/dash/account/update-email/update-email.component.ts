@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IconDefinition, faAt, faGear } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';
@@ -19,15 +19,18 @@ export class UpdateEmailComponent {
   public message: Result | null = null;
   public iat: IconDefinition = faAt;
   public igear: IconDefinition= faGear;
-  public updateEmail: FormGroup;
   @Input({required: true}) email: string = '';
+
+  //formts
+  public updateEmail: FormGroup = this._fb.group({
+    email: new FormControl('')
+  });
   
   constructor(private _api: BakerApiService, private _fb: FormBuilder) { }
 
-  ngOnInit() {
-    this.updateEmail = this._fb.group({
-      email: new FormControl('', Validators.compose([Validators.required, Validators.email, differenceValidator(this.email)]))
-    });
+  ngOnChanges(c: SimpleChanges) {
+    this.updateEmail.controls['email'].clearValidators();
+    this.updateEmail.controls['email'].addValidators([Validators.required, Validators.email, differenceValidator(this.email)]);
   }
 
   emailValid(): boolean {

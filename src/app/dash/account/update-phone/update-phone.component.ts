@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { IconDefinition, faGear, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';
@@ -19,19 +19,22 @@ export class UpdatePhoneComponent {
   public message: Result | null = null;
   public igear: IconDefinition= faGear;
   public iphone: IconDefinition = faPhone;
-  public updatePhone: FormGroup;
   @Input({required: true}) phone: string = '';
   
+  // forms
+  public updatePhone: FormGroup = this._fb.group({
+    phone: new FormControl('')
+  });
+
   constructor(private _api: BakerApiService, private _fb: FormBuilder) { }
 
-  ngOnInit() {
-    this.updatePhone = this._fb.group({
-      phone: new FormControl('', Validators.compose([
-        Validators.required, 
-        Validators.pattern("^\\([1-9][0-9]{2}\\)[1-9][0-9]{2}\\-[0-9]{4}$"),
-        differenceValidator(this.phone)
-      ]))
-    });
+  ngOnChange(c: SimpleChanges) {
+    this.updatePhone.controls['phone'].clearValidators();
+    this.updatePhone.controls['phone'].addValidators([
+      Validators.required, 
+      Validators.pattern("^\\([1-9][0-9]{2}\\)[1-9][0-9]{2}\\-[0-9]{4}$"),
+      differenceValidator(this.phone)
+    ]);
   }
 
   phoneValid(): boolean {
