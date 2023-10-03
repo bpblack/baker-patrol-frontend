@@ -21,7 +21,7 @@ export class UpdateEmailComponent {
   public igear: IconDefinition= faGear;
   @Input({required: true}) email: string = '';
 
-  //formts
+  // formts
   public updateEmail: FormGroup = this._fb.group({
     email: new FormControl('')
   });

@@ -33,7 +33,7 @@ export class UpdateNameComponent {
   @Input() firstName: string = '';
   @Input() lastName: string = '';
 
-  //forms
+  // forms
   public updateName: FormGroup = this._fb.group({
     first_name: new FormControl('', Validators.compose([Validators.required, Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")])),
     last_name: new FormControl('', Validators.compose([Validators.required,Validators.minLength(2), Validators.pattern("^[a-zA-Z].*")]))
@@ -70,7 +70,7 @@ export class UpdateNameComponent {
         this.submitted = false;
       })
     ).subscribe({
-      next: (b: boolean) => { 
+      next: (b: boolean) => {
         this.updateName.reset();
         this.message = {type: 'success', msg: 'Successfully updated your name.'}; 
       },

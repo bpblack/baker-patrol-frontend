@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Observable, throwError, ReplaySubject} from 'rxjs';
-import { catchError, first, map, mergeMap } from 'rxjs/operators';
+import { catchError, concatMap, finalize, first, map, mergeMap } from 'rxjs/operators';
 import { IAuthService } from './iauth.service';
 import { tokenGetter } from 'src/app/app.module';
 import { environment } from 'src/environments/environment';
@@ -244,10 +244,11 @@ export class BakerApiService implements IAuthService {
   private didLogin: boolean = false;
   private jwtHelper: JwtHelperService = new JwtHelperService();
   private _currentUser: ReplaySubject<User>;
-  private _currentUserActual: User;
+  private _currentUserActual: User | null;
 
   constructor(private http: HttpClient) {
     this._currentUser = new ReplaySubject(1);
+    this._currentUserActual = null;
   }
 
   log(...data: any[]) {
@@ -261,7 +262,12 @@ export class BakerApiService implements IAuthService {
 
   get currentUser(): ReplaySubject<User> {
     if (this.isLoggedIn() && !this.didLogin) {
-      this.getCurrentUser();
+      this.http.get<User>(this.url + '/users/' + this.currentUserId() + '/extra', this.defaultOptions()).pipe( 
+        catchError(this.handleError)
+      ).subscribe((u: User) => {
+        this._currentUser.next(u);
+        this._currentUserActual = u;
+      });
       this.didLogin = true;
     }
     return this._currentUser;
@@ -278,11 +284,15 @@ export class BakerApiService implements IAuthService {
       'auth': l
     });
     const ret = this.http.post<UserToken>(this.url + '/user_token', body, this.defaultOptions()).pipe(
-      map(res => { 
+      concatMap(res => { 
         localStorage.setItem('id_token', res.jwt); 
-        this.getCurrentUser(); 
-        return true;
+        return this.http.get<User>(this.url + '/users/' + this.currentUserId() + '/extra', this.defaultOptions());
       }),
+      map((u: User) => {
+        this._currentUser.next(u);
+        this._currentUserActual = u;
+        return true;
+      }), 
       catchError(this.handleError)
     );
     return ret;
@@ -290,6 +300,10 @@ export class BakerApiService implements IAuthService {
 
   logout() {
     localStorage.removeItem('id_token');
+    this.didLogin = false;
+    this._currentUser.complete();
+    this._currentUser = new ReplaySubject(1);
+    this._currentUserActual = null;
   }
 
   forgot(email: string): Observable<boolean> {
@@ -442,23 +456,31 @@ export class BakerApiService implements IAuthService {
   }
 
   updateUser(form: UserNameForm | UserEmailForm | UserPhoneForm | UserPasswordForm, userId: number = this.currentUserId()): Observable<boolean> {
+    let needsUpdate: boolean = false;
+    const update = () => {
+      this.log("Updating user");
+      if (needsUpdate) {
+        if((<UserNameForm>form).first_name !== undefined) {
+          this._currentUserActual!.first_name = (<UserNameForm>form).first_name;
+          this._currentUserActual!.last_name = (<UserNameForm>form).last_name;
+          this._currentUser.next(this._currentUserActual!);
+        } else if ((<UserEmailForm>form).email !== undefined) {
+          this._currentUserActual!.email = (<UserEmailForm>form).email;
+          this._currentUser.next(this._currentUserActual!);
+        } else if ((<UserPhoneForm>form).phone !== undefined) {
+          this._currentUserActual!.phone = (<UserPhoneForm>form).phone;
+          this._currentUser.next(this._currentUserActual!);
+        }
+      }
+    };
     let body = JSON.stringify(form);
     return this.http.patch(this.url + '/users/' + userId, body, this.defaultOptions()).pipe(
       map (res => {
-        if((<UserNameForm>form).first_name !== undefined) {
-          this._currentUserActual.first_name = (<UserNameForm>form).first_name;
-          this._currentUserActual.last_name = (<UserNameForm>form).last_name;
-          this._currentUser.next(this._currentUserActual);
-        } else if ((<UserEmailForm>form).email !== undefined) {
-          this._currentUserActual.email = (<UserEmailForm>form).email;
-          this._currentUser.next(this._currentUserActual);
-        } else if ((<UserPhoneForm>form).phone !== undefined) {
-          this._currentUserActual.phone = (<UserPhoneForm>form).phone;
-          this._currentUser.next(this._currentUserActual);
-        }
+        needsUpdate = true;
         return true;
       }),
-      catchError(this.handleError)
+      catchError(this.handleError),
+      finalize(() => update())
     );
   }
 
@@ -508,7 +530,7 @@ export class BakerApiService implements IAuthService {
 
   resizeCprClass(classId: number, form: {size: string}): Observable<boolean> {
     let body = JSON.stringify(form);
-    return this.http.patch<any>(this.url + '/admin/cpr_classes/' + classId + '/resize', body, this.defaultOptions()).pipe(
+    return this.http.patch<any>(this.url + '/admin/cpr_classes/' + classId, body, this.defaultOptions()).pipe(
       map(r => true),
       catchError(this.handleError)
     );
@@ -531,15 +553,6 @@ export class BakerApiService implements IAuthService {
   private currentUserId() : number {
     let token = tokenGetter();
     return token !== null ? this.jwtHelper.decodeToken(token).sub : -1;
-  }
-
-  private getCurrentUser() {
-    this.http.get<User>(this.url + '/users/' + this.currentUserId() + '/extra', this.defaultOptions()).pipe(
-      catchError(this.handleError)
-    ).subscribe(res => {
-      this._currentUserActual = res;
-      this._currentUser.next(res);
-    });
   }
 
   private handleError(error: HttpErrorResponse) {
