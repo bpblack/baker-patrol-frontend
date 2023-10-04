@@ -31,8 +31,8 @@
         <div *ngIf="showRemove" class="row g-2">
           <alert type="warning" [dismissible]="false">
             <fa-icon [icon]="icons.info"></fa-icon>&nbsp;
-            Select the unregistered students you want to remove from the students list and then click the remove button at the bottom of the students table.&nbsp;
-            You can unregister students as you are selecting them for removal.
+            Only students who have not registered for a class can be removed. You can unregister students from a class while in remove mode.&nbsp;
+            Please select the students you want to remove from the list and then click the remove button at the bottom of the table.&nbsp;
             <br><br>
             <button class="btn btn-secondary btn-block" (click)="hideRemoveStudents()" [disabled]="disable.removed || disable.changed">
               Exit remove mode
