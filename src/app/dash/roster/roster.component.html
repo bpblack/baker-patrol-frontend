@@ -12,7 +12,7 @@
           <accordion [isAnimated]="true">
             <accordion-group *ngFor="let team of roster | searchRoster:searchTerm" heading="{{team.name}}" [isOpen]="team.members.length > 0">
               <div class="table-responsive">
-                <table class="table table-bordered table-hover">
+                <table class="table table-bordered table-hover align-middle">
                   <thead>
                     <tr>
                       <th class="col-md-3">Name</th>
