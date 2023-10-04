@@ -6,7 +6,7 @@
     <div class="card-body">
       <div class="container">
         <div *ngIf="roster.length > 0; else nodisplay" class="row">
-          <baker-search *ngIf="roster.length > 0" (update)="searchTerm = $event"></baker-search>
+          <baker-search *ngIf="roster.length > 0" [(term)]="searchTerm"></baker-search>
         </div>
         <div class="row">
           <accordion [isAnimated]="true">

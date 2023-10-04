@@ -6,7 +6,7 @@
     <div *ngIf="dutyDays.length > 0; else nodisplay" class="card-body">
       <div class="container">
         <div class="row">
-          <baker-search *ngIf="dutyDays.length > 0" (update)="searchTerm = $event"></baker-search>
+          <baker-search *ngIf="dutyDays.length > 0" [(term)]="searchTerm"></baker-search>
         </div>
         <div class="row">
           <div class="table-responsive">

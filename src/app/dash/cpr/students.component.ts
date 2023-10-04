@@ -1,11 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { IconDefinition, faAt, faCheck, faGear, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faAt, faCheck, faCircleInfo, faGear, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { finalize, forkJoin } from 'rxjs';
 import { BakerApiService, CprClass, CprStudent } from 'src/app/shared/services/baker-api.service';
-import { idSelectionValidator, noMatchValidator, styleControl } from 'src/app/shared/validations/validations';
+import { styleControl } from 'src/app/shared/validations/validations';
 
 function cprClassValidator(id: number | null): ValidatorFn {
   return (c: AbstractControl): ValidationErrors | null => {
@@ -30,15 +30,12 @@ export class StudentsComponent {
   public cprClassMap: Map<number, string>;
   public cprStudentMap: Map<number, CprStudent>;
   public searchTerm: string = '';
+  public showRemove: boolean = false;
   public error: StudentMessages = {main: null, add: null, remind: null};
   public success: StudentMessages = {main: null, add: null, remind: null};
-  public disable = {added: false, reminded: false, changed: false }
+  public disable = {added: false, removed: false, reminded: false, changed: false }
   public showChange: {b: boolean, s: CprStudent | null, idx: number | null} = {b: false, s: null, idx: null};
-  public iat: IconDefinition = faAt;
-  public igear: IconDefinition = faGear;
-  public icheck: IconDefinition = faCheck;
-  public ixmark: IconDefinition = faXmark;
-  public itriangle: IconDefinition = faTriangleExclamation;
+  public icons = {at: faAt, info: faCircleInfo, gear: faGear, check: faCheck, x: faXmark, tri: faTriangleExclamation};
   public classNameFn: (i: number | null, m: Map<number, string>) => string = StudentsComponent.getClassNameS;
 
   // modals
@@ -54,6 +51,7 @@ export class StudentsComponent {
     last_name: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email])
   });
+  public removeStudentsForm: FormGroup = this._fb.group({});
   //public changeStudentEmailForm: FormGroup;
   public changeClassForm: FormGroup;
 
@@ -116,6 +114,9 @@ export class StudentsComponent {
         this.cprStudentMap.set(s.id, s);
         this.success.add = 'Added new student ' + s.first_name + ' ' + s.last_name + ' => ' + s.email; 
         this.addStudentForm.reset();
+        if (this.showRemove) {
+          this.removeStudentsForm.addControl(s.id.toString(), new FormControl({value: false, disabled: false}));
+        }
       },
       error: (e: Error) => this.error.add = e.message
     })
@@ -123,6 +124,52 @@ export class StudentsComponent {
 
   hideAddStudent() {
     this.addStudentRef.hide();
+  }
+
+  resetRemoveForm() {
+    // reset the checkbox controls for the current list of students
+    this.removeStudentsForm = this._fb.group({});
+    const rcs = this.cprStudents.forEach((s: CprStudent) => {
+      this.removeStudentsForm.addControl(s.id.toString(), new FormControl({value: false, disabled: s.cpr_class_id !== null}));
+    });
+  }
+
+  showRemoveStudents() {
+    this.showRemove = true;
+    this.resetRemoveForm();
+  }
+
+  onRemoveStudents() {
+    this.disable.removed = true;
+    const removeIds: number[] = this.cprStudents.reduce<number[]>((a: number[], s: CprStudent) => {
+      if (this.removeStudentsForm.controls[s.id.toString()].value === true) {
+        a.push(s.id);
+      }
+      return a;
+    }, []);
+    this._api.removeCprStudents(removeIds).pipe(
+      finalize(() => this.disable.removed = false)
+    ).subscribe({
+      next: (b: boolean) => {
+        // remove the students
+        removeIds.forEach((rid: number) => {
+          this.cprStudentMap.delete(rid);
+          const idx = this.cprStudents.findIndex((s: CprStudent) => s.id === rid);
+          if (idx >= 0) {
+            this.cprStudents.splice(idx, 1);
+          }
+        });
+        // reset the remove form
+        this.resetRemoveForm()
+        // reset the filter
+        this.searchTerm = '';
+      },
+      error: (e: Error) => this.error.main = e.message
+    });
+  }
+
+  hideRemoveStudents() {
+    this.showRemove = false;
   }
 
   showSendReminders() {
@@ -164,19 +211,31 @@ export class StudentsComponent {
   onChangeClass() {
     this.disable.changed = true;
     const fv = this.changeClassForm.value;
+    const s: CprStudent = this.showChange.s!;
     if (fv.cpr_class_id === 'null') {
       // gets converted to a string by form, convert back to null
       fv.cpr_class_id = null;
+    } else {
+      // convert back to a number
+      fv.cpr_class_id = +fv.cpr_class_id;
     }
-    this._api.changeCprClass(this.showChange.s!.id, this.changeClassForm.value).pipe(
+    this._api.changeCprClass(s.id, this.changeClassForm.value).pipe(
       finalize(() => this.disable.changed = false)
     ).subscribe({
       next: (b: boolean) => {
-        const cci = this.changeClassForm.controls['cpr_class_id'].value;
-        if (cci === null || cci === "null") {
-          this.showChange.s!.cpr_class_id = null;
+        const cci = fv.cpr_class_id;
+        if (cci === null) {
+          if (this.showRemove) {
+            this.removeStudentsForm.controls[s.id.toString()].enable();
+          }
+          s.cpr_class_id = null;
         } else {
-          this.showChange.s!.cpr_class_id = +cci;
+          if (this.showRemove) {
+            let rsfc = this.removeStudentsForm.controls[s.id.toString()];
+            rsfc.disable()
+            rsfc.setValue(false);
+          }
+          s.cpr_class_id = cci;
         }
         this.hideChangeClass();
       },

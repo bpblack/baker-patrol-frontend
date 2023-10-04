@@ -556,6 +556,13 @@ export class BakerApiService implements IAuthService {
     );
   }
 
+  removeCprStudents(ids: number[]): Observable<boolean> {
+    return this.http.post<any>(this.url + '/admin/students/remove', JSON.stringify({remove_list: ids}), this.defaultOptions()).pipe(
+      map(r => true),
+      catchError(this.handleError)
+    )
+  }
+
   changeCprClass(studentId: number, f: {cpr_class_id: string}): Observable<boolean> {
     return this.http.patch<any>(this.url + '/admin/students/' + studentId, JSON.stringify(f), this.defaultOptions()).pipe(
       map(r => true),

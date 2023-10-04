@@ -1,13 +1,10 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 
 @Component({
   selector: 'baker-search',
   templateUrl: './search.component.html' 
 })
-export class SearchComponent implements OnInit {
-  @Output() update = new EventEmitter();
-
-  ngOnInit() {
-    this.update.emit('');
-  }
+export class SearchComponent {
+  @Input() term!: string;
+  @Output() termChange = new EventEmitter<string>();
 }

@@ -13,6 +13,7 @@
             <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
                 role="menu" aria-labelledby="button-basic">
               <li role="menuitem"><a class="dropdown-item" (click)="showAddStudent()">Add a student</a></li>
+              <li role="menuitem"><a class="dropdown-item" (click)="showRemoveStudents()">Remove students</a></li>
               <li role="menuitem"><a class="dropdown-item" (click)="showSendReminders()">Send reminders</a></li>
             </ul>
           </div>
@@ -23,36 +24,60 @@
       <div class="container">
         <div *ngIf="error.main" class="row g-2">
           <alert type="danger" [dismissible]="true" (click)="clearMainMessage(error)">
-            <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+            <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
             {{error.main}}
           </alert>
         </div>
+        <div *ngIf="showRemove" class="row g-2">
+          <alert type="warning" [dismissible]="false">
+            <fa-icon [icon]="icons.info"></fa-icon>&nbsp;
+            Select the unregistered students you want to remove from the students list and then click the remove button at the bottom of the students table.&nbsp;
+            You can unregister students as you are selecting them for removal.
+            <br><br>
+            <button class="btn btn-secondary btn-block" (click)="hideRemoveStudents()" [disabled]="disable.removed || disable.changed">
+              Exit remove mode
+            </button>
+          </alert>
+        </div>
         <div *ngIf="cprStudents.length > 0; else nodisplay" class="row g-2">
-          <baker-search *ngIf="cprStudents.length > 0" (update)="searchTerm = $event"></baker-search>
+          <baker-search *ngIf="cprStudents.length > 0" [(term)]="searchTerm"></baker-search>
         </div>
         <div class="row g-2">
-          <table class="table table-bordered table-hover align-middle">
-            <thead>
-              <tr>
-                <th class="col-md-2">Name</th>
-                <th class="col-md-2">Email</th>
-                <th class="col-md-3">Class (click to change)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let s of cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn; let i = index">
-                <td data-title="Name">{{s.first_name}} {{s.last_name}}</td>
-                <td data-title="Email">
-                  <a [href]="'mailto:' + s.email">{{s.email}}</a>
-                </td>
-                <td data-title="Class">
-                  <a *ngIf="!showChange.b || showChange.idx !== i; else showingChange" class="link-secondary" (click)="showChangeClass(s.id, i)">
-                    {{getClassName(s.cpr_class_id)}}
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <form [formGroup]="removeStudentsForm" (ngSubmit)="onRemoveStudents()">
+            <table class="table table-bordered table-hover align-middle">
+              <thead>
+                <tr>
+                  <th class="col-md-2">Name</th>
+                  <th class="col-md-2">Email</th>
+                  <th class="col-md-3">Class (click to change)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let s of cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn; let i = index">
+                  <td data-title="Name">
+                    <input *ngIf="showRemove" type="checkbox" [formControlName]="s.id.toString()">
+                    {{s.first_name}} {{s.last_name}}
+                  </td>
+                  <td data-title="Email">
+                    <a [href]="'mailto:' + s.email">{{s.email}}</a>
+                  </td>
+                  <td data-title="Class">
+                    <a *ngIf="!showChange.b || showChange.idx !== i; else showingChange" class="link-secondary" (click)="showChangeClass(s.id, i)">
+                      {{getClassName(s.cpr_class_id)}}
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+              <div *ngIf="showRemove" class="my-2">
+                  <button *ngIf="!disable.removed; else removing" type="submit" class="btn btn-primary btn-block" [disabled]="disable.changed">
+                    Remove students
+                  </button>
+                  <button class="btn btn-secondary btn-block ms-2" (click)="hideRemoveStudents()" [disabled]="disable.changed || disable.removed">
+                    Exit remove mode
+                  </button>
+              </div>
+            </table>
+          </form>
         </div>
       </div>
     </div>
@@ -62,7 +87,7 @@
 <ng-template #loading>
   <div class="card">
     <div class="card-body">
-      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
       Loading cpr class data...
     </div>
   </div>
@@ -71,10 +96,17 @@
 <ng-template #nodisplay>
   <div class="row">
     <alert type="danger">
-      <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+      <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
      Student roster is empty!
     </alert>
   </div>
+</ng-template>
+
+<ng-template #removing>
+  <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
+    Removing students...
+  </button>
 </ng-template>
 
 <ng-template #addStudentModal>
@@ -88,7 +120,7 @@
     <form [formGroup]="addStudentForm" class="row g-2" (ngSubmit)="onAddStudent()">
       <div *ngIf="error.add" class="row g-2">
         <alert type="danger" [dismissible]="true" (click)="clearAddMessage(error)">
-          <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+          <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
           {{error.add}}
         </alert>
       </div>
@@ -113,7 +145,7 @@
       </div>
       <div class="row g-2">
         <div class="input-group">
-          <span class="input-group-text" id="em"><fa-icon [icon]="iat"></fa-icon></span>
+          <span class="input-group-text" id="em"><fa-icon [icon]="icons.at"></fa-icon></span>
           <input type="text" [class]="styleControl(studentControls['email'])"  formControlName="email" aria-describedby="em" placeholder="Email (required)">
         </div>
       </div>
@@ -128,7 +160,7 @@
 
 <ng-template #adding>
   <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
     Creating Student...
   </button>
 </ng-template>
@@ -143,7 +175,7 @@
   <div class="modal-body">
     <div *ngIf="error.remind" class="row g-2">
       <alert [dismissible]="true" type="danger" (click)="clearSendReminders(error)">
-        <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+        <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
         {{error.remind}}
       </alert>
     </div>
@@ -163,7 +195,7 @@
 
 <ng-template #reminding>
   <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>
     Sending reminders...
   </button>
 </ng-template>
@@ -177,13 +209,13 @@
       </select>
     </div>
     <div class="col">
-      <button *ngIf="!disable.changed; else changing" type="submit" class="btn btn-primary btn-sm" [disabled]="changeClassForm.invalid || disable.changed">
-        <fa-icon [icon]="icheck"></fa-icon>
+      <button *ngIf="!disable.changed; else changing" type="submit" class="btn btn-primary btn-sm" [disabled]="changeClassForm.invalid || disable.changed || disable.removed">
+        <fa-icon [icon]="icons.check"></fa-icon>
       </button>
     </div>
     <div class="col">
       <button class="btn btn-secondary btn-sm" (click)="hideChangeClass()" [disabled]="disable.changed">
-        <fa-icon [icon]="ixmark"></fa-icon>
+        <fa-icon [icon]="icons.x"></fa-icon>
       </button>
     </div>
   </form>
@@ -191,6 +223,6 @@
 
 <ng-template #changing>
   <button class="btn btn-primary btn-sm" [disabled]="true">
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>
   </button>
 </ng-template>
