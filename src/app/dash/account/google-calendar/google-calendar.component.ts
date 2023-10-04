@@ -81,7 +81,7 @@ export class GoogleCalendarComponent {
     this._api.authorizeGoogleCalendar().pipe(
       finalize(() => this.added = false)
     ).subscribe({
-      next: (auth: GoogleAuth) => window.open(auth.uri, '_blank'),
+      next: (auth: GoogleAuth) => window.location.href = auth.uri,
       error: (e: Error) => this.message = {type: 'danger', msg: e.message}
     })
   }
