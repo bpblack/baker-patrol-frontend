@@ -21,26 +21,39 @@
     </div>
     <div class="card-body">
       <div class="container">
-        <div *ngIf="cprStudents.length > 0; else nodisplay" class="row">
+        <div *ngIf="error.main" class="row g-2">
+          <alert type="danger" [dismissible]="true" (click)="clearMainMessage(error)">
+            <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+            {{error.main}}
+          </alert>
+        </div>
+        <div *ngIf="cprStudents.length > 0; else nodisplay" class="row g-2">
           <baker-search *ngIf="cprStudents.length > 0" (update)="searchTerm = $event"></baker-search>
         </div>
-        <div class="row"></div>
-        <table class="table table-bordered table-hover">
-          <thead>
-            <tr>
-              <th class="col-md-3">Name</th>
-              <th class="col-md-3">Email</th>
-              <th class="col-md-3">Class</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let s of cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn">
-              <td data-title="Name" class="col-3">{{s.name}}</td>
-              <td data-title="Email" class="col-3>">{{s.email}}</td>
-              <td data-title="Class" class="col-3">{{getClassName(s.cpr_class_id)}}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="row g-2">
+          <table class="table table-bordered table-hover align-middle">
+            <thead>
+              <tr>
+                <th class="col-md-2">Name</th>
+                <th class="col-md-2">Email</th>
+                <th class="col-md-3">Class (click to change)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn; let i = index">
+                <td data-title="Name">{{s.first_name}} {{s.last_name}}</td>
+                <td data-title="Email">
+                  <a [href]="'mailto:' + s.email">{{s.email}}</a>
+                </td>
+                <td data-title="Class">
+                  <a *ngIf="!showChange.b || showChange.idx !== i; else showingChange" class="link-secondary" (click)="showChangeClass(s.id, i)">
+                    {{getClassName(s.cpr_class_id)}}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -67,23 +80,117 @@
 <ng-template #addStudentModal>
   <div class="modal-header">
     <h4 id="dialog-static-name" class="modal-title pull-left">Add a student</h4>
-    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="hideAddStudent()">
+    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable.added" (click)="hideAddStudent()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    TODO Add student form goes here
+    <form [formGroup]="addStudentForm" class="row g-2" (ngSubmit)="onAddStudent()">
+      <div *ngIf="error.add" class="row g-2">
+        <alert type="danger" [dismissible]="true" (click)="clearAddMessage(error)">
+          <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+          {{error.add}}
+        </alert>
+      </div>
+      <div *ngIf="success.add" class="row g-2">
+        <alert type="success" [dismissible]="true" (click)="clearAddMessage(success)">
+          {{success.add}}
+        </alert>
+      </div>
+      <div class="row g-2">
+        <div class="col">
+          <div class="input-group">
+            <span class="input-group-text" id="fn">First</span>
+            <input type="text" [class]="styleControl(studentControls['first_name'])" formControlName="first_name" aria-describedby="fn" placeholder="First Name (required)">
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <span class="input-group-text" id="ln">Last</span>
+            <input type="text" [class]="styleControl(studentControls['last_name'])" formControlName="last_name" aria-describedby="ln" placeholder="Last Name (required)">
+          </div>
+        </div>
+      </div>
+      <div class="row g-2">
+        <div class="input-group">
+          <span class="input-group-text" id="em"><fa-icon [icon]="iat"></fa-icon></span>
+          <input type="text" [class]="styleControl(studentControls['email'])"  formControlName="email" aria-describedby="em" placeholder="Email (required)">
+        </div>
+      </div>
+      <div class="row g-2">
+        <div class="input-group">
+          <button *ngIf="!disable.added; else adding" type="submit" class="btn btn-primary btn-block" [disabled]="!addStudentForm.valid">Create Student</button>
+        </div>
+      </div>
+    </form>
   </div>
+</ng-template>
+
+<ng-template #adding>
+  <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    Creating Student...
+  </button>
 </ng-template>
 
 <ng-template #sendRemindersModal>
   <div class="modal-header">
     <h4 id="dialog-static-name" class="modal-title pull-left">Send reminder emails</h4>
-    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="hideSendReminders()">
+    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable.reminded" (click)="hideSendReminders()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    TODO send reminders button
+    <div *ngIf="error.remind" class="row g-2">
+      <alert [dismissible]="true" type="danger" (click)="clearSendReminders(error)">
+        <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+        {{error.remind}}
+      </alert>
+    </div>
+    <div *ngIf="success.remind" class="row g-2">
+      <alert [dismissible]="true" type="success" (click)="clearSendReminders(success)">{{success.remind}}</alert>
+    </div>
+    <div class="row align-items-center g-2">
+      <div class="col-auto">
+        Do you want to send reminder emails now?
+      </div>
+      <div class="col">
+        <button *ngIf="!disable.reminded; else reminding" type="submit" class="btn btn-primary btn-block" (click)="onSendReminders()">Yes</button>
+      </div>
+    </div>
   </div>
+</ng-template>
+
+<ng-template #reminding>
+  <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+    Sending reminders...
+  </button>
+</ng-template>
+
+<ng-template #showingChange>
+  <form class="row row-cols-auto gx-1 align-items-start" [formGroup]="changeClassForm" (ngSubmit)="onChangeClass()">
+    <div class="col">
+      <select class="form-select form-select-sm" formControlName="cpr_class_id">
+        <option [value]="null" [disabled]="showChange.s!.cpr_class_id === null">Uregistered</option>
+        <option *ngFor="let c of cprClasses" [value]="c.id" [disabled]="c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count">{{c.time}} @ {{c.location}}</option>
+      </select>
+    </div>
+    <div class="col">
+      <button *ngIf="!disable.changed; else changing" type="submit" class="btn btn-primary btn-sm" [disabled]="changeClassForm.invalid || disable.changed">
+        <fa-icon [icon]="icheck"></fa-icon>
+      </button>
+    </div>
+    <div class="col">
+      <button class="btn btn-secondary btn-sm" (click)="hideChangeClass()" [disabled]="disable.changed">
+        <fa-icon [icon]="ixmark"></fa-icon>
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #changing>
+  <button class="btn btn-primary btn-sm" [disabled]="true">
+    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+  </button>
 </ng-template>

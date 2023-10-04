@@ -1,8 +1,7 @@
 <div class="pt-3">
   <div *ngIf="cprClasses; else loading" class="card">
     <div class="card-header">
-      <!-- TODO: this might need to be a navbar? -->
-      <div class="row gx-2">
+      <div class="row g-2">
         <div class="col-auto">
           <div class="input-group">
             <span class="input-group-text" id="crs">Show Roster:</span>
@@ -17,10 +16,10 @@
         <div class="col">
           <form [formGroup]="resize" class="d-flex" (ngSubmit)="onResize()">
             <div class="input-group me-2">
-              <span class="input-group-text" id="newsize">Resize:</span>
+              <span class="input-group-text" id="newsize">Size</span>
               <input type="text" [class]="styleResize()" id="newsize" formControlName="size">
             </div>
-            <button *ngIf="!resized; else resizing" type="submit" class="btn btn-primary" [disabled]="resize.invalid">
+            <button *ngIf="!resized; else resizing" type="submit" class="btn btn-primary" [disabled]="resize.invalid || size === cprClasses[selected].class_size">
               <fa-icon [icon]="icheck"></fa-icon>
             </button>
           </form>
@@ -29,7 +28,7 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        <table class="table table-bordered table-hover">
+        <table class="table table-bordered table-hover align-middle">
           <thead>
             <tr>
               <th>Student</th>
@@ -38,7 +37,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let s of this.cprClasses[selected].students!">
-              <td class="col-6" data-title="Student">{{s.name}}</td>
+              <td class="col-6" data-title="Student">{{s.first_name}} {{s.last_name}}</td>
               <td data-title="Email"><a href="mailto:{{s.email}}">{{s.email}}</a></td>
             </tr>
           </tbody>

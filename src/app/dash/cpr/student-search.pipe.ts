@@ -11,9 +11,10 @@ export class SearchStudentsPipe implements PipeTransform {
       let students = roster.filter(
         (student: CprStudent) => {
           //search shouldn't be blank, and skip the team portion of team name since it's always team
-          if (student.name.toLowerCase().indexOf(sl) > -1 
+          const sn: string = student.first_name + ' ' + student.last_name;
+          if (sn.toLowerCase().indexOf(sl) > -1 
               || student.email && student.email.toLowerCase().indexOf(sl) > -1
-              || fn(student.cpr_class_id!, cm).toLowerCase().indexOf(sl) > -1) {
+              || fn(student.cpr_class_id, cm).toLowerCase().indexOf(sl) > -1) {
               return true;
           }
           return false;

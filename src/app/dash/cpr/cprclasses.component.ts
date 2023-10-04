@@ -59,8 +59,11 @@ export class CprClassesComponent {
     return 'mailto:?bcc=' + this.cprClasses[this.selected].students!.map((s: CprStudent) => s.email).join(',');
   }
 
+  get size(): number {
+    return +this.resize.controls['size'].value;
+  }
+
   onResize() {
-    this._api.log("Resize to", +this.resize.controls['size'].value);
     this.resized = true;
     const vals = this.resize.value;
     let cur = this.cprClasses[this.selected];

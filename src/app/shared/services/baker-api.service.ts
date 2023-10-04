@@ -170,8 +170,9 @@ export interface OpenRequest {
 export interface CprStudent {
   id: number;
   email: string;
-  name: string;
-  cpr_class_id?: number | null;
+  first_name: string;
+  last_name: string;
+  cpr_class_id: number | null;
 }
 
 export interface CprClass {
@@ -458,7 +459,6 @@ export class BakerApiService implements IAuthService {
   updateUser(form: UserNameForm | UserEmailForm | UserPhoneForm | UserPasswordForm, userId: number = this.currentUserId()): Observable<boolean> {
     let needsUpdate: boolean = false;
     const update = () => {
-      this.log("Updating user");
       if (needsUpdate) {
         if((<UserNameForm>form).first_name !== undefined) {
           this._currentUserActual!.first_name = (<UserNameForm>form).first_name;
@@ -536,9 +536,29 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-  getCprStudents(): Observable<CprStudent[]>{
+  getCprStudents(): Observable<CprStudent[]> {
     return this.http.get<{students: CprStudent[]}>(this.url + '/admin/students', this.defaultOptions()).pipe(
       map(r => r.students),
+      catchError(this.handleError)
+    );
+  }
+
+  addCprStudent(f: {first_name: string, last_name: string, email: string}): Observable<CprStudent> {
+    return this.http.post<CprStudent>(this.url + '/admin/students', JSON.stringify(f), this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  sendCprReminders(): Observable<number> {
+    return this.http.get<{email_count: number}>(this.url + '/admin/students/remind', this.defaultOptions()).pipe(
+      map(r => r.email_count),
+      catchError(this.handleError)
+    );
+  }
+
+  changeCprClass(studentId: number, f: {cpr_class_id: string}): Observable<boolean> {
+    return this.http.patch<any>(this.url + '/admin/students/' + studentId, JSON.stringify(f), this.defaultOptions()).pipe(
+      map(r => true),
       catchError(this.handleError)
     );
   }
