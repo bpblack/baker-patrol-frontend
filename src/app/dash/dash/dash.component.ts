@@ -45,7 +45,7 @@ export class DashComponent implements OnInit, OnDestroy {
       (user: User) => {
         if (user.first_name !== undefined) {
           user.roles.forEach((r: Role) => {
-            if (r.role === 'admin' || r.role === 'cprinstructor') {
+            if (r.role === 'admin' || r.role === 'cprior' || r.role === 'cprinstructor') {
               this.cprAdmin = true;
             }
             if (this._adminRoles.has(r.role)) {

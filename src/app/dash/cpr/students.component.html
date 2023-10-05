@@ -42,7 +42,7 @@
         <div *ngIf="cprStudents.length > 0; else nodisplay" class="row g-2">
           <baker-search *ngIf="cprStudents.length > 0" [(term)]="searchTerm"></baker-search>
         </div>
-        <div class="row g-2">
+        <div class="row g-2 table-responsive">
           <form [formGroup]="removeStudentsForm" (ngSubmit)="onRemoveStudents()">
             <table class="table table-bordered table-hover align-middle">
               <thead>
