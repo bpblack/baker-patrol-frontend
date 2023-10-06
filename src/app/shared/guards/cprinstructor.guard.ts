@@ -10,7 +10,7 @@ export const CprInstructorGuard: CanActivateFn = () => {
     map((u: User) => {
       let ci: boolean = false;
       u.roles.forEach((r: Role) => {
-        if (r.role === 'admin' || r.role === 'cprinstructor') {
+        if (r.role === 'admin' || r.role === 'cprior' || r.role === 'cprinstructor') {
           ci = true;
         }
       });
