@@ -4,7 +4,7 @@ import { Observable, Subscription, interval, of, startWith, switchMap } from 'rx
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { IconDefinition, faChalkboardUser, faGear, faPowerOff, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
-import { BakerApiService, Role, User } from '../../shared/services/baker-api.service';
+import { BakerApiService, Role, User, hasRole } from '../../shared/services/baker-api.service';
 
 @Component({
   selector: 'baker-patrol-dash',
@@ -12,7 +12,7 @@ import { BakerApiService, Role, User } from '../../shared/services/baker-api.ser
   providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
 })
 export class DashComponent implements OnInit, OnDestroy {
-  public isAdmin: boolean = false;
+  public roles = {cpr: false, cpradmin: false, leader: false, admin: false};
   public cprAdmin: boolean = false;
   public isCollapsed: boolean = true;
   public user: Observable<User>;
@@ -24,7 +24,6 @@ export class DashComponent implements OnInit, OnDestroy {
 
   private logoutRef: BsModalRef;
   private _logoutPoll: Subscription;
-  private _adminRoles: Set<string> = new Set(['admin', 'leader']);
 
   constructor(private _api: BakerApiService, private _modalService: BsModalService, private _router: Router) {  }
 
@@ -43,18 +42,10 @@ export class DashComponent implements OnInit, OnDestroy {
     this.user = this._api.currentUser;
     this.user.subscribe(
       (user: User) => {
-        if (user.first_name !== undefined) {
-          user.roles.forEach((r: Role) => {
-            if (r.role === 'admin' || r.role === 'cprior' || r.role === 'cprinstructor') {
-              this.cprAdmin = true;
-            }
-            if (this._adminRoles.has(r.role)) {
-              if (!('season_id' in r) || +r.season_id! === +user.seasons[0].id) {
-                this.isAdmin = true;
-              }
-            }
-          });
-        }
+        this.roles.cpr = hasRole(user.roles, new Set<string>(['admin', 'cprior', 'cprinstructor']));
+        this.roles.cpradmin = hasRole(user.roles, new Set(['admin', 'cprior']));
+        this.roles.leader = hasRole(user.roles, new Set(['admin', 'leader']), user.seasons[0].id);
+        this.roles.admin = hasRole(user.roles, new Set(['admin']));
       }
     );
   }
