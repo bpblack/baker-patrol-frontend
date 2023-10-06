@@ -5,7 +5,7 @@
         <div class="col-md-auto">
           <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
         </div>
-        <div *ngIf="isAdmin || isLeader" class="col">
+        <div *ngIf="isLeader" class="col">
           <div class="btn-group" dropdown>
             <button id="contact-button" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"aria-controls="contact-menu">
               Contact options... <span class="caret"></span>
@@ -28,23 +28,23 @@
             <tr>
               <th>Patroller</th>
               <th>Skills</th>
-              <th *ngIf="isAdmin">Phone #</th>
+              <th *ngIf="isLeader">Phone #</th>
               <th class="col-md-3">Responsibility</th>
-              <th *ngIf="isAdmin">Management</th>
+              <th *ngIf="isLeader">Management</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="rowColor(patrol.patroller.id!, patrol.latest_substitution)">
               <td data-title="Patroller">{{patrol.patroller.name}}</td>
               <td data-title="Skills">{{patrol.patroller.skills}}</td>
-              <td *ngIf="isAdmin" data-title="Phone #">
+              <td *ngIf="isLeader" data-title="Phone #">
                 <a href="tel:{{patrol.patroller.phone}}" class="baker-tel">{{patrol.patroller.phone}}</a>
               </td>
               <td data-title="Responsibility">
-                <ng-container [ngTemplateOutlet]="(isAdmin && dutyDay.swapable) ? swapCell : noSwapCell" 
+                <ng-container [ngTemplateOutlet]="(isLeader && dutyDay.swapable) ? swapCell : noSwapCell" 
                               [ngTemplateOutletContext]="{patrol: patrol, i: i}"></ng-container>
               </td>
-              <td *ngIf="isAdmin" data-title="Management">
+              <td *ngIf="isLeader" data-title="Management">
                 <button class="btn btn-primary" [disabled]="!dutyDay.swapable" (click)="showManageModal(i)">
                   Manage
                 </button>
@@ -96,7 +96,7 @@
   </div>
   <div *ngIf="(history | async) as history; loadingSub" class="modal-body">
     <tabset *ngIf="managePatrol">
-      <tab *ngIf="(history.length === 0 || history[0].accepted) && (isAdmin || isLeader)" heading="Create & Assign" id="tab1">
+      <tab *ngIf="(history.length === 0 || history[0].accepted) && isLeader" heading="Create & Assign" id="tab1">
         <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)" [allowEmpty]="true"></baker-create-assign-sub-form>
       </tab>
       <tab *ngIf="history.length > 0" heading="Sub History" (deselect)="clearError()">
@@ -118,7 +118,7 @@
             <tbody>
               <tr *ngFor="let sub of history; let i = index" [ngClass]="{'table-danger': !sub.accepted && !sub.sub.id, 'table-warning': !sub.accepted && sub.sub.id, 'table-success': sub.accepted && i === 0}">
                 <td class="col-3" data-title="Name">{{sub.subbed.name}}</td>
-                <td *ngIf="i == 0 && !history[0]!.accepted && (isAdmin || isLeader)" class="col-4" data-title="Sub Name">
+                <td *ngIf="i == 0 && !history[0]!.accepted && isLeader" class="col-4" data-title="Sub Name">
                   <baker-assign-sub-form [patrolId]="managePatrol.id" [sub]="{id: sub.id, sub_id: sub.sub.id ? sub.sub.id : 0, sub_name: sub.sub.name}" [inline]="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>
                 </td>
                 <td *ngIf="i > 0 || history[0]!.accepted" class="col-3" data-title="Sub Name">{{sub.sub.name}}</td>
