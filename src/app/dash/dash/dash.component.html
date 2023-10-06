@@ -23,10 +23,10 @@
           <li class="nav-item">
             <a class="nav-link" routerLinkActive="active" routerLink="./Roster">Roster</a>
           </li>
-          <li *ngIf="isAdmin" class="nav-item">
+          <li *ngIf="roles.leader" class="nav-item">
             <a class="nav-link" routerLinkActive="active" routerLink="./Season">Season</a>
           </li>
-          <li *ngIf="cprAdmin" class="nav-item dropdown" dropdown>
+          <li *ngIf="roles.cpr" class="nav-item dropdown" dropdown>
             <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               CPR
             </a>

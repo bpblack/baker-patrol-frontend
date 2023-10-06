@@ -236,6 +236,26 @@ interface Available {
   emails: string[];
 }
 
+export function hasRole(roles: Role[], required: Set<string>, seasonId: number = -1, teamId: number = -1): boolean {
+  let ret: boolean = false;
+  for (let i=0; i < roles.length; ++i) {
+    const r = roles[i];
+    const seasonCheck = () => {
+      return seasonId >= 0 ? r.season_id! === seasonId : true; 
+    };
+    const teamCheck = () => {
+      return teamId >= 0 ? r.team_id! === teamId : true;
+    }
+    if (!('season_id' in r) || (seasonCheck() && teamCheck()))  {
+      if (required.has(r.role)) {
+        ret = true;
+        break;
+      }
+    }
+  }
+  return ret;
+}
+
 @Injectable({
   providedIn: 'root'
 })

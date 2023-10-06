@@ -5,7 +5,7 @@ import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
-import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, User } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
 
 export interface PatrolResponsibility {
@@ -22,7 +22,6 @@ export class DutyDayComponent {
   public dutyDay: DutyDayDetail;
   public available: string[];
   public error: string | null = null;
-  public isAdmin: boolean = false;
   public isLeader: boolean = false;
   public disable: boolean = false;
   public patrolling: string[] = [];
@@ -53,7 +52,7 @@ export class DutyDayComponent {
       concatMap((x: {ra: Role[], dd: DutyDayDetail}) => {
         this.updateRoles(x.ra, x.dd.season_id, x.dd.team.id);
         this.updateDutyDay(x.dd)
-        return (this.isAdmin || this.isLeader) ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
+        return this.isLeader ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[]);
       })
     ).subscribe({
       next: (a: string[]) => this.available = a,
@@ -64,7 +63,7 @@ export class DutyDayComponent {
     this._poll = interval(60000).pipe(
       switchMap(() => forkJoin({
         dd: this._api.getDutyDay(this._id), 
-        a: (this.isAdmin || this.isLeader)? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
+        a: this.isLeader ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
       }))
     ).subscribe((x: {dd: DutyDayDetail, a: string[]}) => {
       this.updateDutyDay(x.dd);
@@ -93,7 +92,7 @@ export class DutyDayComponent {
   }
 
   rowColor(patrollerId: number, latestSub: LatestSub | null) : string {
-    if (this.isLeader || this.isAdmin) {
+    if (this.isLeader) {
       if (latestSub) {
         if (latestSub.accepted) {
           return 'table-success';
@@ -184,19 +183,11 @@ export class DutyDayComponent {
   }
 
   private updateRoles(ra: Role[], seasonId: number, teamId: number) {
-    ra.forEach(r => {
-      if(r) {
-        if (r.role === 'admin') {
-          this.isAdmin = true;
-        } else if (r.role === 'leader') {
-          this.isLeader = r.season_id === seasonId && r.team_id === teamId;
-        }
-      }
-    });
+    this.isLeader = hasRole(ra, new Set(['admin', 'leader']), seasonId, teamId);
   }
 
   private updateDutyDay(dd: DutyDayDetail) {
-    const needsEmails = this.isAdmin || this.isLeader;
+    const needsEmails = this.isLeader;
     this.dutyDay = dd;
     let up: string[] = [];
     let uh: string[] = [];

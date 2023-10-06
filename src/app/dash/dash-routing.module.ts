@@ -10,7 +10,7 @@ import { SeasonComponent } from './season/season.component';
 import { DutyDayComponent } from './duty-day/duty-day.component';
 import { CprClassesComponent } from './cpr/cprclasses.component';
 import { StudentsComponent } from './cpr/students.component';
-import { CprInstructorGuard } from '../shared/guards/cprinstructor.guard';
+import { GetRoleGuard } from '../shared/guards/roles.guard';
 
 const routes: Routes = [
   {
@@ -26,13 +26,13 @@ const routes: Routes = [
         { path: 'Account', component: AccountComponent },
         { path: 'DutyDay/:id', component: DutyDayComponent },
         { path: 'Roster', component: RosterComponent },
-        { path: 'Season', component: SeasonComponent },
+        { path: 'Season', component: SeasonComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'leader']))] },
         { path: 'Team', component: TeamComponent }
       ]
     },
     {
       path: 'Cpr',
-      canActivateChild: [AuthGuard, CprInstructorGuard],
+      canActivateChild: [AuthGuard, GetRoleGuard(new Set<string>(['admin', 'cprior', 'cprinstructor']))],
       children: [
         { path: 'Classes', component: CprClassesComponent },
         { path: 'Students', component: StudentsComponent }
