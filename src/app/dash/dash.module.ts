@@ -38,9 +38,11 @@ import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { CreateFormComponent } from './patrols/create-form/create-form.component';
 import { EmailFormComponent } from './patrols/email-form/email-form.component';
 import { OpenTabComponent } from './patrols/open-tab/open-tab.component';
-import { CprClassesComponent } from './cpr/cprclasses.component';
-import { StudentsComponent } from './cpr/students.component';
-import { SearchStudentsPipe } from './cpr/student-search.pipe';
+import { CprClassesComponent } from './cpr/classes/cprclasses.component';
+import { StudentsComponent } from './cpr/students/students.component';
+import { SearchStudentsPipe } from './cpr/students/student-search.pipe';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { CprSettingsComponent } from './cpr/settings/cprsettings.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +71,8 @@ import { SearchStudentsPipe } from './cpr/student-search.pipe';
     OpenTabComponent,
     CprClassesComponent,
     SearchStudentsPipe,
-    StudentsComponent
+    StudentsComponent,
+    CprSettingsComponent
   ],
   imports: [
     CommonModule,
@@ -77,6 +80,7 @@ import { SearchStudentsPipe } from './cpr/student-search.pipe';
     ReactiveFormsModule,
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
+    BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     CollapseModule.forRoot(),
     ModalModule.forRoot(),

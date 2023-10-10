@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { CprStudent } from '../../shared/services/baker-api.service';
+import { CprStudent } from '../../../shared/services/baker-api.service';
 
 @Pipe({name: 'searchStudents'})
 export class SearchStudentsPipe implements PipeTransform {

@@ -8,9 +8,10 @@ import { RosterComponent } from './roster/roster.component';
 import { AccountComponent } from './account/account.component';
 import { SeasonComponent } from './season/season.component';
 import { DutyDayComponent } from './duty-day/duty-day.component';
-import { CprClassesComponent } from './cpr/cprclasses.component';
-import { StudentsComponent } from './cpr/students.component';
+import { CprClassesComponent } from './cpr/classes/cprclasses.component';
+import { StudentsComponent } from './cpr/students/students.component';
 import { GetRoleGuard } from '../shared/guards/roles.guard';
+import { CprSettingsComponent } from './cpr/settings/cprsettings.component';
 
 const routes: Routes = [
   {
@@ -32,10 +33,11 @@ const routes: Routes = [
     },
     {
       path: 'Cpr',
-      canActivateChild: [AuthGuard, GetRoleGuard(new Set<string>(['admin', 'cprior', 'cprinstructor']))],
+      canActivateChild: [AuthGuard],
       children: [
-        { path: 'Classes', component: CprClassesComponent },
-        { path: 'Students', component: StudentsComponent }
+        { path: 'Classes', component: CprClassesComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'cprior', 'cprinstructor']))] },
+        { path: 'Students', component: StudentsComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'cprior', 'cprinstructor']))] },
+        { path: 'Settings', component: CprSettingsComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'cprior']))] }
       ]
     }]
   }

@@ -1,10 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { IconDefinition, faAt, faCheck, faCircleInfo, faGear, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faCheck, faCircleCheck, faCircleInfo, faGear, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { finalize, forkJoin } from 'rxjs';
-import { BakerApiService, CprClass, CprStudent } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, CprClass, CprStudent, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
 function cprClassValidator(id: number | null): ValidatorFn {
@@ -30,12 +30,13 @@ export class StudentsComponent {
   public cprClassMap: Map<number, string>;
   public cprStudentMap: Map<number, CprStudent>;
   public searchTerm: string = '';
+  public cprAdmin: boolean = false;
   public showRemove: boolean = false;
   public error: StudentMessages = {main: null, add: null, remind: null};
   public success: StudentMessages = {main: null, add: null, remind: null};
   public disable = {added: false, removed: false, reminded: false, changed: false }
   public showChange: {b: boolean, s: CprStudent | null, idx: number | null} = {b: false, s: null, idx: null};
-  public icons = {at: faAt, info: faCircleInfo, gear: faGear, check: faCheck, x: faXmark, tri: faTriangleExclamation};
+  public icons = {at: faAt, info: faCircleInfo, gear: faGear, check: faCheck, x: faXmark, tri: faTriangleExclamation, ok: faCircleCheck};
   public classNameFn: (i: number | null, m: Map<number, string>) => string = StudentsComponent.getClassNameS;
 
   // modals
@@ -58,6 +59,10 @@ export class StudentsComponent {
   constructor(private _api: BakerApiService, private _modal: BsModalService, private _fb: FormBuilder) {}
 
   ngOnInit() {
+    this._api.currentUser.subscribe({
+      next: (u: User) => this.cprAdmin = hasRole(u.roles, new Set(['admin', 'cprior']))
+    });
+
     forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents()}).pipe(
       finalize(() => {
         this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.location]));
@@ -93,6 +98,7 @@ export class StudentsComponent {
   }
 
   showAddStudent() {
+    if (!this.cprAdmin) return;
     this.addStudentRef = this._modal.show(this.addStudent, this._mOpts);
   }
 
@@ -101,6 +107,7 @@ export class StudentsComponent {
   }
 
   onAddStudent() {
+    if (!this.cprAdmin) return;
     this.disable.added = true;
     this._api.addCprStudent(this.addStudentForm.value).pipe(
       finalize(() => this.disable.added = false)
@@ -135,11 +142,13 @@ export class StudentsComponent {
   }
 
   showRemoveStudents() {
+    if (!this.cprAdmin) return;
     this.showRemove = true;
     this.resetRemoveForm();
   }
 
   onRemoveStudents() {
+    if (!this.cprAdmin) return;
     this.disable.removed = true;
     const removeIds: number[] = this.cprStudents.reduce<number[]>((a: number[], s: CprStudent) => {
       if (this.removeStudentsForm.controls[s.id.toString()].value === true) {
@@ -173,10 +182,12 @@ export class StudentsComponent {
   }
 
   showSendReminders() {
+    if(!this.cprAdmin) return;
     this.sendRemindersRef = this._modal.show(this.sendReminders, this._mOpts)
   }
   
   onSendReminders() {
+    if (!this.cprAdmin) return;
     this.disable.reminded = true;
     this._api.sendCprReminders().pipe(
       finalize(() => this.disable.reminded = false)
@@ -195,6 +206,7 @@ export class StudentsComponent {
   }
 
   showChangeClass(studentId: number, idx: number) {
+    if (!this.cprAdmin) return;
     this.showChange.b = true;
     this.showChange.idx = idx;
     const s = this.cprStudentMap.get(studentId);
@@ -209,6 +221,7 @@ export class StudentsComponent {
   }
   
   onChangeClass() {
+    if (!this.cprAdmin) return;
     this.disable.changed = true;
     const fv = this.changeClassForm.value;
     const s: CprStudent = this.showChange.s!;

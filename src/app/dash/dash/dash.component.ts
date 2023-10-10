@@ -42,10 +42,10 @@ export class DashComponent implements OnInit, OnDestroy {
     this.user = this._api.currentUser;
     this.user.subscribe(
       (user: User) => {
-        this.roles.cpr = hasRole(user.roles, new Set<string>(['admin', 'cprior', 'cprinstructor']));
-        this.roles.cpradmin = hasRole(user.roles, new Set(['admin', 'cprior']));
-        this.roles.leader = hasRole(user.roles, new Set(['admin', 'leader']), user.seasons[0].id);
         this.roles.admin = hasRole(user.roles, new Set(['admin']));
+        this.roles.cpradmin = this.roles.admin || hasRole(user.roles, new Set(['cprior']));
+        this.roles.cpr = this.roles.cpradmin || hasRole(user.roles, new Set<string>(['cprinstructor']));
+        this.roles.leader = this.roles.admin || hasRole(user.roles, new Set(['leader']), user.seasons[0].id);
       }
     );
   }
