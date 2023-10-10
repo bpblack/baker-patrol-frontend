@@ -5,7 +5,7 @@
         <div class="col-auto">
           <h2>CPR Students</h2>
         </div>
-        <div class="col">
+        <div *ngIf="cprAdmin" class="col">
           <div class="btn-group" dropdown>
             <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
               Actions&nbsp;<span class="caret"></span>
@@ -126,6 +126,7 @@
       </div>
       <div *ngIf="success.add" class="row g-2">
         <alert type="success" [dismissible]="true" (click)="clearAddMessage(success)">
+          <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
           {{success.add}}
         </alert>
       </div>
@@ -180,7 +181,10 @@
       </alert>
     </div>
     <div *ngIf="success.remind" class="row g-2">
-      <alert [dismissible]="true" type="success" (click)="clearSendReminders(success)">{{success.remind}}</alert>
+      <alert [dismissible]="true" type="success" (click)="clearSendReminders(success)">
+        <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+        {{success.remind}}
+      </alert>
     </div>
     <div class="row align-items-center g-2">
       <div class="col-auto">

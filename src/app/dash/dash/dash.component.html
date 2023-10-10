@@ -43,6 +43,12 @@
                   Students
                 </a>
               </li>
+              <li *ngIf="roles.cpradmin">
+                <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Settings">
+                  <fa-icon [icon]="igear"></fa-icon>&nbsp;
+                  Settings
+                </a>
+              </li>
             </ul>
           </li>
           <li class="nav-item dropdown" dropdown>

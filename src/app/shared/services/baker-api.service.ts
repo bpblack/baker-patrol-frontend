@@ -184,6 +184,13 @@ export interface CprClass {
   students?: CprStudent[];
 }
 
+export interface Classroom {
+  id: number;
+  name: string;
+  address: string;
+  map_link: string;
+}
+
 interface UserNameForm {
   first_name: string;
   last_name: string;
@@ -548,6 +555,12 @@ export class BakerApiService implements IAuthService {
     );
   }
 
+  addCprClass(f: {classroom_id: string, time: Date, class_size: string}): Observable<CprClass> {
+    return this.http.post<CprClass>(this.url + '/admin/cpr_classes', JSON.stringify(f), this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   resizeCprClass(classId: number, form: {size: string}): Observable<boolean> {
     let body = JSON.stringify(form);
     return this.http.patch<any>(this.url + '/admin/cpr_classes/' + classId, body, this.defaultOptions()).pipe(
@@ -586,6 +599,19 @@ export class BakerApiService implements IAuthService {
   changeCprClass(studentId: number, f: {cpr_class_id: string}): Observable<boolean> {
     return this.http.patch<any>(this.url + '/admin/students/' + studentId, JSON.stringify(f), this.defaultOptions()).pipe(
       map(r => true),
+      catchError(this.handleError)
+    );
+  }
+
+  getClassrooms(): Observable<Classroom[]> {
+    return this.http.get<{classrooms: any}>(this.url + '/admin/classrooms', this.defaultOptions()).pipe(
+      map(r => r.classrooms),
+      catchError(this.handleError)
+    );
+  }
+
+  addClassroom(f: {name: string, address: string, map_link: string}): Observable<Classroom> {
+    return this.http.post<Classroom>(this.url + '/admin/classrooms', JSON.stringify(f), this.defaultOptions()).pipe(
       catchError(this.handleError)
     );
   }

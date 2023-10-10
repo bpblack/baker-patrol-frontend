@@ -39,12 +39,12 @@ export function idSelectionValidator(): ValidatorFn {
   }
 }
 
-export function  styleControl(c: AbstractControl, invalid: boolean = false): string {
+export function  styleControl(c: AbstractControl, invalid: boolean = false, fcType: string = 'form-control'): string {
   if (!c.pristine) {
     if (c.valid && !invalid) {
-      return 'form-control is-valid';
+      return fcType +' is-valid';
     }
-    return 'form-control is-invalid'
+    return fcType + ' is-invalid'
   }
-  return 'form-control';
+  return fcType;
 }

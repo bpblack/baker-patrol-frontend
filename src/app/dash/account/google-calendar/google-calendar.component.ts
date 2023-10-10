@@ -97,7 +97,7 @@ export class GoogleCalendarComponent {
   }
 
   styleControl() {
-    return styleControl(this.updateCalendar.controls['calendar_id']);
+    return styleControl(this.updateCalendar.controls['calendar_id'], false, 'form-select');
   }
 
   inValidSelection() {
