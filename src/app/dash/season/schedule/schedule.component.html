@@ -1,0 +1,50 @@
+<div *ngIf="(dutyDays | async) as dutyDays; else loading" class="card mt-3">
+  <div class="card-header">
+    <h2>{{seasonName}} Duty Days</h2>
+  </div>
+  <div *ngIf="dutyDays.length > 0; else nodisplay" class="card-body">
+    <div class="container">
+      <div class="row">
+        <baker-search *ngIf="dutyDays.length > 0" [(term)]="searchTerm"></baker-search>
+      </div>
+      <div class="row">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Team</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dd of dutyDays | searchDutyDays:searchTerm" >
+                <td data-title="Date">
+                  <a routerLink="../DutyDay/{{dd.id}}">{{dd.date}}</a>
+                </td>
+                <td data-title="Team">{{dd.team!.name}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="card">
+    <div class="card-body">
+      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      Loading season data...
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #nodisplay>
+  <div class="row">
+    <alert type="danger">
+      <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+      Season has no duty days!
+    </alert>
+  </div>
+</ng-template>

@@ -18,8 +18,8 @@ export interface UserToken {
 export interface Season {
   id: number;
   name: string;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
 }
 
 export interface Role {
@@ -361,6 +361,13 @@ export class BakerApiService implements IAuthService {
 
   getDutyDay(dutyDayId: number): Observable<DutyDayDetail>  {
     return this.http.get<DutyDayDetail>(this.url + '/duty_days/' + dutyDayId, this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getLatestSeason(): Observable<Season> {
+    this.log('Getting latest season');
+    return this.http.get<Season>(this.url + '/admin/seasons/latest', this.defaultOptions()).pipe(
       catchError(this.handleError)
     );
   }

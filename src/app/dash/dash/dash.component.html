@@ -23,8 +23,24 @@
           <li class="nav-item">
             <a class="nav-link" routerLinkActive="active" routerLink="./Roster">Roster</a>
           </li>
-          <li *ngIf="roles.leader" class="nav-item">
-            <a class="nav-link" routerLinkActive="active" routerLink="./Season">Season</a>
+          <li *ngIf="roles.admin; else leaderSchedule" class="nav-item dropdown" dropdown>
+            <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin
+            </a>
+            <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+              <li *ngIf="roles.leader" class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="./Season/Schedule">
+                  <fa-icon [icon]="icons.calendar"></fa-icon>&nbsp;
+                  Season
+                </a>
+              </li>
+              <li *ngIf="roles.leader" class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="./Season/Settings">
+                  <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
+                  Settings
+                </a>
+              </li>
+            </ul>
           </li>
           <li *ngIf="roles.cpr" class="nav-item dropdown" dropdown>
             <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -33,19 +49,19 @@
             <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
               <li>
                 <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Classes">
-                  <fa-icon [icon]="ischool"></fa-icon>&nbsp;
+                  <fa-icon [icon]="icons.school"></fa-icon>&nbsp;
                   Classes
                 </a>
               </li>
               <li>
                 <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Students">
-                  <fa-icon [icon]="ichalkboard"></fa-icon>&nbsp;
+                  <fa-icon [icon]="icons.chalkboard"></fa-icon>&nbsp;
                   Students
                 </a>
               </li>
               <li *ngIf="roles.cpradmin">
                 <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Settings">
-                  <fa-icon [icon]="igear"></fa-icon>&nbsp;
+                  <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
                   Settings
                 </a>
               </li>
@@ -58,13 +74,13 @@
             <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
               <li>
                 <a class="dropdown-item" routerLinkActive="active" routerLink="./Account">
-                  <fa-icon [icon]="igear"></fa-icon>&nbsp;
+                  <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
                   Settings
                 </a>
               </li>
               <li>
                 <a class="dropdown-item" routerLink="/Login" (click)="logout()">
-                  <fa-icon [icon]="ipower"></fa-icon>&nbsp;
+                  <fa-icon [icon]="icons.power"></fa-icon>&nbsp;
                   Logout
                 </a>
               </li>
@@ -82,10 +98,16 @@
 <ng-template #loading>
   <div  class="card p-3 m-3">
     <div class="card-body">
-      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
       Loading user info...
     </div>
   </div>
+</ng-template>
+
+<ng-template #leaderSchedule>
+  <li *ngIf="roles.leader" class="nav-item">
+    <a class="nav-link" routerLinkActive="active" routerLink="./Season/Schedule">Season</a>
+  </li>
 </ng-template>
 
 <ng-template #logoutModal data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">

@@ -6,12 +6,13 @@ import { PatrolsComponent } from './patrols/patrols.component';
 import { TeamComponent } from './team/team.component';
 import { RosterComponent } from './roster/roster.component';
 import { AccountComponent } from './account/account.component';
-import { SeasonComponent } from './season/season.component';
+import { ScheduleComponent } from './season/schedule/schedule.component';
 import { DutyDayComponent } from './duty-day/duty-day.component';
 import { CprClassesComponent } from './cpr/classes/cprclasses.component';
 import { StudentsComponent } from './cpr/students/students.component';
 import { GetRoleGuard } from '../shared/guards/roles.guard';
 import { CprSettingsComponent } from './cpr/settings/cprsettings.component';
+import { AdminSettingsComponent } from './season/settings/admin-settings.component';
 
 const routes: Routes = [
   {
@@ -27,8 +28,15 @@ const routes: Routes = [
         { path: 'Account', component: AccountComponent },
         { path: 'DutyDay/:id', component: DutyDayComponent },
         { path: 'Roster', component: RosterComponent },
-        { path: 'Season', component: SeasonComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'leader']))] },
         { path: 'Team', component: TeamComponent }
+      ]
+    },
+    {
+      path: 'Season',
+      canActivateChild: [AuthGuard],
+      children: [
+        { path: 'Schedule', component: ScheduleComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'leader']))] },
+        { path: 'Settings', component: AdminSettingsComponent, canActivate: [GetRoleGuard(new Set<string>(['admin']))] }
       ]
     },
     {

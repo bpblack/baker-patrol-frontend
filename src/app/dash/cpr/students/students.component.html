@@ -1,84 +1,82 @@
-<div class="pt-3">
-  <div *ngIf="cprClasses; else loading" class="card">
-    <div class="card-header">
-      <div class="row gx-2">
-        <div class="col-auto">
-          <h2>CPR Students</h2>
-        </div>
-        <div *ngIf="cprAdmin" class="col">
-          <div class="btn-group" dropdown>
-            <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
-              Actions&nbsp;<span class="caret"></span>
-            </button>
-            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-                role="menu" aria-labelledby="button-basic">
-              <li role="menuitem"><a class="dropdown-item" (click)="showAddStudent()">Add a student</a></li>
-              <li role="menuitem"><a class="dropdown-item" (click)="showRemoveStudents()">Remove students</a></li>
-              <li role="menuitem"><a class="dropdown-item" (click)="showSendReminders()">Send reminders</a></li>
-            </ul>
-          </div>
+<div *ngIf="cprClasses; else loading" class="card mt-3">
+  <div class="card-header">
+    <div class="row gx-2">
+      <div class="col-auto">
+        <h2>CPR Students</h2>
+      </div>
+      <div *ngIf="cprAdmin" class="col">
+        <div class="btn-group" dropdown>
+          <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
+            Actions&nbsp;<span class="caret"></span>
+          </button>
+          <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+              role="menu" aria-labelledby="button-basic">
+            <li role="menuitem"><a class="dropdown-item" (click)="showAddStudent()">Add a student</a></li>
+            <li role="menuitem"><a class="dropdown-item" (click)="showRemoveStudents()">Remove students</a></li>
+            <li role="menuitem"><a class="dropdown-item" (click)="showSendReminders()">Send reminders</a></li>
+          </ul>
         </div>
       </div>
     </div>
-    <div class="card-body">
-      <div class="container">
-        <div *ngIf="error.main" class="row g-2">
-          <alert type="danger" [dismissible]="true" (click)="clearMainMessage(error)">
-            <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
-            {{error.main}}
-          </alert>
-        </div>
-        <div *ngIf="showRemove" class="row g-2">
-          <alert type="warning" [dismissible]="false">
-            <fa-icon [icon]="icons.info"></fa-icon>&nbsp;
-            Only students who have not registered for a class can be removed. You can unregister students by changing their class selection while in remove mode.&nbsp;
-            Please select the students you want to remove from the list and then click the remove button at the bottom of the table.&nbsp;
-            <br><br>
-            <button class="btn btn-secondary btn-block" (click)="hideRemoveStudents()" [disabled]="disable.removed || disable.changed">
-              Exit remove mode
-            </button>
-          </alert>
-        </div>
-        <div *ngIf="cprStudents.length > 0; else nodisplay" class="row g-2">
-          <baker-search *ngIf="cprStudents.length > 0" [(term)]="searchTerm"></baker-search>
-        </div>
-        <div class="row g-2 table-responsive">
-          <form [formGroup]="removeStudentsForm" (ngSubmit)="onRemoveStudents()">
-            <table class="table table-bordered table-hover align-middle">
-              <thead>
-                <tr>
-                  <th class="col-md-2">Name</th>
-                  <th class="col-md-2">Email</th>
-                  <th class="col-md-3">Class (click to change)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let s of cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn; let i = index">
-                  <td data-title="Name">
-                    <input *ngIf="showRemove" type="checkbox" [formControlName]="s.id.toString()">
-                    {{s.first_name}} {{s.last_name}}
-                  </td>
-                  <td data-title="Email">
-                    <a [href]="'mailto:' + s.email">{{s.email}}</a>
-                  </td>
-                  <td data-title="Class">
-                    <a *ngIf="!showChange.b || showChange.idx !== i; else showingChange" class="link-secondary" (click)="showChangeClass(s.id, i)">
-                      {{getClassName(s.cpr_class_id)}}
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-              <div *ngIf="showRemove" class="my-2">
-                  <button *ngIf="!disable.removed; else removing" type="submit" class="btn btn-primary btn-block" [disabled]="disable.changed">
-                    Remove students
-                  </button>
-                  <button class="btn btn-secondary btn-block ms-2" (click)="hideRemoveStudents()" [disabled]="disable.changed || disable.removed">
-                    Exit remove mode
-                  </button>
-              </div>
-            </table>
-          </form>
-        </div>
+  </div>
+  <div class="card-body">
+    <div class="container">
+      <div *ngIf="error.main" class="row g-2">
+        <alert type="danger" [dismissible]="true" (click)="clearMainMessage(error)">
+          <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+          {{error.main}}
+        </alert>
+      </div>
+      <div *ngIf="showRemove" class="row g-2">
+        <alert type="warning" [dismissible]="false">
+          <fa-icon [icon]="icons.info"></fa-icon>&nbsp;
+          Only students who have not registered for a class can be removed. You can unregister students by changing their class selection while in remove mode.&nbsp;
+          Please select the students you want to remove from the list and then click the remove button at the bottom of the table.&nbsp;
+          <br><br>
+          <button class="btn btn-secondary btn-block" (click)="hideRemoveStudents()" [disabled]="disable.removed || disable.changed">
+            Exit remove mode
+          </button>
+        </alert>
+      </div>
+      <div *ngIf="cprStudents.length > 0; else nodisplay" class="row g-2">
+        <baker-search *ngIf="cprStudents.length > 0" [(term)]="searchTerm"></baker-search>
+      </div>
+      <div class="row g-2 table-responsive">
+        <form [formGroup]="removeStudentsForm" (ngSubmit)="onRemoveStudents()">
+          <table class="table table-bordered table-hover align-middle">
+            <thead>
+              <tr>
+                <th class="col-md-2">Name</th>
+                <th class="col-md-2">Email</th>
+                <th class="col-md-3">Class (click to change)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn; let i = index">
+                <td data-title="Name">
+                  <input *ngIf="showRemove" type="checkbox" [formControlName]="s.id.toString()">
+                  {{s.first_name}} {{s.last_name}}
+                </td>
+                <td data-title="Email">
+                  <a [href]="'mailto:' + s.email">{{s.email}}</a>
+                </td>
+                <td data-title="Class">
+                  <a *ngIf="!showChange.b || showChange.idx !== i; else showingChange" class="link-secondary" (click)="showChangeClass(s.id, i)">
+                    {{getClassName(s.cpr_class_id)}}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+            <div *ngIf="showRemove" class="my-2">
+                <button *ngIf="!disable.removed; else removing" type="submit" class="btn btn-primary btn-block" [disabled]="disable.changed">
+                  Remove students
+                </button>
+                <button class="btn btn-secondary btn-block ms-2" (click)="hideRemoveStudents()" [disabled]="disable.changed || disable.removed">
+                  Exit remove mode
+                </button>
+            </div>
+          </table>
+        </form>
       </div>
     </div>
   </div>

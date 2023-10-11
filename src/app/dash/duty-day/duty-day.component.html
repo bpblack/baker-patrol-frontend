@@ -1,58 +1,56 @@
-<div class="pt-3">
-  <div *ngIf="dutyDay; else loading" class="card">
-    <div class="card-header container-fluid">
-      <div class="row">
-        <div class="col-md-auto">
-          <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
-        </div>
-        <div *ngIf="isLeader" class="col">
-          <div class="btn-group" dropdown>
-            <button id="contact-button" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"aria-controls="contact-menu">
-              Contact options... <span class="caret"></span>
-            </button>
-            <ul id="dropdown-animated1" *dropdownMenu class="dropdown-menu"
-                role="menu" aria-labelledby="button-animated">
-                <li role="menuitem"><a class="dropdown-item" href="{{patrollingMailTo()}}">On Duty Patrollers</a></li>
-                <li *ngIf="hosting.length > 0" role="menuitem"><a class="dropdown-item" href="{{hostingMailTo()}}">On Duty Hosts</a></li>
-                <li *ngIf="hosting.length > 0" role="menuitem"><a class="dropdown-item" href="{{patrollingAndHostingMailTo()}}">On Duty Patrollers & Hosts</a></li>
-                <li role="menuitem"><a class="dropdown-item" href="{{availableMailTo()}}">Off Duty Patrollers</a></li>
-            </ul>
-          </div>
+<div *ngIf="dutyDay; else loading" class="card mt-3">
+  <div class="card-header container-fluid">
+    <div class="row">
+      <div class="col-md-auto">
+        <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
+      </div>
+      <div *ngIf="isLeader" class="col">
+        <div class="btn-group" dropdown>
+          <button id="contact-button" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"aria-controls="contact-menu">
+            Contact options... <span class="caret"></span>
+          </button>
+          <ul id="dropdown-animated1" *dropdownMenu class="dropdown-menu"
+              role="menu" aria-labelledby="button-animated">
+              <li role="menuitem"><a class="dropdown-item" href="{{patrollingMailTo()}}">On Duty Patrollers</a></li>
+              <li *ngIf="hosting.length > 0" role="menuitem"><a class="dropdown-item" href="{{hostingMailTo()}}">On Duty Hosts</a></li>
+              <li *ngIf="hosting.length > 0" role="menuitem"><a class="dropdown-item" href="{{patrollingAndHostingMailTo()}}">On Duty Patrollers & Hosts</a></li>
+              <li role="menuitem"><a class="dropdown-item" href="{{availableMailTo()}}">Off Duty Patrollers</a></li>
+          </ul>
         </div>
       </div>
     </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-          <thead>
-            <tr>
-              <th>Patroller</th>
-              <th>Skills</th>
-              <th *ngIf="isLeader">Phone #</th>
-              <th class="col-md-3">Responsibility</th>
-              <th *ngIf="isLeader">Management</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="rowColor(patrol.patroller.id!, patrol.latest_substitution)">
-              <td data-title="Patroller">{{patrol.patroller.name}}</td>
-              <td data-title="Skills">{{patrol.patroller.skills}}</td>
-              <td *ngIf="isLeader" data-title="Phone #">
-                <a href="tel:{{patrol.patroller.phone}}" class="baker-tel">{{patrol.patroller.phone}}</a>
-              </td>
-              <td data-title="Responsibility">
-                <ng-container [ngTemplateOutlet]="(isLeader && dutyDay.swapable) ? swapCell : noSwapCell" 
-                              [ngTemplateOutletContext]="{patrol: patrol, i: i}"></ng-container>
-              </td>
-              <td *ngIf="isLeader" data-title="Management">
-                <button class="btn btn-primary" [disabled]="!dutyDay.swapable" (click)="showManageModal(i)">
-                  Manage
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Patroller</th>
+            <th>Skills</th>
+            <th *ngIf="isLeader">Phone #</th>
+            <th class="col-md-3">Responsibility</th>
+            <th *ngIf="isLeader">Management</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="rowColor(patrol.patroller.id!, patrol.latest_substitution)">
+            <td data-title="Patroller">{{patrol.patroller.name}}</td>
+            <td data-title="Skills">{{patrol.patroller.skills}}</td>
+            <td *ngIf="isLeader" data-title="Phone #">
+              <a href="tel:{{patrol.patroller.phone}}" class="baker-tel">{{patrol.patroller.phone}}</a>
+            </td>
+            <td data-title="Responsibility">
+              <ng-container [ngTemplateOutlet]="(isLeader && dutyDay.swapable) ? swapCell : noSwapCell" 
+                            [ngTemplateOutletContext]="{patrol: patrol, i: i}"></ng-container>
+            </td>
+            <td *ngIf="isLeader" data-title="Management">
+              <button class="btn btn-primary" [disabled]="!dutyDay.swapable" (click)="showManageModal(i)">
+                Manage
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
