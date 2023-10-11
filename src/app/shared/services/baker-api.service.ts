@@ -366,7 +366,6 @@ export class BakerApiService implements IAuthService {
   }
 
   getLatestSeason(): Observable<Season> {
-    this.log('Getting latest season');
     return this.http.get<Season>(this.url + '/admin/seasons/latest', this.defaultOptions()).pipe(
       catchError(this.handleError)
     );

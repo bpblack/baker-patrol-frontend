@@ -3,19 +3,28 @@
     <h2>Season Setup</h2>
   </div>
   <div *ngIf="latest; else loading" class="card-body">
-    <form *ngIf="now > end; else current" class="row g-2" [formGroup]="seasonSetupForm" (ngSubmit)="onSetupSubmit()">
+    <form *ngIf="today > end; else current" class="row g-2" [formGroup]="seasonSetupForm" (ngSubmit)="onSetupSubmit()">
+      <div *ngIf="this.errors.setup.length > 0" class="col-md-12">
+        <alert type="danger" [dismissible]="false">
+          <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+          There are season setup errors:
+          <ul>
+            <li *ngFor="let m of this.errors.setup">{{m}}</li>
+          </ul>
+        </alert>
+      </div>
       <div class="col-md-6">
         <div class="input-group">
           <span class="input-group-text" id="sdate">Start</span>
           <input [class]="styleControl(seasonSetupForm.controls['start'])" #datepickerMDY="bsDatepicker" aria-describedby="sdate" bsDatepicker formControlName="start"
-            [bsConfig]="dateConfig" placeholder="MM/DD/YYYY">
+            [bsConfig]="dateConfig" [minDate]="this.startMonth[0]" [maxDate]="this.startMonth[1]" placeholder="MM/DD/YYYY">
         </div>
       </div>
       <div class="col-md-6">
         <div class="input-group">
           <span class="input-group-text" id="edate">End</span>
           <input [class]="styleControl(seasonSetupForm.controls['end'])" #datepickerMDY="bsDatepicker" aria-describedby="edate" bsDatepicker formControlName="end"
-            [bsConfig]="dateConfig" placeholder="MM/DD/YYYY">
+            [bsConfig]="dateConfig" [minDate]="this.endMonth[0]" [maxDate]="this.endMonth[1]" placeholder="MM/DD/YYYY">
         </div>
       </div>
       <div class="col-md-12">
