@@ -622,6 +622,17 @@ export class BakerApiService implements IAuthService {
     );
   }
 
+  addSeason(f: {start: Date | null, end: Date | null, team: string | null, roster: File | null}) {
+    let data = new FormData(); 
+    data.append('start', f.start!.toDateString());
+    data.append('end', f.end!.toDateString());
+    data.append('team', f.team!);
+    data.append('roster', f.roster!);
+    this.http.post(this.url + '/admin/seasons', data, {headers: new HttpHeaders(), responseType: 'json' as const}).subscribe(
+      {next: r => this.log("Posted new season")}
+    );
+  }
+
   private defaultOptions() {
     let headers = new HttpHeaders({
 	    'Content-Type': 'application/json'

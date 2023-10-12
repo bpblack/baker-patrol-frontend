@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { FormSubmittedEvent, Substitute } from '../../shared-forms/form-types';
+import { FormSubmittedEvent, Substitute } from '../../shared/form-types';
 import { BakerApiService } from 'src/app/shared/services/baker-api.service';
 import { IconDefinition, faGear, faSleigh } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';

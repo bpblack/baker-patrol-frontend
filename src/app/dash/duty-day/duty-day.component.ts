@@ -6,7 +6,7 @@ import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
 import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, User, hasRole } from 'src/app/shared/services/baker-api.service';
-import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
+import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared/form-types';
 
 export interface PatrolResponsibility {
   patrolId: number;

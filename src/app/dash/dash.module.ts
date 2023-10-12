@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 
 import { RouterModule } from '@angular/router';
 
@@ -15,7 +13,6 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { DropzoneCdkModule } from '@ngx-dropzone/cdk';
-import { DropzoneMaterialModule } from '@ngx-dropzone/material';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { DashRoutingModule } from './dash-routing.module';
@@ -28,14 +25,16 @@ import { SearchRosterPipe } from './roster/roster-search.pipe';
 import { SearchComponent } from './search/search.component';
 import { DutyDayComponent } from './duty-day/duty-day.component';
 import { ResponsibilitySwapFormComponent } from './duty-day/responsibility-swap-form/responsibility-swap-form.component';
-import { CreateAssignFormComponent } from './shared-forms/create-assign-form/create-assign-form.component';
-import { AssignFormComponent } from './shared-forms/assign-form/assign-form.component';
 import { PatrolsTabComponent } from './patrols/patrols-tab/patrols-tab.component';
 import { RequestsTabComponent } from './patrols/requests-tab/requests-tab.component';
 import { UpdateEmailComponent } from './account/update-email/update-email.component';
 import { CreateFormComponent } from './patrols/create-form/create-form.component';
 import { EmailFormComponent } from './patrols/email-form/email-form.component';
 import { OpenTabComponent } from './patrols/open-tab/open-tab.component';
+
+import { CreateAssignFormComponent } from './shared/create-assign-form/create-assign-form.component';
+import { AssignFormComponent } from './shared/assign-form/assign-form.component';
+import { BakerDropzone } from './shared/dropzone/dropzone.component';
 
 import { AccountComponent } from './account/account.component';
 import { UpdatePasswordComponent } from './account/update-password/update-password.component';
@@ -81,7 +80,8 @@ import { AdminSettingsComponent } from './season/settings/admin-settings.compone
     SearchStudentsPipe,
     StudentsComponent,
     CprSettingsComponent,
-    AdminSettingsComponent
+    AdminSettingsComponent,
+    BakerDropzone
   ],
   imports: [
     CommonModule,
@@ -97,10 +97,7 @@ import { AdminSettingsComponent } from './season/settings/admin-settings.compone
     NgxMaskDirective,
     NgxMaskPipe,
     FontAwesomeModule,
-    MatFormFieldModule,
-    MatInputModule,
     DropzoneCdkModule,
-    DropzoneMaterialModule,
     DashRoutingModule
   ],
   providers: [provideNgxMask()]

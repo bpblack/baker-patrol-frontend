@@ -22,10 +22,8 @@ const validEnd: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
 const validLength: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
   const s = c.get('start')!.value;
   const e = c.get('end')!.value;
-  console.log('Valid length?', s, e)
-  if (s && c) {
+  if (s && e) {
     const ndays = Math.round((e.getTime() - s.getTime())/(24*3600*1000));
-    console.log("Number of weekends is", Math.floor((s.getDay() + ndays)/7));
     if (Math.floor((s.getDay() + ndays)/7) !== environment.numWeekends){
       return {invalidLength: true};
     }
@@ -49,7 +47,8 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public seasonSetupForm = this._fb.group({
     start: new FormControl<Date | null>(null, [Validators.required, validStart]),
     end: new FormControl<Date | null>(null, [Validators.required, validEnd]),
-    file: new FormControl<File | null>(null, [Validators.required, FileInputValidators.accept('application/json')])
+    team: new FormControl<string>('', [Validators.required]),
+    roster: new FormControl<File | null>(null, [Validators.required, FileInputValidators.accept('application/json')])
   }, {validators: validLength});
 
   constructor(private _api: BakerApiService, private _fb: FormBuilder) { 
@@ -66,7 +65,6 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
     this.setupSub = this.seasonSetupForm.valueChanges.subscribe(c => {
       this.errors.setup = [];
-      this._api.log("Change is", c);
       if (c.start && this.seasonSetupForm.controls['start'].errors?.['invalidStart']) {
         this.errors.setup.push('The starting date must be a Friday in November ' + this.startMonth[0].getFullYear() + '.');
       }
@@ -76,7 +74,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
       if (c.start && c.end && this.seasonSetupForm.errors?.['invalidLength']) {
         this.errors.setup.push('The season must have ' + environment.numWeekends + ' weekends.');
       }
-      if (c.file && this.seasonSetupForm.controls['file'].errors?.['accept']) {
+      if (c.roster && this.seasonSetupForm.controls['roster'].errors?.['accept']) {
         this.errors.setup.push('The uploaded file must be a *.json file.');
       }
     });
@@ -87,7 +85,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   }
 
   onSetupSubmit() {
-    
+    this._api.addSeason(this.seasonSetupForm.getRawValue());
   }
 
   styleControl(ac: AbstractControl) {
@@ -101,7 +99,7 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   }
 
   get fileName(): string | null {
-    const f: File | null = this.seasonSetupForm.controls['file'].value;
+    const f: File | null = this.seasonSetupForm.controls['roster'].value;
     return f ? f.name : null;
   }
 

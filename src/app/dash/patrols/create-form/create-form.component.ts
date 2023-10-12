@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { finalize } from 'rxjs';
 import { BakerApiService, SubAssignment } from 'src/app/shared/services/baker-api.service';
-import { AssignmentSuccessEvent, FormSubmittedEvent } from '../../shared-forms/form-types';
+import { AssignmentSuccessEvent, FormSubmittedEvent } from '../../shared/form-types';
 
 @Component({
   selector: 'baker-create-sub-form',

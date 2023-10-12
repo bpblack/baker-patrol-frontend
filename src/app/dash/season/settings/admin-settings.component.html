@@ -3,7 +3,7 @@
     <h2>Season Setup</h2>
   </div>
   <div *ngIf="latest; else loading" class="card-body">
-    <form *ngIf="today > end; else current" class="row g-2" [formGroup]="seasonSetupForm" (ngSubmit)="onSetupSubmit()">
+    <form *ngIf="today > end; else current" class="row g-2 align-items-center" [formGroup]="seasonSetupForm" (ngSubmit)="onSetupSubmit()">
       <div *ngIf="this.errors.setup.length > 0" class="col-md-12">
         <alert type="danger" [dismissible]="false">
           <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
@@ -13,28 +13,35 @@
           </ul>
         </alert>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <div class="input-group">
           <span class="input-group-text" id="sdate">Start</span>
           <input [class]="styleControl(seasonSetupForm.controls['start'])" #datepickerMDY="bsDatepicker" aria-describedby="sdate" bsDatepicker formControlName="start"
             [bsConfig]="dateConfig" [minDate]="this.startMonth[0]" [maxDate]="this.startMonth[1]" placeholder="MM/DD/YYYY">
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-4">
         <div class="input-group">
           <span class="input-group-text" id="edate">End</span>
           <input [class]="styleControl(seasonSetupForm.controls['end'])" #datepickerMDY="bsDatepicker" aria-describedby="edate" bsDatepicker formControlName="end"
             [bsConfig]="dateConfig" [minDate]="this.endMonth[0]" [maxDate]="this.endMonth[1]" placeholder="MM/DD/YYYY">
         </div>
       </div>
+      <div class="col-md-4">
+        <label class="form-label me-2">First Sat Team:</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="team" id="ateam" value="a" formControlName="team">
+          <label class="form-check-label" for="ateam">A Team</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="team" id="cteam" value="c" formControlName="team">
+          <label class="form-check-label" for="cteam">C Team</label>
+        </div>
+      </div>
       <div class="col-md-12">
-        <mat-form-field appearance="outline" [style.width.px]="315">
-          <ngx-mat-dropzone placeholder="Drop Setup File Here" [required]="true" shouldLabelFloat="true">
-            <input type="file" fileInput formControlName="file"/>
-          </ngx-mat-dropzone>
-          <mat-error>Only JSON files are allowed</mat-error>
-          <mat-hint *ngIf="fileName">{{fileName}} added!</mat-hint>
-        </mat-form-field>
+        <baker-dropzone [message]="fileName ? fileName : 'Drag and drop a roster file.'">
+          <input type="file" fileInput formControlName="roster"/>
+        </baker-dropzone>
       </div>
       <div class="col-md-12">
         <button *ngIf="true" type="submit" class="btn btn-danger btn-block" [disabled]="!seasonSetupForm.valid">Initialize New Season!</button>
