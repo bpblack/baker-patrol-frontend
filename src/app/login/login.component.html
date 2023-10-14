@@ -20,28 +20,28 @@
           <div class="row">
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
             <alert *ngIf="error" type="danger" [dismissible]="true" (onClose)="closeError()">
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+              <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
               {{error}}
             </alert>
           </div>
           <div class="row">
-            <alert *ngIf="showAlert(email)" type="danger">
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
-              A valid email address is required.
-            </alert>
             <div class="input-group">
-              <span class="input-group-text" id="at"><fa-icon [icon]="iat"></fa-icon></span>
+              <span class="input-group-text" id="at"><fa-icon [icon]="icons.at"></fa-icon></span>
               <input type="email" [class]="styleControl(email)" id="email" formControlName="email" placeholder="name@example.com" aria-labelledby="name@exmple.com" aria-describedby="at">
+              <div *ngIf="showAlert(email)" class="invalid-feedback">
+                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                A valid email address is required.
+              </div>
             </div>
           </div>
           <div class="row">
-            <alert *ngIf="showAlert(password)" type="danger">            
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
-              A valid password is required.
-            </alert>
             <div class="input-group">
-              <span class="input-group-text" id="key"><fa-icon [icon]="ikey"></fa-icon></span>
+              <span class="input-group-text" id="key"><fa-icon [icon]="icons.key"></fa-icon></span>
               <input type="password" [class]="styleControl(password)" formControlName="password" placeholder="Password" aria-labelledby="Password" aria-describedby="key">
+              <div *ngIf="showAlert(password)" class="invalid-feedback">
+                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                A valid password is required.
+              </div>
             </div>
           </div>
           <div class="nput-group">
@@ -60,7 +60,7 @@
 
 <ng-template #loggingin>
   <button type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>
     Logging in...
   </button>
 </ng-template>

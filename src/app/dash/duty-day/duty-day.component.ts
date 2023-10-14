@@ -91,16 +91,17 @@ export class DutyDayComponent {
     return "mailto:?cc=" + this.patrolling.join(",") + "," +this.hosting.join(",") + "&subject=" + this.dutyDay.team.name + " Duty Day " + this.dutyDay.date;
   }
 
-  rowColor(patrollerId: number, latestSub: LatestSub | null) : string {
+  rowColor(patrollerId: number | null | undefined, latestSub: LatestSub | null) : string {
     if (this.isLeader) {
+      this._api.log("Should be danger", patrollerId === null);
       if (latestSub) {
         if (latestSub.accepted) {
           return 'table-success';
         } else {
           return latestSub.sub_id ? 'table-warning' : 'table-danger';
         }
-      } else if (patrollerId === null) {
-        return 'danger';
+      } else if (patrollerId === undefined || patrollerId === null) {
+        return 'table-danger';
       }
     }
     return '';

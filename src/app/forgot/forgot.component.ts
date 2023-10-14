@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { BakerApiService } from '../shared/services/baker-api.service';
-import { faAt, faCircleCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faCircleCheck, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { styleControl } from '../shared/validations/validations';
 
 @Component({
@@ -13,9 +13,7 @@ export class ForgotComponent {
   public success: boolean = false;
   public submitted: boolean = false;
   public error: string | null = null;
-  public iat = faAt;
-  public icheck = faCircleCheck;
-  public itriangle = faTriangleExclamation;
+  public icons = {at: faAt, gear: faGear, circle: faCircleCheck, triangle: faTriangleExclamation};
   public forgotForm: FormGroup = this._fb.group({
     email: new FormControl('', [Validators.required, Validators.email])
   });

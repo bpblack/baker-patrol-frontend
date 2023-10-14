@@ -19,7 +19,7 @@
             <tbody>
               <tr *ngFor="let dd of dutyDays | searchDutyDays:searchTerm" >
                 <td data-title="Date">
-                  <a routerLink="../DutyDay/{{dd.id}}">{{dd.date}}</a>
+                  <a routerLink="../../DutyDay/{{dd.id}}">{{dd.date}}</a>
                 </td>
                 <td data-title="Team">{{dd.team!.name}}</td>
               </tr>

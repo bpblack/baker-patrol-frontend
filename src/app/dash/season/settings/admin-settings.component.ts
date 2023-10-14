@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FileInputValidators } from '@ngx-dropzone/cdk';
-import { Subscription } from 'rxjs';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { Subscription, finalize } from 'rxjs';
 import { BakerApiService, Season } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 import { environment } from 'src/environments/environment';
@@ -37,13 +38,16 @@ const validLength: ValidatorFn = (c: AbstractControl): ValidationErrors | null =
 })
 export class AdminSettingsComponent implements OnInit, OnDestroy {
   public latest: Season;
+  public setupSub: Subscription;
   public endMonth: Date[] = [];
   public startMonth: Date[] = [];
   public today: Date = new Date();
-  public errors = {setup: <string[]>[]};
-  public setupSub: Subscription;
+  public initConfirm: boolean = false;
+  public setupErrors = {start: '', end: '', season: '', roster: '', api: ''};
+  public disableClose = {initialize: false };
   public icons = {gear: faGear, triangle: faTriangleExclamation};
   public dateConfig = {containerClass: 'theme-dark-blue', withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'MM/DD/YYYY' };
+
   public seasonSetupForm = this._fb.group({
     start: new FormControl<Date | null>(null, [Validators.required, validStart]),
     end: new FormControl<Date | null>(null, [Validators.required, validEnd]),
@@ -51,7 +55,11 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     roster: new FormControl<File | null>(null, [Validators.required, FileInputValidators.accept('application/json')])
   }, {validators: validLength});
 
-  constructor(private _api: BakerApiService, private _fb: FormBuilder) { 
+  @ViewChild('initializeSeason') initializeModal: any;
+  private _initializeRef: BsModalRef;
+  private _modalConfig =  {animated: true, backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'};
+
+  constructor(private _api: BakerApiService, private _fb: FormBuilder, private _modal: BsModalService) { 
     this.startMonth.push(new Date(this.today.getFullYear(), 10, 1));
     this.startMonth.push(new Date(this.today.getFullYear(), 10, 30));
     this.endMonth.push(new Date(this.today.getFullYear() + 1, 3, 1));
@@ -64,28 +72,36 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     });
 
     this.setupSub = this.seasonSetupForm.valueChanges.subscribe(c => {
-      this.errors.setup = [];
-      if (c.start && this.seasonSetupForm.controls['start'].errors?.['invalidStart']) {
-        this.errors.setup.push('The starting date must be a Friday in November ' + this.startMonth[0].getFullYear() + '.');
+      if (c.start) {
+        this.setupErrors.start = '';
+        if (this.seasonSetupForm.controls['start'].errors?.['invalidStart']) {
+          this.setupErrors.start = 'The starting date must be a Friday in November ' + this.startMonth[0].getFullYear() + '.';
+        }
       }
-      if (c.end && this.seasonSetupForm.controls['end'].errors?.['invalidEnd']) {
-        this.errors.setup.push('The ending date must be a Sunday in April ' + this.endMonth[0].getFullYear() + '.');
+      if (c.end) {
+        this.setupErrors.end = '';
+        if (this.seasonSetupForm.controls['end'].errors?.['invalidEnd']) {
+          this.setupErrors.end = 'The ending date must be a Sunday in April ' + this.endMonth[0].getFullYear() + '.';
+        }
       }
-      if (c.start && c.end && this.seasonSetupForm.errors?.['invalidLength']) {
-        this.errors.setup.push('The season must have ' + environment.numWeekends + ' weekends.');
+      if (c.start && c.end) {
+        this.setupErrors.season = '';
+        if (this.seasonSetupForm.errors?.['invalidLength']) {
+          this.setupErrors.season = 'The season must have ' + environment.numWeekends + ' weekends.';
+        }
       }
-      if (c.roster && this.seasonSetupForm.controls['roster'].errors?.['accept']) {
-        this.errors.setup.push('The uploaded file must be a *.json file.');
+      if (c.roster) {
+        this.setupErrors.roster = ''
+        if (this.seasonSetupForm.controls['roster'].errors?.['accept']) {
+          this._api.log('roster error');
+          this.setupErrors.roster = 'The uploaded file must be a *.json file.';
+        }
       }
     });
   }
 
   ngOnDestroy() {
     this.setupSub.unsubscribe();
-  }
-
-  onSetupSubmit() {
-    this._api.addSeason(this.seasonSetupForm.getRawValue());
   }
 
   styleControl(ac: AbstractControl) {
@@ -103,4 +119,27 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
     return f ? f.name : null;
   }
 
+  onInitializeSubmit() {
+    this._initializeRef = this._modal.show(this.initializeModal, this._modalConfig);
+  }
+
+  hideInitialize() {
+    this._initializeRef.hide();
+    this.initConfirm = false;
+    this.setupErrors.api = '';
+  }
+
+  onInitializeConfirmSubmit() {
+    this.disableClose.initialize = true;
+    this._api.addSeason(this.seasonSetupForm.getRawValue()).pipe(
+      finalize(() => this.disableClose.initialize = false)
+    ).subscribe({
+      next: (s: Season) => {
+        this.latest = s;
+        this.seasonSetupForm.reset();
+        this.hideInitialize();
+      },
+      error: (e: Error) => this.setupErrors.api = e.message
+    });
+  }
 }

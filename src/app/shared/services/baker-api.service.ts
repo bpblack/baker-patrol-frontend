@@ -38,7 +38,7 @@ export interface User {
 }
 
 export interface RosterUser {
-  id?: number;
+  id?: number | null;
   name: string;
   phone?: string;
   email?: string;
@@ -622,14 +622,25 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-  addSeason(f: {start: Date | null, end: Date | null, team: string | null, roster: File | null}) {
+  addSeason(f: {start: Date | null, end: Date | null, team: string | null, roster: File | null}): Observable<Season> {
     let data = new FormData(); 
-    data.append('start', f.start!.toDateString());
-    data.append('end', f.end!.toDateString());
+    data.append('start', f.start!.toISOString());
+    data.append('end', f.end!.toISOString());
     data.append('team', f.team!);
     data.append('roster', f.roster!);
-    this.http.post(this.url + '/admin/seasons', data, {headers: new HttpHeaders(), responseType: 'json' as const}).subscribe(
-      {next: r => this.log("Posted new season")}
+    let newSeason: Season;
+    return this.http.post<Season>(this.url + '/admin/seasons', data, {headers: new HttpHeaders(), responseType: 'json' as const}).pipe(
+      concatMap((s: Season) => {
+        newSeason = s;
+        return this.http.get<User>(this.url + '/users/' + this.currentUserId() + '/extra', this.defaultOptions());
+      }),
+      map((u: User) => {
+        //update the current user with their new season info
+        this._currentUser.next(u);
+        this._currentUserActual = u;
+        return newSeason;
+      }),
+      catchError(this.handleError)
     );
   }
 

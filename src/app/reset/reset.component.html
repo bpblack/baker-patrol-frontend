@@ -20,28 +20,28 @@
           <div class="row">
             <h1 class="h3 mb-3 fw-normal">Reset your password:</h1>
             <alert *ngIf="error" type="danger" [dismissible]="true" (onClose)="closeError()">
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+              <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
               {{error}}
             </alert>
           </div>
           <div class="row">
-            <alert *ngIf="showAlert(password)" type="danger">
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
-              A password of at least 8 characters is required.
-            </alert>
             <div class="input-group">
-              <span class="input-group-text" id="key1"><fa-icon [icon]="ikey"></fa-icon></span>
+              <span class="input-group-text" id="key1"><fa-icon [icon]="icons.key"></fa-icon></span>
               <input type="password" [class]="styleControl(password)" id="password" formControlName="password" placeholder="Password" aria-label="Password" aria-describedby="key1">
+              <div *ngIf="showAlert(password)" class="invalid-feedback">
+                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                A password of at least 8 characters is required.
+              </div>
             </div>
           </div>
           <div class="row">
-            <alert *ngIf="showFormAlert()" type="danger">
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
-              A valid matching password is required.
-            </alert>
             <div class="input-group">
-              <span class="input-group-text" id="key2"><fa-icon [icon]="ikey"></fa-icon></span>
+              <span class="input-group-text" id="key2"><fa-icon [icon]="icons.key"></fa-icon></span>
               <input type="password" [class]="styleControl(confirmPassword, resetForm.errors?.['noMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
+              <div *ngIf="showFormAlert()" class="invalid-feedback">
+                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                A valid matching password is required.
+              </div>
             </div>
           </div>
           <div class="input-group">
@@ -68,7 +68,7 @@
 <ng-template #success>
   <div class="col-md-6 col-lg-4">
     <alert type="success">
-      <fa-icon [icon]="icircle"></fa-icon>&nbsp;
+      <fa-icon [icon]="icons.circle"></fa-icon>&nbsp;
       Your password was successfully reset. You can now <a routerLink="/Login" class="alert-link">login</a>.
     </alert>
   </div>
@@ -76,7 +76,7 @@
 
 <ng-template #submitting>
   <button type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
     Resetting password...
   </button>
 </ng-template>

@@ -33,7 +33,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="rowColor(patrol.patroller.id!, patrol.latest_substitution)">
+          <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="rowColor(patrol.patroller.id, patrol.latest_substitution)">
             <td data-title="Patroller">{{patrol.patroller.name}}</td>
             <td data-title="Skills">{{patrol.patroller.skills}}</td>
             <td *ngIf="isLeader" data-title="Phone #">

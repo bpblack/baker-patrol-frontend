@@ -14,10 +14,7 @@ import { styleControl } from '../shared/validations/validations';
 export class LoginComponent {
   public error: string | null = null;
   public submitted: boolean = false;
-  public iat = faAt;
-  public ikey = faKey;
-  public igear = faGear;
-  public itriangle = faTriangleExclamation;
+  public icons = {at: faAt, key: faKey, gear: faGear, triangle: faTriangleExclamation};
   public loginForm: FormGroup = this._fb.group({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(8)])

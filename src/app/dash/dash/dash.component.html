@@ -29,13 +29,13 @@
             </a>
             <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
               <li *ngIf="roles.leader" class="nav-item">
-                <a class="nav-link" routerLinkActive="active" routerLink="./Season/Schedule">
+                <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Schedule">
                   <fa-icon [icon]="icons.calendar"></fa-icon>&nbsp;
                   Season
                 </a>
               </li>
               <li *ngIf="roles.leader" class="nav-item">
-                <a class="nav-link" routerLinkActive="active" routerLink="./Season/Settings">
+                <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Settings">
                   <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
                   Settings
                 </a>
