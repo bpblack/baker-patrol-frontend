@@ -26,7 +26,10 @@ export class ForgotComponent {
     this.clearError();
     this.submitted = true;
     this._api.forgot(this.forgotForm.controls['email'].value).subscribe({
-      next: s => this.submitted = false,
+      next: s => {
+        this.success = true;
+        this.submitted = false;
+      },
       error: e => {
         this.submitted = false;
         this.error = e.message

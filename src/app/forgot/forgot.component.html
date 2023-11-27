@@ -40,8 +40,8 @@
             </div>
           </div>
           <div class="row">
-            <div class="input-group">
-              <button *ngIf="!submitted; else verifying" type="submit" class="form-control btn btn-primary submit" [disabled]="!forgotForm.valid">Forgot</button>
+            <div class="input-group" [hidden]="wasSuccess()">
+              <button *ngIf="!submitted; else verifying" type="submit" class="form-control btn btn-primary submit" [disabled]="!forgotForm.valid">Send Password Reset</button>
             </div>
           </div>
           <div class="row d-md-flex">
