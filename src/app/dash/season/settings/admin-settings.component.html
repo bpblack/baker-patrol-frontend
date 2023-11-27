@@ -11,7 +11,7 @@
         <form *ngIf="today > end; else current" class="row g-2 align-items-center" [formGroup]="seasonSetupForm" (ngSubmit)="onInitializeSubmit()">
           <div *ngIf="setupErrors.season" class="col-md-12">
             <alert type="danger" [dismissible]="false">
-              <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+              <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
               {{setupErrors.season}}
             </alert>
           </div>
@@ -21,7 +21,7 @@
               <input [class]="styleControl(seasonSetupForm.controls['start'])" #datepickerMDY="bsDatepicker" aria-describedby="sdate" bsDatepicker formControlName="start"
                 [bsConfig]="dateConfig" [minDate]="this.startMonth[0]" [maxDate]="this.startMonth[1]" placeholder="MM/DD/YYYY">
               <div *ngIf="setupErrors.start" class="invalid-feedback">
-                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
                 {{setupErrors.start}}
               </div>
             </div>
@@ -32,7 +32,7 @@
               <input [class]="styleControl(seasonSetupForm.controls['end'])" #datepickerMDY="bsDatepicker" aria-describedby="edate" bsDatepicker formControlName="end"
                 [bsConfig]="dateConfig" [minDate]="this.endMonth[0]" [maxDate]="this.endMonth[1]" placeholder="MM/DD/YYYY">
               <div *ngIf="setupErrors.end" class="invalid-feedback">
-                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
                 {{setupErrors.end}}
               </div>
             </div>
@@ -71,8 +71,9 @@
 
 <ng-template #current>
   <alert type="warning">
-    <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
-    The current season runs until {{end | date}}. You can create a new season once the current season ends.
+    <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+    The current season runs until {{end | date}}. You can create a new season once the current season ends.<br><br>
+    <button type="submit" class="btn btn-primary btn-block" (click)="showEmailNewUsers()">Email new users</button>
   </alert>
 </ng-template>
 
@@ -85,8 +86,8 @@
   <div class="modal-body">
     <div class="container" *ngIf="this.seasonSetupForm.valid">
       <div *ngIf="setupErrors.api" class="row">
-        <alert type="danger" [dismissible]="true">
-          <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+        <alert type="danger" [dismissible]="true" (onClose)="clearApiError()">
+          <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
           {{setupErrors.api}}
         </alert>
       </div>
@@ -115,6 +116,44 @@
 <ng-template #submittedInitialize>
   <button type="submit" class="btn btn-danger btn-block" [disabled]="true">
     <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
-    Initializing Season
+    Initializing Season...
+  </button>
+</ng-template>
+
+<ng-template #emailNewUsers>
+  <div class="modal-header">
+    <h4 id="dialog-static-name" class="modal-title pull-left">Send New User Password Reset Emails</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disableClose.emailed" (click)="hideEmailNewUsers()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="setupErrors.api" class="row g-2">
+      <alert [dismissible]="true" type="danger" (click)="clearApiError()">
+        <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+        {{setupErrors.api}}
+      </alert>
+    </div>
+    <div *ngIf="emailCount" class="row g-2">
+      <alert [dismissible]="true" type="success" (click)="clearEmailCount()">
+        <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+        {{emailCount}} new user password reset emails sent.
+      </alert>
+    </div>
+    <div *ngIf="emailCount === null" class="row align-items-center g-2">
+      <div class="col-auto">
+        Do you want to send password reset emails now?
+      </div>
+      <div class="col">
+        <button *ngIf="!disableClose.emailed; else emailing" type="submit" class="btn btn-primary btn-block" (click)="onEmailNewUsers()">Yes</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #emailing>
+  <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
+    Emailing...
   </button>
 </ng-template>

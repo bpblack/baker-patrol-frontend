@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { FileInputValidators } from '@ngx-dropzone/cdk';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Subscription, finalize } from 'rxjs';
@@ -24,7 +24,7 @@ const validLength: ValidatorFn = (c: AbstractControl): ValidationErrors | null =
   const s = c.get('start')!.value;
   const e = c.get('end')!.value;
   if (s && e) {
-    const ndays = Math.round((e.getTime() - s.getTime())/(24*3600*1000));
+    const ndays = Math.round((e.getTime() - s.getTime())/(24*3600*1000)) + 1;
     if (Math.floor((s.getDay() + ndays)/7) !== environment.numWeekends){
       return {invalidLength: true};
     }
@@ -43,9 +43,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   public startMonth: Date[] = [];
   public today: Date = new Date();
   public initConfirm: boolean = false;
+  public emailCount: number | null = null;
   public setupErrors = {start: '', end: '', season: '', roster: '', api: ''};
-  public disableClose = {initialize: false };
-  public icons = {gear: faGear, triangle: faTriangleExclamation};
+  public disableClose = {initialize: false, emailed: false};
+  public icons = {gear: faGear, ok: faCircleCheck, tri: faTriangleExclamation};
   public dateConfig = {containerClass: 'theme-dark-blue', withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'MM/DD/YYYY' };
 
   public seasonSetupForm = this._fb.group({
@@ -57,6 +58,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
 
   @ViewChild('initializeSeason') initializeModal: any;
   private _initializeRef: BsModalRef;
+
+  @ViewChild('emailNewUsers') emailNewUserModal: any;
+  private _emailNewUserRef: BsModalRef;
+
   private _modalConfig =  {animated: true, backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'};
 
   constructor(private _api: BakerApiService, private _fb: FormBuilder, private _modal: BsModalService) { 
@@ -126,6 +131,10 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
   hideInitialize() {
     this._initializeRef.hide();
     this.initConfirm = false;
+    this.clearApiError();
+  }
+  
+  clearApiError() {
     this.setupErrors.api = '';
   }
 
@@ -141,5 +150,29 @@ export class AdminSettingsComponent implements OnInit, OnDestroy {
       },
       error: (e: Error) => this.setupErrors.api = e.message
     });
+  }
+
+  showEmailNewUsers() {
+    this._emailNewUserRef = this._modal.show(this.emailNewUserModal, this._modalConfig);
+  }
+
+  hideEmailNewUsers() {
+    this._emailNewUserRef.hide();
+    this.clearApiError();
+    this.clearEmailCount();
+  }
+
+  onEmailNewUsers() {
+    this.disableClose.emailed = true;
+    this._api.sendNewUserPasswordResets().pipe(
+      finalize(() => this.disableClose.emailed = false)
+    ).subscribe({
+      next: (c: number) => this.emailCount = c,
+      error: (e: Error) => this.setupErrors.api = e.message
+    });
+  }
+
+  clearEmailCount() {
+    this.emailCount = null;
   }
 }

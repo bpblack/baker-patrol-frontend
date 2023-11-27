@@ -644,6 +644,13 @@ export class BakerApiService implements IAuthService {
     );
   }
 
+  sendNewUserPasswordResets(): Observable<number> {
+    return this.http.get<{email_count: number}>(this.url + '/admin/users/email', this.defaultOptions()).pipe(
+      map(r => r.email_count),
+      catchError(this.handleError)
+    );
+  }
+
   private defaultOptions() {
     let headers = new HttpHeaders({
 	    'Content-Type': 'application/json'

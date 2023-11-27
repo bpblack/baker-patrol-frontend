@@ -17,7 +17,7 @@
                     <th class="col-md-3">Name</th>
                     <th class="col-md-3">Email</th>
                     <th class="col-md-3">Phone</th>
-                    <th class="col-md-3">Roles</th>
+                    <th *ngIf="isLeader" class="col-md-3">Roles</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -31,7 +31,7 @@
                     <td data-title="Phone">
                       <a href="tel:{{member.phone}}" class="baker-tel">{{member.phone}}</a>
                     </td>
-                    <td data-title="Roles">
+                    <td *ngIf="isLeader" data-title="Roles">
                       {{member.roles}}
                     </td>
                   </tr>
