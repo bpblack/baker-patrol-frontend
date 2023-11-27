@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Observable, Subscription, interval, of, startWith, switchMap } from 'rxjs';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { IconDefinition, faChalkboardUser, faGear, faPowerOff, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
-import { BakerApiService, Role, User, hasRole } from '../../shared/services/baker-api.service';
+import { faCalendarDays, faChalkboardUser, faGear, faPowerOff, faSchoolFlag } from '@fortawesome/free-solid-svg-icons';
+import { BakerApiService,User, hasRole } from '../../shared/services/baker-api.service';
 
 @Component({
   selector: 'baker-patrol-dash',
@@ -16,10 +16,7 @@ export class DashComponent implements OnInit, OnDestroy {
   public cprAdmin: boolean = false;
   public isCollapsed: boolean = true;
   public user: Observable<User>;
-  public igear: IconDefinition = faGear;
-  public ipower: IconDefinition = faPowerOff;
-  public ischool: IconDefinition = faSchoolFlag;
-  public ichalkboard: IconDefinition = faChalkboardUser;
+  public icons = {gear: faGear, power: faPowerOff, school: faSchoolFlag, chalkboard: faChalkboardUser, calendar: faCalendarDays}
   @ViewChild('logoutModal') logoutElement: any;
 
   private logoutRef: BsModalRef;

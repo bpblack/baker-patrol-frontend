@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors,
 import { BakerApiService } from '../shared/services/baker-api.service';
 import { ActivatedRoute } from '@angular/router';
 import { finalize } from 'rxjs';
-import { IconDefinition, faCircleCheck, faGear, faKey, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faGear, faKey, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { matchValidator, passwordRegexp, styleControl } from '../shared/validations/validations';
 
 @Component({
@@ -15,10 +15,7 @@ export class ResetComponent {
   public success: boolean = false;
   public error: string | null = null;
   public submitted: boolean = false;
-  public ikey: IconDefinition = faKey;
-  public igear: IconDefinition = faGear;
-  public icircle: IconDefinition = faCircleCheck;
-  public itriangle: IconDefinition = faTriangleExclamation;
+  public icons = {key: faKey, gear: faGear, circle: faCircleCheck, triangle: faTriangleExclamation};
   public resetForm: FormGroup = this._fb.group({
       password: new FormControl('', { validators: [Validators.required, Validators.pattern(passwordRegexp)] }),
       confirmPassword: new FormControl('', [Validators.required, Validators.pattern(passwordRegexp)]),      

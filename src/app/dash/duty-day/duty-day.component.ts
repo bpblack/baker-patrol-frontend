@@ -6,7 +6,7 @@ import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
 import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, User, hasRole } from 'src/app/shared/services/baker-api.service';
-import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
+import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared/form-types';
 
 export interface PatrolResponsibility {
   patrolId: number;
@@ -91,16 +91,17 @@ export class DutyDayComponent {
     return "mailto:?cc=" + this.patrolling.join(",") + "," +this.hosting.join(",") + "&subject=" + this.dutyDay.team.name + " Duty Day " + this.dutyDay.date;
   }
 
-  rowColor(patrollerId: number, latestSub: LatestSub | null) : string {
+  rowColor(patrollerId: number | null | undefined, latestSub: LatestSub | null) : string {
     if (this.isLeader) {
+      this._api.log("Should be danger", patrollerId === null);
       if (latestSub) {
         if (latestSub.accepted) {
           return 'table-success';
         } else {
           return latestSub.sub_id ? 'table-warning' : 'table-danger';
         }
-      } else if (patrollerId === null) {
-        return 'danger';
+      } else if (patrollerId === undefined || patrollerId === null) {
+        return 'table-danger';
       }
     }
     return '';

@@ -18,8 +18,8 @@ export interface UserToken {
 export interface Season {
   id: number;
   name: string;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
 }
 
 export interface Role {
@@ -38,7 +38,7 @@ export interface User {
 }
 
 export interface RosterUser {
-  id?: number;
+  id?: number | null;
   name: string;
   phone?: string;
   email?: string;
@@ -365,6 +365,12 @@ export class BakerApiService implements IAuthService {
     );
   }
 
+  getLatestSeason(): Observable<Season> {
+    return this.http.get<Season>(this.url + '/admin/seasons/latest', this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   getSeasonDutyDays(seasonId: number): Observable<DutyDay[]> {
     return this.http.get<DutyDay[]>(this.url + '/seasons/' + seasonId + '/duty_days', this.defaultOptions()).pipe(
       catchError(this.handleError)
@@ -612,6 +618,35 @@ export class BakerApiService implements IAuthService {
 
   addClassroom(f: {name: string, address: string, map_link: string}): Observable<Classroom> {
     return this.http.post<Classroom>(this.url + '/admin/classrooms', JSON.stringify(f), this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  addSeason(f: {start: Date | null, end: Date | null, team: string | null, roster: File | null}): Observable<Season> {
+    let data = new FormData(); 
+    data.append('start', f.start!.toISOString());
+    data.append('end', f.end!.toISOString());
+    data.append('team', f.team!);
+    data.append('roster', f.roster!);
+    let newSeason: Season;
+    return this.http.post<Season>(this.url + '/admin/seasons', data, {headers: new HttpHeaders(), responseType: 'json' as const}).pipe(
+      concatMap((s: Season) => {
+        newSeason = s;
+        return this.http.get<User>(this.url + '/users/' + this.currentUserId() + '/extra', this.defaultOptions());
+      }),
+      map((u: User) => {
+        //update the current user with their new season info
+        this._currentUser.next(u);
+        this._currentUserActual = u;
+        return newSeason;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  sendNewUserPasswordResets(): Observable<number> {
+    return this.http.get<{email_count: number}>(this.url + '/admin/users/email', this.defaultOptions()).pipe(
+      map(r => r.email_count),
       catchError(this.handleError)
     );
   }

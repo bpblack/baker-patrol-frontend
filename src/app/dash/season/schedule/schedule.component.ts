@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IconDefinition, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { Observable, concatMap } from 'rxjs';
 import { BakerApiService, DutyDay, Season } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-season',
-  templateUrl: './season.component.html'
+  selector: 'baker-schedule',
+  templateUrl: './schedule.component.html'
 })
-export class SeasonComponent {
+export class ScheduleComponent implements OnInit {
   public seasonName: string;
   public searchTerm: string = '';
   public dutyDays: Observable<DutyDay[]>;

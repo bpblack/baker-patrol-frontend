@@ -1,52 +1,50 @@
-<div class="pt-3">
-  <div class="card">
-    <div class="card-header">
-      <h2>CPR Setup</h2>
-    </div>
-    <div class="card-body">
-      <div class="card">
-        <div class="card-header">
-          <h4>Add a classroom</h4>
-        </div>
-        <div class="card-body">
-          <form class="row g-2" [formGroup]="addClassroomForm" (ngSubmit)="onAddClassroom()">
-            <div *ngIf="error" class="col-md-12">
-              <alert type="danger" [dismissible]="true" (click)="clearError()">
-                <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
-                {{error}}
-              </alert>
+<div class="card mt-3">
+  <div class="card-header">
+    <h2>CPR Setup</h2>
+  </div>
+  <div class="card-body">
+    <div class="card">
+      <div class="card-header">
+        <h4>Add a classroom</h4>
+      </div>
+      <div class="card-body">
+        <form class="row g-2" [formGroup]="addClassroomForm" (ngSubmit)="onAddClassroom()">
+          <div *ngIf="error" class="col-md-12">
+            <alert type="danger" [dismissible]="true" (click)="clearError()">
+              <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+              {{error}}
+            </alert>
+          </div>
+          <div *ngIf="success" class="col-md-12">
+            <alert type="success" [dismissible]="true" (click)="clearSuccess()">
+              <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+              {{success}}
+            </alert>
+          </div>
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text" id="cname">Name</span>
+              <input type="text" [class]="styleControl(classroomName)" aria-describedby="cname" formControlName="name" placeholder="Name">
             </div>
-            <div *ngIf="success" class="col-md-12">
-              <alert type="success" [dismissible]="true" (click)="clearSuccess()">
-                <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
-                {{success}}
-              </alert>
+          </div>
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text" id="caddr">Address</span>
+              <input type="text" [class]="styleControl(classroomAddress)" aria-describedby="caddr" formControlName="address" placeholder="Copied Address from Google Maps">
             </div>
-            <div class="col-md-6">
-              <div class="input-group">
-                <span class="input-group-text" id="cname">Name</span>
-                <input type="text" [class]="styleControl(classroomName)" aria-describedby="cname" formControlName="name" placeholder="Name">
-              </div>
+          </div>
+          <div class="col-md-12">
+            <div class="input-group">
+              <span class="input-group-text" id="clink">Map link</span>
+              <input type="text" [class]="styleControl(classroomLink)" aria-describedby="clink" formControlName="map_link" placeholder="Google maps share url">
             </div>
-            <div class="col-md-6">
-              <div class="input-group">
-                <span class="input-group-text" id="caddr">Address</span>
-                <input type="text" [class]="styleControl(classroomAddress)" aria-describedby="caddr" formControlName="address" placeholder="Copied Address from Google Maps">
-              </div>
+          </div>
+          <div class="col-md-12">
+            <div class="input-group">
+              <button *ngIf="!disable; else adding" type="submit" class="btn btn-primary btn-block" [disabled]="!addClassroomForm.valid">Create Classroom</button>
             </div>
-            <div class="col-md-12">
-              <div class="input-group">
-                <span class="input-group-text" id="clink">Map link</span>
-                <input type="text" [class]="styleControl(classroomLink)" aria-describedby="clink" formControlName="map_link" placeholder="Google maps share url">
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="input-group">
-                <button *ngIf="!disable; else adding" type="submit" class="btn btn-primary btn-block" [disabled]="!addClassroomForm.valid">Create Classroom</button>
-              </div>
-            </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

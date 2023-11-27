@@ -21,22 +21,22 @@
             <h1 class="h3 mb-3 fw-normal">Password reset</h1>
             <alert *ngIf="wasSuccess()" type="success">
               <span class="sr-only">Success:</span>
-              <fa-icon [icon]="icheck"></fa-icon>&nbsp;
+              <fa-icon [icon]="icons.circle"></fa-icon>&nbsp;
               A password reset email has been sent. Please check your email and follow the link in the reset message.
             </alert>
             <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
-              <fa-icon [icon]="itriangle"></fa-icon>&nbsp;
+              <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
               {{error}}
             </alert>
           </div>
           <div class="row" [hidden]="wasSuccess()">
-            <!-- Using #username, we can identify this input to get the value on the form's submit event -->
-            <alert *ngIf="showAlert()" type="danger">
-              A valid email address is required.
-            </alert>
             <div class="input-group">
-              <span class="input-group-text" id="at"><fa-icon [icon]="iat"></fa-icon></span>
+              <span class="input-group-text" id="at"><fa-icon [icon]="icons.at"></fa-icon></span>
               <input type="email" [class]="styleControl()" id="email" formControlName="email" placeholder="name@example.com" aria-labelledby="name@exmple.com" aria-describedby="at">
+              <div *ngIf="showAlert()" class="invalid-feedback">
+                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                A valid email address is required.
+              </div>
             </div>
           </div>
           <div class="row">
@@ -57,7 +57,7 @@
 
 <ng-template #verifying>
   <button type="submit" class="form-control btn btn-primary submit" [disabled]=true>
-    <i class="fa fa-cog fa-spin fa-fw"></i>
+    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
     Verifying email...
   </button>
 </ng-template>

@@ -3,7 +3,7 @@ import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Subscription, concatMap, finalize, interval, startWith, switchMap } from 'rxjs';
 import { BakerApiService, PatrolDetails, PatrolDutyDay, Season, Substitution, Substitutions } from 'src/app/shared/services/baker-api.service';
-import { AssignmentSuccessEvent, isAssignmentSuccessEvent, FormSubmittedEvent, isFormSubmittedEvent } from '../shared-forms/form-types';
+import { AssignmentSuccessEvent, isAssignmentSuccessEvent, FormSubmittedEvent, isFormSubmittedEvent } from '../shared/form-types';
 
 interface ITab {
   active: boolean,

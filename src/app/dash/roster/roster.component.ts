@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { IconDefinition, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { Observable, concatMap} from 'rxjs';
-import { BakerApiService, Season, TeamRoster } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, Season, TeamRoster, User, hasRole } from 'src/app/shared/services/baker-api.service';
 
 @Component({
   selector: 'baker-roster',
   templateUrl: './roster.component.html'
 })
 export class RosterComponent {
+  public isLeader: boolean = false;
   public searchTerm: string = '';
   public seasonName: string;
   public igear: IconDefinition = faGear;
@@ -17,6 +18,11 @@ export class RosterComponent {
   constructor(private _api: BakerApiService) { }
 
   ngOnInit() {
+    this._api.currentUser.subscribe(
+      (user: User) => {
+        this.isLeader = hasRole(user.roles, new Set(['admin', 'leader']));
+      }
+    );
     this.roster = this._api.currentUserSeason.pipe(
       concatMap((s: Season) => {
         this.seasonName = s.name;

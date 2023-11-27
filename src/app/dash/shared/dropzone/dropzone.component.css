@@ -1,0 +1,33 @@
+.baker-dropzone {
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 25px;
+  transition: 0.2s;
+}
+
+.choose-file-button {
+  flex-shrink: 0;
+  padding: 8px 15px;
+  margin-right: 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.file-message {
+  font-size: small;
+  font-weight: 300;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invalid-file {
+  width: 100%;
+  margin-top: .25rem;
+  font-size: .875em;
+  color: #dc3545;
+}

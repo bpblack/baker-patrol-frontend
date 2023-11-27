@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { DutyDay } from '../../shared/services/baker-api.service';
+import { DutyDay } from '../../../shared/services/baker-api.service';
 
 @Pipe({name: 'searchDutyDays'})
 export class SearchDutyDaysPipe implements PipeTransform {
@@ -12,7 +12,7 @@ export class SearchDutyDaysPipe implements PipeTransform {
         (dd: DutyDay) => {
           let teamName = (dd.team) ? dd.team.name.toLowerCase().split(' ')[0] + ' ' : '';
           //search shouldn't be blank, and skip the team portion of team name since it's always team
-          if (dd.date.indexOf(sl) > -1 || teamName.indexOf(sl) > -1) {
+          if (dd.date.toLocaleString().indexOf(sl) > -1 || teamName.indexOf(sl) > -1) {
             return true;
           }
           return false;
