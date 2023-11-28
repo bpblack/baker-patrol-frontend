@@ -29,6 +29,7 @@
     "@ngx-dropzone/cdk": "^16.1.1",
     "bootstrap": "^5.3.1",
     "express": "^4.18.2",
+    "express-sslify": "^1.2.0",
     "ngx-bootstrap": "^11.0.2",
     "ngx-mask": "^16.3.6",
     "path": "^0.12.7",

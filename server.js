@@ -1,6 +1,7 @@
 let express = require('express');
+let enforce = require('express-sslify')
 let app = express();
-app.use(express.static(__dirname+'/dist/baker-patrol-frontend'));
+app.use(enforce.HTTPS({ trustProtoHeader: true }), express.static(__dirname+'/dist/baker-patrol-frontend'));
 app.get('/*', (req, resp) => {
   resp.sendFile(__dirname+'/dist/baker-patrol-frontend/index.html')
 });
