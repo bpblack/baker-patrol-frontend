@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 
-export const passwordRegexp = "^[a-zA-Z0-9!#$%&'\"*+\/=?^_`{|}~.-]{8,72}$";
+export const passwordRegexp = /^\S{8,}$/;
 
 export function matchValidator(val1: string, val2: string): ValidatorFn {
   return (f: AbstractControl): ValidationErrors | null => {
