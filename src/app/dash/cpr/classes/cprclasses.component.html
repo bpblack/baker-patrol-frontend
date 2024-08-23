@@ -98,7 +98,7 @@
           <span class="input-group-text" id="ccr">Classroom</span>
           <select [class]="styleControl(getAddClass('classroom_id'), 'form-select')" formControlName="classroom_id" aria-describedby="ccr">
             <option value="" disabled selected>Please choose</option>
-            <option *ngFor="let c of cprClassrooms" [value]="c.id">{{c.name}} @ {{c.address}}</option>
+            <option *ngFor="let c of cprClassrooms" [value]="c.id">{{c.name}} &#64; {{c.address}}</option>
           </select>
         </div>
       </div>

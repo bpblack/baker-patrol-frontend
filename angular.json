@@ -68,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "baker-patrol-frontend:build:production"
+              "buildTarget": "baker-patrol-frontend:build:production"
             },
             "development": {
-              "browserTarget": "baker-patrol-frontend:build:development"
+              "buildTarget": "baker-patrol-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -79,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "baker-patrol-frontend:build"
+            "buildTarget": "baker-patrol-frontend:build"
           }
         },
         "test": {

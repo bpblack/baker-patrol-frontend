@@ -207,7 +207,7 @@
     <div class="col">
       <select class="form-select form-select-sm" formControlName="cpr_class_id">
         <option [value]="null" [disabled]="showChange.s!.cpr_class_id === null">Uregistered</option>
-        <option *ngFor="let c of cprClasses" [value]="c.id" [disabled]="c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count">{{c.time}} @ {{c.location}}</option>
+        <option *ngFor="let c of cprClasses" [value]="c.id" [disabled]="c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count">{{c.time}} &#64; {{c.location}}</option>
       </select>
     </div>
     <div class="col">
