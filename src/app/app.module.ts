@@ -23,7 +23,8 @@ export function tokenGetter() {
   return localStorage.getItem("id_token");
 }
 
-@NgModule({ declarations: [
+@NgModule({ 
+    declarations: [
         AppComponent,
         LoginComponent,
         ForgotComponent,
@@ -47,5 +48,6 @@ export function tokenGetter() {
         FontAwesomeModule,
         DashModule
     ], 
-    providers: [provideHttpClient(withInterceptorsFromDi())] })
+    providers: [provideHttpClient(withInterceptorsFromDi())] 
+})
 export class AppModule { }
