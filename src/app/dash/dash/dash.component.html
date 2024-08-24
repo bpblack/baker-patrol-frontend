@@ -12,103 +12,109 @@
       </button>
     </div>
     <div class="collapse navbar-collapse flex-grow-1 justify-content-end" patrolNavbar [collapse]="isCollapsed">
-      <div *ngIf="(user | async) as user">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" routerLinkActive="active" routerLink="./Patrols">Duty Days</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLinkActive="active" routerLink="./Team">Team</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLinkActive="active" routerLink="./Roster">Roster</a>
-          </li>
-          <li *ngIf="roles.admin; else leaderSchedule" class="nav-item dropdown" dropdown>
-            <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Admin
-            </a>
-            <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
-              <li *ngIf="roles.leader" class="nav-item">
-                <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Schedule">
-                  <fa-icon [icon]="icons.calendar"></fa-icon>&nbsp;
-                  Season
+      @if (user | async; as user) {
+        <div>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" routerLinkActive="active" routerLink="./Patrols">Duty Days</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLinkActive="active" routerLink="./Team">Team</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLinkActive="active" routerLink="./Roster">Roster</a>
+            </li>
+            @if (roles.admin) {
+              <li class="nav-item dropdown" dropdown>
+                <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Admin
                 </a>
+                <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+                  <li class="nav-item">
+                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Schedule">
+                      <fa-icon [icon]="icons.calendar"></fa-icon>&nbsp;
+                      Season
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Settings">
+                      <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
+                      Settings
+                    </a>
+                  </li>
+                </ul>
               </li>
-              <li *ngIf="roles.leader" class="nav-item">
-                <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Settings">
-                  <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
-                  Settings
+            } @else if (roles.leader) {
+              <li class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="./Season/Schedule">Season</a>
+              </li>
+            }
+            @if (roles.cpr) {
+              <li class="nav-item dropdown" dropdown>
+                <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  CPR
                 </a>
+                <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Classes">
+                      <fa-icon [icon]="icons.school"></fa-icon>&nbsp;
+                      Classes
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Students">
+                      <fa-icon [icon]="icons.chalkboard"></fa-icon>&nbsp;
+                      Students
+                    </a>
+                  </li>
+                  @if (roles.cpradmin) {
+                    <li>
+                      <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Settings">
+                        <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
+                        Settings
+                      </a>
+                    </li>
+                  }
+                </ul>
               </li>
-            </ul>
-          </li>
-          <li *ngIf="roles.cpr" class="nav-item dropdown" dropdown>
-            <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              CPR
-            </a>
-            <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Classes">
-                  <fa-icon [icon]="icons.school"></fa-icon>&nbsp;
-                  Classes
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Students">
-                  <fa-icon [icon]="icons.chalkboard"></fa-icon>&nbsp;
-                  Students
-                </a>
-              </li>
-              <li *ngIf="roles.cpradmin">
-                <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Settings">
-                  <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
-                  Settings
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown" dropdown>
-            <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {{user.first_name}} {{user.last_name}}
-            </a>
-            <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" routerLinkActive="active" routerLink="./Account">
-                  <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
-                  Settings
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" routerLink="/Login" (click)="logout()">
-                  <fa-icon [icon]="icons.power"></fa-icon>&nbsp;
-                  Logout
-                </a>
-              </li>
-            </ul>
-          </li>
-        </ul>  
-      </div>
+            }
+            <li class="nav-item dropdown" dropdown>
+              <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{user.first_name}} {{user.last_name}}
+              </a>
+              <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" routerLinkActive="active" routerLink="./Account">
+                    <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
+                    Settings
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" routerLink="/Login" (click)="logout()">
+                    <fa-icon [icon]="icons.power"></fa-icon>&nbsp;
+                    Logout
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>  
+        </div>
+      }
     </div>
   </div>
 </nav>
 <div class="container">
-  <router-outlet *ngIf="(user | async); else loading"></router-outlet>
-</div>
-
-<ng-template #loading>
-  <div  class="card p-3 m-3">
-    <div class="card-body">
-      <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
-      Loading user info...
+  @if (user | async; as user) {
+    <router-outlet></router-outlet>
+  } @else {
+    <div  class="card p-3 m-3">
+      <div class="card-body">
+        <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+        Loading user info...
+      </div>
     </div>
-  </div>
-</ng-template>
-
-<ng-template #leaderSchedule>
-  <li *ngIf="roles.leader" class="nav-item">
-    <a class="nav-link" routerLinkActive="active" routerLink="./Season/Schedule">Season</a>
-  </li>
-</ng-template>
+  }
+</div>
 
 <ng-template #logoutModal data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
   <div class="modal-header">

@@ -1,76 +1,82 @@
-<div *ngIf="cprClasses; else loading" class="card mt-3">
-  <div class="card-header">
-    <div class="row g-2">
-      <div class="col-auto">
-        <div class="input-group">
-          <span class="input-group-text" id="crs">Show Roster:</span>
-          <select class="form-select" (change)="selectClass($event)" id="crs">
-            <option *ngFor="let c of cprClasses; let i = index" value="{{i}}">{{getClassTitle(i)}}</option>
-          </select>
+@if (cprClasses) {
+  <div class="card mt-3">
+    <div class="card-header">
+      <div class="row g-2">
+        <div class="col-auto">
+          <div class="input-group">
+            <span class="input-group-text" id="crs">Show Roster:</span>
+            <select class="form-select" (change)="selectClass($event)" id="crs">
+              @for (c of cprClasses; track c.id; let i=$index) {
+                <option value="{{i}}">{{getClassTitle(i)}}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col">
+          @if (cprAdmin) {
+            <div class="btn-group" dropdown>
+              <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
+                Actions&nbsp;<span class="caret"></span>
+              </button>
+              <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
+                <li role="menuitem"><a class="dropdown-item" [href]="classMailLink()">Email Class</a></li>
+                <li role="menuitem"><a class="dropdown-item" (click)="showAddClass()">Add a Class</a></li>
+              </ul>
+            </div>
+          } @else {
+            <a class="btn btn-primary" [href]="classMailLink()">Email Class</a>
+          }
+        </div>
+        <div class="col">
+          @if (cprAdmin) {
+            <form [formGroup]="resize" class="d-flex" (ngSubmit)="onResize()">
+              <div class="input-group me-2">
+                <span class="input-group-text" id="newsize">Size</span>
+                <input type="text" [class]="styleControl(newSize)" id="newsize" formControlName="size">
+              </div>
+              @if (!disable.resized) {
+                <button type="submit" class="btn btn-primary" [disabled]="resize.invalid || size === cprClasses[selected].class_size">
+                  <fa-icon [icon]="icons.check"></fa-icon>
+                </button>
+              } @else {
+                <button type="submit" class="btn btn-primary" [disabled]="true">
+                  <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>
+                </button>
+              }
+            </form>
+          }
         </div>
       </div>
-      <div class="col">
-        <a *ngIf="!cprAdmin; else adminMenu"class="btn btn-primary" [href]="classMailLink()">Email Class</a>
-      </div>
-      <div class="col">
-        <form *ngIf="cprAdmin" [formGroup]="resize" class="d-flex" (ngSubmit)="onResize()">
-          <div class="input-group me-2">
-            <span class="input-group-text" id="newsize">Size</span>
-            <input type="text" [class]="styleControl(newSize)" id="newsize" formControlName="size">
-          </div>
-          <button *ngIf="!disable.resized; else resizing" type="submit" class="btn btn-primary" [disabled]="resize.invalid || size === cprClasses[selected].class_size">
-            <fa-icon [icon]="icons.check"></fa-icon>
-          </button>
-        </form>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of this.cprClasses[selected].students!; track s.id) {
+              <tr>
+                <td class="col-6" data-title="Student">{{s.first_name}} {{s.last_name}}</td>
+                <td data-title="Email"><a href="mailto:{{s.email}}">{{s.email}}</a></td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let s of this.cprClasses[selected].students!">
-            <td class="col-6" data-title="Student">{{s.first_name}} {{s.last_name}}</td>
-            <td data-title="Email"><a href="mailto:{{s.email}}">{{s.email}}</a></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<ng-template #loading>
+} @else {
   <div class="card">
     <div class="card-body">
-      <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
+      <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
       Loading cpr class data...
     </div>
   </div>
-</ng-template>
-
-<ng-template #adminMenu>
-  <div class="btn-group" dropdown>
-    <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
-      Actions&nbsp;<span class="caret"></span>
-    </button>
-    <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
-      <li role="menuitem"><a class="dropdown-item" [href]="classMailLink()">Email Class</a></li>
-      <li role="menuitem"><a class="dropdown-item" (click)="showAddClass()">Add a Class</a></li>
-    </ul>
-  </div>
-</ng-template>
-
-<ng-template #resizing>
-  <button type="submit" class="btn btn-primary" [disabled]="true">
-    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>
-  </button>
-</ng-template>
+}
 
 <ng-template #addClassModal>
   <div class="modal-header">
@@ -79,63 +85,67 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-  <div *ngIf="cprClassrooms.length > 0; else noClassrooms" class="modal-body">
-    <form class="row g-2" [formGroup]="addClassForm" (ngSubmit)="onAddClass()">
-      <div *ngIf="error" class="col-md-12">
-        <alert type="danger" [dismissible]="true" (click)="clearError()">
-          <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
-          {{error}}
-        </alert>
-      </div>
-      <div *ngIf="success" class="col-md-12">
-        <alert type="success" [dismissible]="true" (click)="clearSuccess()">
-          <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
-          {{success}}
-        </alert>
-      </div>
-      <div class="col-md-12">
-        <div class="input-group">
-          <span class="input-group-text" id="ccr">Classroom</span>
-          <select [class]="styleControl(getAddClass('classroom_id'), 'form-select')" formControlName="classroom_id" aria-describedby="ccr">
-            <option value="" disabled selected>Please choose</option>
-            <option *ngFor="let c of cprClassrooms" [value]="c.id">{{c.name}} &#64; {{c.address}}</option>
-          </select>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="input-group">
-          <span class="input-group-text" id="csz">Size</span>
-          <input type="text" [class]="styleControl(getAddClass('class_size'))" aria-describedby="csz" formControlName="class_size">
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="input-group">
-          <span class="input-group-text" id="cdate">Date</span>
-          <input [class]="styleControl(getAddClass('time'))" #datepickerMDY="bsDatepicker" aria-describedby="cdate" bsDatepicker formControlName="time"
-            [bsConfig]="{containerClass: 'theme-dark-blue', withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'MM/DD/YYYY h:mm a' }" placeholder="MM/DD/YYYY h:mm">
-        </div>
-      </div>
-      <div class="col-md-12">
-        <div class="input-group">
-          <button *ngIf="!disable.added; else adding" type="submit" class="btn btn-primary btn-block" [disabled]="!addClassForm.valid">Create Class</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</ng-template>
-
-<ng-template #noClassrooms>
   <div class="modal-body">
-    <alert type="danger">
-      <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
-      There are no classrooms defined. Please use the CPR settings panel to add at least one classroom.
-    </alert>
+    @if(cprClassrooms.length > 0) {
+      <form class="row g-2" [formGroup]="addClassForm" (ngSubmit)="onAddClass()">
+        @if (error) {
+          <div class="col-md-12">
+            <alert type="danger" [dismissible]="true" (click)="clearError()">
+              <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+              {{error}}
+            </alert>
+          </div>
+        }
+        @if (success) {
+          <div class="col-md-12">
+            <alert type="success" [dismissible]="true" (click)="clearSuccess()">
+              <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+              {{success}}
+            </alert>
+          </div>
+        }
+        <div class="col-md-12">
+          <div class="input-group">
+            <span class="input-group-text" id="ccr">Classroom</span>
+            <select [class]="styleControl(getAddClass('classroom_id'), 'form-select')" formControlName="classroom_id" aria-describedby="ccr">
+              <option value="" disabled selected>Please choose</option>
+              @for (c of cprClassrooms; track c.id) {
+                <option [value]="c.id">{{c.name}} &#64; {{c.address}}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text" id="csz">Size</span>
+            <input type="text" [class]="styleControl(getAddClass('class_size'))" aria-describedby="csz" formControlName="class_size">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text" id="cdate">Date</span>
+            <input [class]="styleControl(getAddClass('time'))" #datepickerMDY="bsDatepicker" aria-describedby="cdate" bsDatepicker formControlName="time"
+              [bsConfig]="{containerClass: 'theme-dark-blue', withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'MM/DD/YYYY h:mm a' }" placeholder="MM/DD/YYYY h:mm">
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="input-group">
+            @if (!disable.added) {
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="!addClassForm.valid">Create Class</button>
+            } @else {
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+                <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+                Creating Student...
+              </button>
+            }
+          </div>
+        </div>
+      </form>
+    } @else {
+      <alert type="danger">
+        <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+        There are no classrooms defined. Please use the CPR settings panel to add at least one classroom.
+      </alert>
+    }
   </div>
-</ng-template>
-
-<ng-template #adding>
-  <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
-    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
-    Createing Student...
-  </button>
 </ng-template>

@@ -47,6 +47,7 @@ export interface RosterUser {
 }
 
 export interface TeamRoster {
+  id: number;
   name: string;
   leader?: RosterUser;
   members: RosterUser[];
@@ -159,6 +160,7 @@ export interface Substitutions {
 }
 
 export interface OpenRequest {
+  id: number;
   duty_day_id: number;
   date: string;
   team: string;
@@ -264,7 +266,7 @@ export function hasRole(roles: Role[], required: Set<string>, seasonId: number =
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BakerApiService implements IAuthService {
 

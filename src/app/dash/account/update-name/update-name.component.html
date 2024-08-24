@@ -3,12 +3,16 @@
     <h4>Update Name</h4>
   </div>
   <div class="card-body">
-    <alert *ngIf="message" [type]="message.type" [dismissible]="true" click="clearMessage()">
-      {{message.msg}}
-    </alert>
-    <alert *ngIf="showAlert()" type="danger" [dismissible]="true">
-      A new first and last name that does not match {{this.firstName}} {{this.lastName}} is required.
-    </alert>
+    @if (message) {
+      <alert [type]="message.type" [dismissible]="true" click="clearMessage()">
+        {{message.msg}}
+      </alert>
+    }
+    @if (showAlert()) {
+      <alert type="danger" [dismissible]="true">
+        A new first and last name that does not match {{this.firstName}} {{this.lastName}} is required.
+      </alert>
+    }
     <form [formGroup]="updateName" (ngSubmit)="submit()">
       <div class="input-group mb-2">
         <span class="input-group-text" id="fn">First</span>
@@ -19,15 +23,15 @@
         <input type="text" [class]="styleControl(lastNameInput)" id="last" formControlName="last_name" placeholder="{{lastName}}" aria-describedby="ln" (blur)="blur(lastNameInput)">
       </div>
       <div class="input-group">
-        <button *ngIf="!submitted; else renaming" type="submit" class="form-control btn btn-primary submit" [disabled]="updateName.invalid">Update Name</button>
+        @if (!submitted) {
+          <button type="submit" class="form-control btn btn-primary submit" [disabled]="updateName.invalid">Update Name</button>
+        } @else {
+          <button  type="submit" class="form-control btn btn-primary submit" [disabled]=true>
+            <fa-icon [icon]="igear" animation="spin"></fa-icon>&nbsp;
+            Updating Name...
+          </button>
+        }
       </div>
     </form>
   </div>
 </div>
-
-<ng-template #renaming>
-  <button  type="submit" class="form-control btn btn-primary submit" [disabled]=true>
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-    Updating Name...
-  </button>
-</ng-template>

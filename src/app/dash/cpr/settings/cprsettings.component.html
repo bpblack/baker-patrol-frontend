@@ -9,18 +9,21 @@
       </div>
       <div class="card-body">
         <form class="row g-2" [formGroup]="addClassroomForm" (ngSubmit)="onAddClassroom()">
-          <div *ngIf="error" class="col-md-12">
-            <alert type="danger" [dismissible]="true" (click)="clearError()">
-              <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
-              {{error}}
-            </alert>
-          </div>
-          <div *ngIf="success" class="col-md-12">
-            <alert type="success" [dismissible]="true" (click)="clearSuccess()">
-              <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
-              {{success}}
-            </alert>
-          </div>
+          @if (error) {
+            <div class="col-md-12">
+              <alert type="danger" [dismissible]="true" (click)="clearError()">
+                <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+                {{error}}
+              </alert>
+            </div>}
+          @if (success) {
+            <div class="col-md-12">
+              <alert type="success" [dismissible]="true" (click)="clearSuccess()">
+                <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+                {{success}}
+              </alert>
+            </div>
+          }
           <div class="col-md-6">
             <div class="input-group">
               <span class="input-group-text" id="cname">Name</span>
@@ -41,7 +44,14 @@
           </div>
           <div class="col-md-12">
             <div class="input-group">
-              <button *ngIf="!disable; else adding" type="submit" class="btn btn-primary btn-block" [disabled]="!addClassroomForm.valid">Create Classroom</button>
+              @if (!disable) {
+                <button type="submit" class="btn btn-primary btn-block" [disabled]="!addClassroomForm.valid">Create Classroom</button>
+              } @else {
+                <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+                  <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+                  Creating Classroom...
+                </button>
+              }
             </div>
           </div>
         </form>
@@ -49,10 +59,3 @@
     </div>
   </div>
 </div>
-
-<ng-template #adding>
-  <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
-    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
-    Creating Classroom...
-  </button>
-</ng-template>

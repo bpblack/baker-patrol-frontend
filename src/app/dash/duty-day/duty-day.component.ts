@@ -93,7 +93,6 @@ export class DutyDayComponent {
 
   rowColor(patrollerId: number | null | undefined, latestSub: LatestSub | null) : string {
     if (this.isLeader) {
-      this._api.log("Should be danger", patrollerId === null);
       if (latestSub) {
         if (latestSub.accepted) {
           return 'table-success';

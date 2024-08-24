@@ -14,69 +14,75 @@
     </div>
   </div>
   <div class="row justify-content-center">
-    <div *ngIf="!wasSuccess(); else success" class="col-md-6 col-lg-4">
-      <form [formGroup]="resetForm" (ngSubmit)="onSubmit()">
-        <div class="d-grid gap-3">
-          <div class="row">
-            <h1 class="h3 mb-3 fw-normal">Reset your password:</h1>
-            <alert *ngIf="error" type="danger" [dismissible]="true" (onClose)="closeError()">
-              <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
-              {{error}}
-            </alert>
-          </div>
-          <div class="row">
-            <div class="input-group">
-              <span class="input-group-text" id="key1"><fa-icon [icon]="icons.key"></fa-icon></span>
-              <input type="password" [class]="styleControl(password)" id="password" formControlName="password" placeholder="Password" aria-label="Password" aria-describedby="key1">
-              <div *ngIf="showAlert(password)" class="invalid-feedback">
-                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
-                A password of at least 8 characters is required.
+    @if (!wasSuccess()) {
+      <div class="col-md-6 col-lg-4">
+        <form [formGroup]="resetForm" (ngSubmit)="onSubmit()">
+          <div class="d-grid gap-3">
+            <div class="row">
+              <h1 class="h3 mb-3 fw-normal">Reset your password:</h1>
+              @if (error) {
+                <alert type="danger" [dismissible]="true" (onClose)="closeError()">
+                  <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                  {{error}}
+                </alert>
+              }
+            </div>
+            <div class="row">
+              <div class="input-group">
+                <span class="input-group-text" id="key1"><fa-icon [icon]="icons.key"></fa-icon></span>
+                <input type="password" [class]="styleControl(password)" id="password" formControlName="password" placeholder="Password" aria-label="Password" aria-describedby="key1">
+                @if (showAlert(password)) {
+                  <div class="invalid-feedback">
+                    <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                    A password of at least 8 characters is required.
+                  </div>
+                }
               </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="input-group">
-              <span class="input-group-text" id="key2"><fa-icon [icon]="icons.key"></fa-icon></span>
-              <input type="password" [class]="styleControl(confirmPassword, resetForm.errors?.['noMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
-              <div *ngIf="showFormAlert()" class="invalid-feedback">
-                <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
-                A valid matching password is required.
+            <div class="row">
+              <div class="input-group">
+                <span class="input-group-text" id="key2"><fa-icon [icon]="icons.key"></fa-icon></span>
+                <input type="password" [class]="styleControl(confirmPassword, resetForm.errors?.['noMatch'])" formControlName="confirmPassword" placeholder="Confirm Password" aria-labelledby="Confirm Password" aria-describedby="key2">
+                @if (showFormAlert()) {
+                  <div class="invalid-feedback">
+                    <fa-icon [icon]="icons.triangle"></fa-icon>&nbsp;
+                    A valid matching password is required.
+                  </div>
+                }
               </div>
             </div>
+            <div class="input-group">
+              @if (!submitted) {
+                <button type="submit" class="form-control btn btn-primary submit px-3" [disabled]="!resetForm.valid">Reset Pasword</button>
+              } @else {
+                <button type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
+                  <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+                  Resetting password...
+                </button>
+              }
+            </div>
+            <div class="row">
+              <alert type="info">
+                <h4>Password requirements:</h4>
+                <div class="d-flex justify-content-center">
+                <ol class="list-group list-group-flush list-group-numbered">
+                  <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;At least 8 characters</li>
+                  <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Contains letters, numbers, or symbols</li>
+                  <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Contains no whitespace characters</li>
+                </ol>
+                </div>
+              </alert>
+            </div>
           </div>
-          <div class="input-group">
-            <button *ngIf="!submitted; else submitting" type="submit" class="form-control btn btn-primary submit px-3" [disabled]="!resetForm.valid">Reset Pasword</button>
-          </div>
-          <div class="row">
-            <alert type="info">
-              <h4>Password requirements:</h4>
-              <div class="d-flex justify-content-center">
-              <ol class="list-group list-group-flush list-group-numbered">
-                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;At least 8 characters</li>
-                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Contains letters, numbers, or symbols</li>
-                <li class="list-group-item d-flex align-items-start text-info-emphasis bg-info-subtle">&nbsp;Contains no whitespace characters</li>
-              </ol>
-              </div>
-            </alert>
-          </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    } @else {
+      <div class="col-md-6 col-lg-4">
+        <alert type="success">
+          <fa-icon [icon]="icons.circle"></fa-icon>&nbsp;
+          Your password was successfully reset. You can now <a routerLink="/Login" class="alert-link">login</a>.
+        </alert>
+      </div>
+    }
   </div>
 </div>
-
-<ng-template #success>
-  <div class="col-md-6 col-lg-4">
-    <alert type="success">
-      <fa-icon [icon]="icons.circle"></fa-icon>&nbsp;
-      Your password was successfully reset. You can now <a routerLink="/Login" class="alert-link">login</a>.
-    </alert>
-  </div>
-</ng-template>
-
-<ng-template #submitting>
-  <button type="submit" class="form-control btn btn-primary submit px-3" [disabled]=true>
-    <fa-icon [icon]="icons.gear" [spin]="true"></fa-icon>&nbsp;
-    Resetting password...
-  </button>
-</ng-template>

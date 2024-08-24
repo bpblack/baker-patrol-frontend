@@ -10,10 +10,12 @@ import { DropzoneComponent } from "@ngx-dropzone/cdk";
       <span class="file-message">{{message}}</span>
       <ng-content select="[fileInput]"></ng-content>
     </div>
-    <div *ngIf="error" class="invalid-file">
-      <fa-icon [icon]="triangle"></fa-icon>&nbsp;
-      {{error}}
-    </div>
+    @if(error) {
+      <div class="invalid-file">
+        <fa-icon [icon]="triangle"></fa-icon>&nbsp;
+        {{error}}
+      </div>
+    }
   `,
   styleUrls: ['./dropzone.component.css']
 })

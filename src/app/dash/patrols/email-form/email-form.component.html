@@ -1,25 +1,27 @@
 <form [formGroup]="subEmail" (ngSubmit)="onEmail()">
   <div class="mt-3" >
-    <alert *ngIf="error" type="danger" [dismissible]="true" (click)="clearError()">
-      {{error}}
-    </alert>
+    @if (error) {
+      <alert type="danger" [dismissible]="true" (click)="clearError()">
+        {{error}}
+      </alert>
+    }
   </div>
   <div class="input-group my-3">
-    <span *ngIf="!sub.sub_name; else named" class="input-group-text" id="msg">To:&nbsp;Everyone</span>
+    @if (!sub.sub_name) {
+      <span class="input-group-text" id="msg">To:&nbsp;Everyone</span>
+    } @else {
+      <span class="input-group-text" id="msg">To:&nbsp;{{sub.sub_name}}</span>
+    }
     <textarea class="form-control" rows="4" formControlName="message" aria-describedby="msg" placeholder="Message to send in email"></textarea>
   </div>
   <div class="input-group">
-    <button *ngIf="!submitted; else submitting" type="submit" class="btn btn-primary btn-block">{{buttonText}}</button>
+    @if (!submitted) {
+      <button type="submit" class="btn btn-primary btn-block">{{buttonText}}</button>
+    } @else {
+      <button type="submit" class="btn btn-primary btn-block" [disabled]=true>
+        <i class="fa fa-cog fa-spin fa-fw"></i>
+        Emailing...
+      </button>
+    }
   </div>
 </form>
-
-<ng-template #named>
-  <span *ngIf="sub.sub_name" class="input-group-text" id="msg">To:&nbsp;{{sub.sub_name}}</span>
-</ng-template>
-
-<ng-template #submitting>
-  <button type="submit" class="btn btn-primary btn-block" [disabled]=true>
-    <i class="fa fa-cog fa-spin fa-fw"></i>
-    Emailing...
-  </button>
-</ng-template>

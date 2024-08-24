@@ -22,7 +22,7 @@ export class SearchRosterPipe implements PipeTransform {
             return false;
           }
         );
-        newRoster.push({name: team.name, members: members, collapsed: members.length === 0});
+        newRoster.push({id: team.id, name: team.name, members: members, collapsed: members.length === 0});
       }
       return newRoster;
     }

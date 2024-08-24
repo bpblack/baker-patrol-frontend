@@ -3,27 +3,30 @@
     <h4>Update Phone</h4>
   </div>
   <div class="card-body">
-    <alert *ngIf="message" [type]="message.type" [dismissible]="true" click="clearMessage()">
-      {{message.msg}}
-    </alert>
-    <form [formGroup]="updatePhone" (ngSubmit)="submit()">
-      <alert *ngIf="phoneValid()" type="danger">
-        A valid phone address that does not match your current address is required.
+    @if(message) {
+      <alert [type]="message.type" [dismissible]="true" click="clearMessage()">
+        {{message.msg}}
       </alert>
+    }
+    <form [formGroup]="updatePhone" (ngSubmit)="submit()">
+      @if(phoneValid()) {
+        <alert type="danger">
+          A valid phone address that does not match your current address is required.
+        </alert>
+      }
       <div class="input-group mb-2">
         <span class="input-group-text" id="at"><fa-icon [icon]="iphone"></fa-icon></span>
         <input type="tel" [class]="styleControl()" mask="(000)000-0000" [specialCharacters]="['(',')','-']" [dropSpecialCharacters]="false" id="phone" formControlName="phone" placeholder="{{phone}}" aria-describedby="at" (blur)="blur()">
       </div>
       <div class="input-group">
-        <button *ngIf="!submitted; else updatingPhone" type="submit" class="form-control btn btn-primary submit" [disabled]="!updatePhone.valid">Update phone</button>
+        @if(!submitted) {
+          <button type="submit" class="form-control btn btn-primary submit" [disabled]="!updatePhone.valid">Update phone</button>
+        } @else {
+          <button type="submit" class="form-control btn btn-primary submit" [disabled]="true">
+            <fa-icon [icon]="igear" animation="spin"></fa-icon>&nbsp;
+            Updating phone...
+          </button>}
       </div>
     </form>
   </div>
 </div>
-
-<ng-template #updatingPhone>
-  <button type="submit" class="form-control btn btn-primary submit" [disabled]="true">
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-    Updating phone...
-  </button>
-</ng-template>

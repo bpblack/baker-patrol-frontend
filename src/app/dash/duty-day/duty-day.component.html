@@ -1,138 +1,153 @@
-<div *ngIf="dutyDay; else loading" class="card mt-3">
-  <div class="card-header container-fluid">
-    <div class="row">
-      <div class="col-md-auto">
-        <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
-      </div>
-      <div *ngIf="isLeader" class="col">
-        <div class="btn-group" dropdown>
-          <button id="contact-button" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"aria-controls="contact-menu">
-            Contact options... <span class="caret"></span>
-          </button>
-          <ul id="dropdown-animated1" *dropdownMenu class="dropdown-menu"
-              role="menu" aria-labelledby="button-animated">
-              <li role="menuitem"><a class="dropdown-item" href="{{patrollingMailTo()}}">On Duty Patrollers</a></li>
-              <li *ngIf="hosting.length > 0" role="menuitem"><a class="dropdown-item" href="{{hostingMailTo()}}">On Duty Hosts</a></li>
-              <li *ngIf="hosting.length > 0" role="menuitem"><a class="dropdown-item" href="{{patrollingAndHostingMailTo()}}">On Duty Patrollers & Hosts</a></li>
-              <li role="menuitem"><a class="dropdown-item" href="{{availableMailTo()}}">Off Duty Patrollers</a></li>
-          </ul>
+@if (dutyDay) {
+  <div class="card mt-3">
+    <div class="card-header container-fluid">
+      <div class="row">
+        <div class="col-md-auto">
+          <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
         </div>
+        @if (isLeader) {
+          <div class="col">
+            <div class="btn-group" dropdown>
+              <button id="contact-button" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"aria-controls="contact-menu">
+                Contact options... <span class="caret"></span>
+              </button>
+              <ul id="dropdown-animated1" *dropdownMenu class="dropdown-menu"
+                  role="menu" aria-labelledby="button-animated">
+                  <li role="menuitem"><a class="dropdown-item" href="{{patrollingMailTo()}}">On Duty Patrollers</a></li>
+                  @if (hosting.length > 0) {
+                    <li role="menuitem"><a class="dropdown-item" href="{{hostingMailTo()}}">On Duty Hosts</a></li>
+                    <li role="menuitem"><a class="dropdown-item" href="{{patrollingAndHostingMailTo()}}">On Duty Patrollers & Hosts</a></li>
+                  }
+                  <li role="menuitem"><a class="dropdown-item" href="{{availableMailTo()}}">Off Duty Patrollers</a></li>
+              </ul>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Patroller</th>
+              <th>Skills</th>
+              <th class="col-md-3">Responsibility</th>
+              @if (isLeader) {
+                <th>Phone #</th>
+                <th>Management</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (patrol of dutyDay.patrols; track patrol.id; let i=$index) {
+              <tr [ngClass]="rowColor(patrol.patroller.id, patrol.latest_substitution)">
+                <td data-title="Patroller">{{patrol.patroller.name}}</td>
+                <td data-title="Skills">{{patrol.patroller.skills}}</td>
+                <td data-title="Responsibility">
+                  @if (isLeader && dutyDay.swapable) {
+                    @if (swapRow !== i) {
+                      <a class="link-secondary" (click)="setSwapRow(i)">
+                        {{patrol.responsibility.name}}
+                      </a>
+                    } @else {
+                      <span class="editable-container editable-inline">
+                        <baker-responsibility-swap-form [patrolId]="patrol.id" [responsibilities]="responsibilities.get(patrol.responsibility.role)!" (swap)="onPatrolSwap($event)">
+                        </baker-responsibility-swap-form>
+                      </span>
+                    }
+                  } @else {
+                    {{patrol.responsibility.name}}
+                  }
+                </td>
+                @if (isLeader) {
+                  <td data-title="Phone #">
+                    <a href="tel:{{patrol.patroller.phone}}" class="baker-tel">{{patrol.patroller.phone}}</a>
+                  </td>
+                  <td data-title="Management">
+                    <button class="btn btn-primary" [disabled]="!dutyDay.swapable" (click)="showManageModal(i)">
+                      Manage
+                    </button>
+                  </td>}
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle">
-        <thead>
-          <tr>
-            <th>Patroller</th>
-            <th>Skills</th>
-            <th *ngIf="isLeader">Phone #</th>
-            <th class="col-md-3">Responsibility</th>
-            <th *ngIf="isLeader">Management</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let patrol of dutyDay.patrols; let i=index" [ngClass]="rowColor(patrol.patroller.id, patrol.latest_substitution)">
-            <td data-title="Patroller">{{patrol.patroller.name}}</td>
-            <td data-title="Skills">{{patrol.patroller.skills}}</td>
-            <td *ngIf="isLeader" data-title="Phone #">
-              <a href="tel:{{patrol.patroller.phone}}" class="baker-tel">{{patrol.patroller.phone}}</a>
-            </td>
-            <td data-title="Responsibility">
-              <ng-container [ngTemplateOutlet]="(isLeader && dutyDay.swapable) ? swapCell : noSwapCell" 
-                            [ngTemplateOutletContext]="{patrol: patrol, i: i}"></ng-container>
-            </td>
-            <td *ngIf="isLeader" data-title="Management">
-              <button class="btn btn-primary" [disabled]="!dutyDay.swapable" (click)="showManageModal(i)">
-                Manage
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<ng-template #loading>
+} @else {
   <div class="card">
     <div class="card-body">
-      <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
+      <fa-icon [icon]="igear" animation="spin"></fa-icon>&nbsp;
       Loading duty day data...
     </div>
   </div>
-</ng-template>
-
-<ng-template let-patrol="patrol" #noSwapCell>
-  {{patrol.responsibility.name}}
-</ng-template>
-
-<ng-template let-patrol="patrol" let-i="i" #swapCell>
-    <ng-container [ngTemplateOutlet]="(swapRow !== i) ? swapLink : swapForm" [ngTemplateOutletContext]="{patrol: patrol, i: i}"></ng-container>
-</ng-template>
-
-<ng-template let-patrol="patrol" let-i="i" #swapLink>
-  <a *ngIf="swapRow !== i; else swapForm" class="link-secondary" (click)="setSwapRow(i)">
-    {{patrol.responsibility.name}}
-  </a>
-</ng-template>
-
-<ng-template let-patrol="patrol" #swapForm>
-    <span class="editable-container editable-inline">
-      <baker-responsibility-swap-form [patrolId]="patrol.id" [responsibilities]="responsibilities.get(patrol.responsibility.role)!" (swap)="onPatrolSwap($event)">
-      </baker-responsibility-swap-form>
-    </span>
-</ng-template>
+}
 
 <ng-template #manageModal>
-  <div *ngIf="managePatrol" class="modal-header">
-    <h4 id="dialog-static-name" class="modal-title pull-left">Manage patrol {{managePatrol.responsibility.name}} {{dutyDay.date}}</h4>
-    <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="closeManageModal()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-  <div *ngIf="(history | async) as history; loadingSub" class="modal-body">
-    <tabset *ngIf="managePatrol">
-      <tab *ngIf="(history.length === 0 || history[0].accepted) && isLeader" heading="Create & Assign" id="tab1">
-        <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)" [allowEmpty]="true"></baker-create-assign-sub-form>
-      </tab>
-      <tab *ngIf="history.length > 0" heading="Sub History" (deselect)="clearError()">
-        <div *ngIf="error" class="my-3">
-          <!-- inline assign form emits error string for cleaner display here -->
-          <alert type="danger" [dismissible]="true" (click)="clearError()">
-            {{error}}
-          </alert>
-        </div>
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover table-sm align-middle">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Sub Name</th>
-                <th>Reason</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let sub of history; let i = index" [ngClass]="{'table-danger': !sub.accepted && !sub.sub.id, 'table-warning': !sub.accepted && sub.sub.id, 'table-success': sub.accepted && i === 0}">
-                <td class="col-3" data-title="Name">{{sub.subbed.name}}</td>
-                <td *ngIf="i == 0 && !history[0]!.accepted && isLeader" class="col-4" data-title="Sub Name">
-                  <baker-assign-sub-form [patrolId]="managePatrol.id" [sub]="{id: sub.id, sub_id: sub.sub.id ? sub.sub.id : 0, sub_name: sub.sub.name}" [inline]="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>
-                </td>
-                <td *ngIf="i > 0 || history[0]!.accepted" class="col-3" data-title="Sub Name">{{sub.sub.name}}</td>
-                <td class="w-auto" data-title="Reason">{{sub.reason}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </tab>
-    </tabset>
-  </div>
-</ng-template>
-
-<ng-template #loadingSub>
-  <div class="modal-body">
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-    Loading patrol substitution data...
-  </div>
+  @if (managePatrol) {
+    <div class="modal-header">
+      <h4 id="dialog-static-name" class="modal-title pull-left">Manage patrol {{managePatrol.responsibility.name}} {{dutyDay.date}}</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" [disabled]="disable" (click)="closeManageModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+  }
+  @if (history | async; as history) {
+    <div class="modal-body">
+      @if (managePatrol) {
+        <tabset>
+          @if ((history.length === 0 || history[0].accepted) && isLeader) {
+            <tab heading="Create & Assign" id="tab1">
+              <baker-create-assign-sub-form [patrolId]="managePatrol.id" (create)="onSubCreateAssign($event)" [allowEmpty]="true"></baker-create-assign-sub-form>
+            </tab>
+          }
+          @if (history.length > 0) {
+            <tab heading="Sub History" (deselect)="clearError()">
+              @if (error) {
+                <div class="my-3">
+                  <!-- inline assign form emits error string for cleaner display here -->
+                  <alert type="danger" [dismissible]="true" (click)="clearError()">
+                    {{error}}
+                  </alert>
+                </div>
+              }
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Sub Name</th>
+                      <th>Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (sub of history; track sub.id; let i=$index) {
+                      <tr [ngClass]="{'table-danger': !sub.accepted && !sub.sub.id, 'table-warning': !sub.accepted && sub.sub.id, 'table-success': sub.accepted && i === 0}">
+                        <td class="col-3" data-title="Name">{{sub.subbed.name}}</td>
+                        @if (i == 0 && !history[0]!.accepted && isLeader) {
+                          <td class="col-4" data-title="Sub Name">
+                            <baker-assign-sub-form [patrolId]="managePatrol.id" [sub]="{id: sub.id, sub_id: sub.sub.id ? sub.sub.id : 0, sub_name: sub.sub.name}" [inline]="true" (assign)="onSubAssign($event)"></baker-assign-sub-form>
+                          </td>
+                        } @else {
+                          <td class="col-3" data-title="Sub Name">{{sub.sub.name}}</td>
+                        }
+                        <td class="w-auto" data-title="Reason">{{sub.reason}}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </tab>
+          }
+        </tabset>
+      }
+    </div>
+  } @else {
+    <div class="modal-body">
+      <fa-icon [icon]="igear" animation="spin"></fa-icon>&nbsp;
+      Loading patrol substitution data...
+    </div>
+  }
 </ng-template>

@@ -3,27 +3,31 @@
     <h4>Update Email</h4>
   </div>
   <div class="card-body">
-    <alert *ngIf="message" [type]="message.type" [dismissible]="true" click="clearMessage()">
-      {{message.msg}}
-    </alert>
-    <alert *ngIf="emailValid()" type="danger" [dismissible]="true">
-      A valid email address that does not match your current address is required.
-    </alert>
+    @if (message) {
+      <alert [type]="message.type" [dismissible]="true" click="clearMessage()">
+        {{message.msg}}
+      </alert>
+    }
+    @if (emailValid()) {
+      <alert type="danger" [dismissible]="true">
+        A valid email address that does not match your current address is required.
+      </alert>
+    }
     <form [formGroup]="updateEmail" (ngSubmit)="submit()">
       <div class="input-group">
         <span class="input-group-text" id="at"><fa-icon [icon]="iat"></fa-icon></span>
         <input type="email" [class]="styleControl()" id="email" formControlName="email" placeholder="{{email}}" aria-describedby="at" (blur)="blur()">
       </div>
       <div class="input-group my-2">
-        <button *ngIf="!submitted; else updatingEmail" type="submit" class="form-control btn btn-primary submit" [disabled]="!updateEmail.valid">Update email</button>
+        @if (!submitted) {
+          <button type="submit" class="form-control btn btn-primary submit" [disabled]="!updateEmail.valid">Update email</button>
+        } @else {
+          <button type="submit" class="form-control btn btn-primary submit" [disabled]="true">
+            <fa-icon [icon]="igear" animation="spin"></fa-icon>&nbsp;
+            Updating email...
+          </button>
+        }
       </div>
     </form>
   </div>
 </div>
-
-<ng-template #updatingEmail>
-  <button type="submit" class="form-control btn btn-primary submit" [disabled]="true">
-    <fa-icon [icon]="igear" [spin]="true"></fa-icon>&nbsp;
-    Updating email...
-  </button>
-</ng-template>

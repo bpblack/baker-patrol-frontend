@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from  "@auth0/angular-jwt";
@@ -23,32 +23,29 @@ export function tokenGetter() {
   return localStorage.getItem("id_token");
 }
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    ForgotComponent,
-    ResetComponent,
-    GoogleCalendarComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    RouterModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    JwtModule.forRoot({
-      config: {
-        tokenGetter: tokenGetter,
-        allowedDomains: environment.allowedDomains,
-      },
-    }),
-    AlertModule.forRoot(),
-    FontAwesomeModule,
-    DashModule
-  ],
-  providers: [BakerApiService],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        ForgotComponent,
+        ResetComponent,
+        GoogleCalendarComponent
+    ],
+    bootstrap: [AppComponent], 
+    imports: [
+        BrowserModule,
+        RouterModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        ReactiveFormsModule,
+        JwtModule.forRoot({
+            config: {
+                tokenGetter: tokenGetter,
+                allowedDomains: environment.allowedDomains,
+            },
+        }),
+        AlertModule.forRoot(),
+        FontAwesomeModule,
+        DashModule
+    ], 
+    providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
