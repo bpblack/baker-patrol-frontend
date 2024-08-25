@@ -50,6 +50,92 @@
           <div class="row g-2">
             <baker-search [(term)]="searchTerm"></baker-search>
           </div>
+          <div class="row g-2 table-responsive">
+            <form [formGroup]="removeStudentsForm" (ngSubmit)="onRemoveStudents()">
+              <table class="table table-bordered table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th class="col-md-2">Name</th>
+                    <th class="col-md-2">Email</th>
+                    <th class="col-md-3">Class (click to change)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (s of (cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn); track s.id; let i=$index) {
+                    <tr>
+                      <td data-title="Name">
+                        @if (showRemove) {
+                          <input type="checkbox" [formControlName]="s.id.toString()">
+                        }
+                        {{s.first_name}} {{s.last_name}}
+                      </td>
+                      <td data-title="Email">
+                        <a [href]="'mailto:' + s.email">{{s.email}}</a>
+                      </td>
+                      <td data-title="Class">
+                        @if (!showChange.b || showChange.idx !== i) {
+                          <a class="link-secondary" (click)="showChangeClass(s.id, i)">
+                            @if (s.has_cpr_cert) {
+                              Has outside CPR certification
+                            } @else {
+                              {{getClassName(s.cpr_class_id)}}
+                            }
+                          </a>
+                        } @else {
+                          <form class="row row-cols-auto gx-1 align-items-start" [formGroup]="changeClassForm" (ngSubmit)="onChangeClass()">
+                            <div class="col">
+                              <select class="form-select form-select-sm" formControlName="cpr_class_id">
+                                @if (!s.has_cpr_cert) {
+                                  <option [value]="null" [disabled]="showChange.s!.cpr_class_id === null">Uregistered</option>
+                                }
+                                <option [value]="0" [disabled]="s.has_cpr_cert">Has outside CPR certification</option>
+                                @for (c of cprClasses; track c.id) {
+                                  <option [value]="c.id" [disabled]="!s.has_cpr_cert && (c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count)">{{c.time}} &#64; {{c.location}}</option>
+                                }
+                              </select>
+                            </div>
+                            <div class="col">
+                              @if (!disable.changed) {
+                                <button type="submit" class="btn btn-primary btn-sm" [disabled]="changeClassForm.invalid || disable.changed || disable.removed">
+                                  <fa-icon [icon]="icons.check"></fa-icon>
+                                </button>
+                              } @else {
+                                <button class="btn btn-primary btn-sm" [disabled]="true">
+                                  <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>
+                                </button>
+                              }
+                            </div>
+                            <div class="col">
+                              <button class="btn btn-secondary btn-sm" (click)="hideChangeClass()" [disabled]="disable.changed">
+                                <fa-icon [icon]="icons.x"></fa-icon>
+                              </button>
+                            </div>
+                          </form>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+                @if (showRemove) {
+                  <div class="my-2">
+                    @if (!disable.removed) {
+                      <button type="submit" class="btn btn-primary btn-block" [disabled]="disable.changed">
+                        Remove students
+                      </button>
+                    } @else {
+                      <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+                        <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+                        Removing students...
+                      </button>
+                    } 
+                    <button class="btn btn-secondary btn-block ms-2" (click)="hideRemoveStudents()" [disabled]="disable.changed || disable.removed">
+                      Exit remove mode
+                    </button>
+                  </div>
+                }
+              </table>
+            </form>
+          </div>
         } @else {
           <div class="row">
             <alert type="danger">
@@ -58,85 +144,6 @@
             </alert>
           </div>
         }
-        <div class="row g-2 table-responsive">
-          <form [formGroup]="removeStudentsForm" (ngSubmit)="onRemoveStudents()">
-            <table class="table table-bordered table-hover align-middle">
-              <thead>
-                <tr>
-                  <th class="col-md-2">Name</th>
-                  <th class="col-md-2">Email</th>
-                  <th class="col-md-3">Class (click to change)</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (s of (cprStudents | searchStudents:searchTerm:cprClassMap:classNameFn); track s.id; let i=$index) {
-                  <tr>
-                    <td data-title="Name">
-                      @if (showRemove) {
-                        <input type="checkbox" [formControlName]="s.id.toString()">
-                      }
-                      {{s.first_name}} {{s.last_name}}
-                    </td>
-                    <td data-title="Email">
-                      <a [href]="'mailto:' + s.email">{{s.email}}</a>
-                    </td>
-                    <td data-title="Class">
-                      @if (!showChange.b || showChange.idx !== i) {
-                        <a class="link-secondary" (click)="showChangeClass(s.id, i)">
-                          {{getClassName(s.cpr_class_id)}}
-                        </a>
-                      } @else {
-                        <form class="row row-cols-auto gx-1 align-items-start" [formGroup]="changeClassForm" (ngSubmit)="onChangeClass()">
-                          <div class="col">
-                            <select class="form-select form-select-sm" formControlName="cpr_class_id">
-                              <option [value]="null" [disabled]="showChange.s!.cpr_class_id === null">Uregistered</option>
-                              @for (c of cprClasses; track c.id) {
-                                <option [value]="c.id" [disabled]="c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count">{{c.time}} &#64; {{c.location}}</option>
-                              }
-                            </select>
-                          </div>
-                          <div class="col">
-                            @if (!disable.changed) {
-                              <button type="submit" class="btn btn-primary btn-sm" [disabled]="changeClassForm.invalid || disable.changed || disable.removed">
-                                <fa-icon [icon]="icons.check"></fa-icon>
-                              </button>
-                            } @else {
-                              <button class="btn btn-primary btn-sm" [disabled]="true">
-                                <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>
-                              </button>
-                            }
-                          </div>
-                          <div class="col">
-                            <button class="btn btn-secondary btn-sm" (click)="hideChangeClass()" [disabled]="disable.changed">
-                              <fa-icon [icon]="icons.x"></fa-icon>
-                            </button>
-                          </div>
-                        </form>
-                      }
-                    </td>
-                  </tr>
-                }
-              </tbody>
-              @if (showRemove) {
-                <div class="my-2">
-                  @if (!disable.removed) {
-                    <button type="submit" class="btn btn-primary btn-block" [disabled]="disable.changed">
-                      Remove students
-                    </button>
-                  } @else {
-                    <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
-                      <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
-                      Removing students...
-                    </button>
-                  } 
-                  <button class="btn btn-secondary btn-block ms-2" (click)="hideRemoveStudents()" [disabled]="disable.changed || disable.removed">
-                    Exit remove mode
-                  </button>
-                </div>
-              }
-            </table>
-          </form>
-        </div>
       </div>
     </div>
   </div>

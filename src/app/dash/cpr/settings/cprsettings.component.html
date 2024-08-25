@@ -3,58 +3,145 @@
     <h2>CPR Setup</h2>
   </div>
   <div class="card-body">
-    <div class="card">
-      <div class="card-header">
-        <h4>Add a classroom</h4>
+    <div class="row row-cols-1 g-2">
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+            <h4>Add a classroom</h4>
+          </div>
+          <div class="card-body">
+            <form class="row g-2" [formGroup]="addClassroomForm" (ngSubmit)="onAddClassroom()">
+              @if (error) {
+                <div class="col-md-12">
+                  <alert type="danger" [dismissible]="true" (click)="clearError()">
+                    <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+                    {{error}}
+                  </alert>
+                </div>}
+              @if (success) {
+                <div class="col-md-12">
+                  <alert type="success" [dismissible]="true" (click)="clearSuccess()">
+                    <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+                    {{success}}
+                  </alert>
+                </div>
+              }
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text" id="cname">Name</span>
+                  <input type="text" [class]="styleControl(classroomName)" aria-describedby="cname" formControlName="name" placeholder="Name">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text" id="caddr">Address</span>
+                  <input type="text" [class]="styleControl(classroomAddress)" aria-describedby="caddr" formControlName="address" placeholder="Copied Address from Google Maps">
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="input-group">
+                  <span class="input-group-text" id="clink">Map link</span>
+                  <input type="text" [class]="styleControl(classroomLink)" aria-describedby="clink" formControlName="map_link" placeholder="Google maps share url">
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="input-group">
+                  @if (!disable.classroom) {
+                    <button type="submit" class="btn btn-primary btn-block" [disabled]="!addClassroomForm.valid">Create Classroom</button>
+                  } @else {
+                    <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+                      <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+                      Creating Classroom...
+                    </button>
+                  }
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <form class="row g-2" [formGroup]="addClassroomForm" (ngSubmit)="onAddClassroom()">
-          @if (error) {
-            <div class="col-md-12">
-              <alert type="danger" [dismissible]="true" (click)="clearError()">
-                <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
-                {{error}}
-              </alert>
-            </div>}
-          @if (success) {
-            <div class="col-md-12">
-              <alert type="success" [dismissible]="true" (click)="clearSuccess()">
-                <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
-                {{success}}
-              </alert>
-            </div>
-          }
-          <div class="col-md-6">
-            <div class="input-group">
-              <span class="input-group-text" id="cname">Name</span>
-              <input type="text" [class]="styleControl(classroomName)" aria-describedby="cname" formControlName="name" placeholder="Name">
-            </div>
+      <div class="col">
+        <div class="card">
+          <div class="card-header">
+            <h4>Create CPR Classes</h4>
           </div>
-          <div class="col-md-6">
-            <div class="input-group">
-              <span class="input-group-text" id="caddr">Address</span>
-              <input type="text" [class]="styleControl(classroomAddress)" aria-describedby="caddr" formControlName="address" placeholder="Copied Address from Google Maps">
-            </div>
-          </div>
-          <div class="col-md-12">
-            <div class="input-group">
-              <span class="input-group-text" id="clink">Map link</span>
-              <input type="text" [class]="styleControl(classroomLink)" aria-describedby="clink" formControlName="map_link" placeholder="Google maps share url">
-            </div>
-          </div>
-          <div class="col-md-12">
-            <div class="input-group">
-              @if (!disable) {
-                <button type="submit" class="btn btn-primary btn-block" [disabled]="!addClassroomForm.valid">Create Classroom</button>
+          <div class="card-body">
+            @if (initError) {
+              <div class="col-md-12">
+                <alert type="danger" [dismissible]="true" (click)="clearInitError()">
+                  <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+                  {{initError}}
+                </alert>
+              </div>}
+            @if (initSuccess) {
+              <div class="col-md-12">
+                <alert type="success" [dismissible]="true" (click)="clearInitSuccess()">
+                  <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+                  {{initSuccess}}
+                </alert>
+              </div>
+            }
+            @if (!cprLatest) {
+              <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+              Loading cpr data...
+            } @else if (cprLatest.expired) {
+              @if (!disable.initialize) {
+                <button class="btn btn-primary btn-block" (click)="onInitializeCpr()">Initialize CPR Classes for {{curYear}}</button>
               } @else {
                 <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
                   <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
-                  Creating Classroom...
+                  Initializing CPR classes for {{curYear}}...
                 </button>
               }
-            </div>
+            } @else {
+              @if(classrooms.length > 0) {
+                <form class="row g-2" [formGroup]="addClassForm" (ngSubmit)="onAddClass()">
+                  <div class="col-md-12">
+                    <div class="input-group">
+                      <span class="input-group-text" id="ccr">Classroom</span>
+                      <select [class]="styleControl(getAddClass('classroom_id'), 'form-select')" formControlName="classroom_id" aria-describedby="ccr">
+                        <option value="" disabled selected>Please choose</option>
+                        @for (c of classrooms; track c.id) {
+                          <option [value]="c.id">{{c.name}} &#64; {{c.address}}</option>
+                        }
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text" id="csz">Size</span>
+                      <input type="text" [class]="styleControl(getAddClass('class_size'))" aria-describedby="csz" formControlName="class_size">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text" id="cdate">Date</span>
+                      <input [class]="styleControl(getAddClass('time'))" #datepickerMDY="bsDatepicker" aria-describedby="cdate" bsDatepicker formControlName="time"
+                        [bsConfig]="{containerClass: 'theme-dark-blue', withTimepicker: true, keepDatepickerOpened: true, dateInputFormat: 'MM/DD/YYYY h:mm a' }" placeholder="MM/DD/YYYY h:mm">
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="input-group">
+                      @if (!disable.initialize) {
+                        <button type="submit" class="btn btn-primary btn-block" [disabled]="!addClassForm.valid">Create Class</button>
+                      } @else {
+                        <button type="submit" class="btn btn-primary btn-block" [disabled]="true">
+                          <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+                          Creating Class...
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </form>
+              } @else {
+                <alert type="danger">
+                  <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
+                  There are no classrooms defined. Please use the CPR settings panel to add at least one classroom.
+                </alert>
+              }
+            }
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>

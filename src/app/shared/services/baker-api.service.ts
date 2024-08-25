@@ -169,12 +169,20 @@ export interface OpenRequest {
   email: string;
 }
 
+export interface CprYear {
+  id: number;
+  year: string;
+  expired: boolean;
+}
+
 export interface CprStudent {
   id: number;
   email: string;
   first_name: string;
   last_name: string;
   cpr_class_id: number | null;
+  modifiable: boolean;
+  has_cpr_cert: boolean;
 }
 
 export interface CprClass {
@@ -551,6 +559,18 @@ export class BakerApiService implements IAuthService {
   removeGoogleCalendar(): Observable<boolean> {
     return this.http.delete(this.url + '/google_calendars/destroy', this.defaultOptions()).pipe(
       map(res => true),
+      catchError(this.handleError)
+    );
+  }
+
+  getCprYearLatest(): Observable<CprYear> {
+    return this.http.get<CprYear>(this.url + '/admin/cpr_years/latest', this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  initializeCprYear(): Observable<CprYear> {
+    return this.http.post<CprYear>(this.url + '/admin/cpr_years', null, this.defaultOptions()).pipe(
       catchError(this.handleError)
     );
   }

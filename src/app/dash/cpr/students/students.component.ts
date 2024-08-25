@@ -137,7 +137,7 @@ export class StudentsComponent {
     // reset the checkbox controls for the current list of students
     this.removeStudentsForm = this._fb.group({});
     const rcs = this.cprStudents.forEach((s: CprStudent) => {
-      this.removeStudentsForm.addControl(s.id.toString(), new FormControl({value: false, disabled: s.cpr_class_id !== null}));
+      this.removeStudentsForm.addControl(s.id.toString(), new FormControl({value: false, disabled: s.has_cpr_cert || s.cpr_class_id !== null}));
     });
   }
 
@@ -212,8 +212,12 @@ export class StudentsComponent {
     const s = this.cprStudentMap.get(studentId);
     if (s !== undefined) {
       this.showChange.s = s;
+      let class_id = s.cpr_class_id;
+      if (s.has_cpr_cert) {
+        class_id = 0
+      }
       this.changeClassForm = this._fb.group({
-        cpr_class_id: new FormControl(s.cpr_class_id, [cprClassValidator(s.cpr_class_id)])
+        cpr_class_id: new FormControl(class_id, [cprClassValidator(class_id)])
       })
     } else {
       this.hideChangeClass();
@@ -248,7 +252,13 @@ export class StudentsComponent {
             rsfc.disable()
             rsfc.setValue(false);
           }
-          s.cpr_class_id = cci;
+          if (cci === 0) {
+            s.cpr_class_id = null;
+            s.has_cpr_cert = true;
+          } else {
+            s.cpr_class_id = cci;
+            s.has_cpr_cert = false;
+          }
         }
         this.hideChangeClass();
       },

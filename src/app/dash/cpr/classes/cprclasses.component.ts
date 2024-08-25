@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { faCheck, faCircleCheck, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { concatMap, finalize, of } from 'rxjs';
 import { BakerApiService, Classroom, CprClass, CprStudent, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
@@ -12,12 +11,6 @@ function classSizeValidator(val: number): ValidatorFn {
     return (cmp && cmp < val) ? { sizeTooSmall: true } : null; 
   }
 }
-
-const isPast: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
-  const now = new Date();
-  const v = Date.parse(c.value);
-  return (!v || c.value < now) ? { invalidDate: true } : null;
-} 
 
 @Component({
   selector: 'baker-cpr-class',
@@ -33,17 +26,8 @@ export class CprClassesComponent {
   public cprAdmin: boolean = false;
   public disable = {resized: false, added: false};
   public icons = {gear: faGear, check: faCheck, tri: faTriangleExclamation, ok: faCircleCheck};
-
-  public addClassRef: BsModalRef;
-  @ViewChild('addClassModal') addClass: any;
-
-  public addClassForm: FormGroup = this._fb.group({
-    classroom_id: new FormControl('', [Validators.required]),
-    time: new FormControl('', [Validators.required, isPast]),
-    class_size: new FormControl('', [Validators.required, Validators.pattern("^[0-9]+$")])
-  });
   
-  constructor(private _api: BakerApiService, private _modal: BsModalService, private _fb: FormBuilder) {}
+  constructor(private _api: BakerApiService, private _fb: FormBuilder) {}
 
   ngOnInit() {
     this._api.currentUser.pipe(
@@ -118,40 +102,7 @@ export class CprClassesComponent {
     return this.resize.controls['size'];
   }
 
-  getAddClass(name: string): AbstractControl {
-    return this.addClassForm.controls[name];
-  }
-
   styleControl(a: AbstractControl, ct: string = 'form-control') {
     return styleControl(a, false, ct);
-  }
-
-  showAddClass() {
-    if (!this.cprAdmin) return;
-    this.addClassRef = this._modal.show(this.addClass, {animated: true, backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'});
-  }
-
-  onAddClass() {
-    if (!this.cprAdmin) return;
-    this.disable.added = true;
-    this._api.addCprClass(this.addClassForm.value).pipe(
-      finalize(() => this.disable.added = false)
-    ).subscribe({
-      next: (c: CprClass) => {
-        this.cprClasses.splice(this.cprClasses.findIndex((cur: CprClass) => {
-          const nd = Date.parse(c.time)
-          const cd = Date.parse(cur.time)
-          return nd <= cd;
-        }), 0, c);
-        this.addClassForm.reset();
-        this.success = 'Added ' + c.location + ' @ ' + c.time + ' with a class size of ' + c.class_size!;
-      }, 
-      error: (e: Error) => this.error = e.message
-    });
-  }
-
-  hideAddClass() {
-    this.addClassRef.hide();
-    this.addClassForm.reset();
   }
 }
