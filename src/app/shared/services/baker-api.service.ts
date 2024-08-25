@@ -190,15 +190,15 @@ export interface CprClass {
   time: string;
   students_count?: number;
   class_size?: number;
-  location: string;
+  classroom: Classroom;
   students?: CprStudent[];
 }
 
 export interface Classroom {
   id: number;
   name: string;
-  address: string;
-  map_link: string;
+  address?: string;
+  map_link?: string;
 }
 
 interface UserNameForm {
@@ -589,10 +589,10 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-  resizeCprClass(classId: number, form: {size: string}): Observable<boolean> {
-    let body = JSON.stringify(form);
-    return this.http.patch<any>(this.url + '/admin/cpr_classes/' + classId, body, this.defaultOptions()).pipe(
-      map(r => true),
+  editCprClass(classId: number, f: {classroom_id: string, time: Date, class_size: string}): Observable<CprClass> {
+    let body = JSON.stringify(f);
+    this.log(body);
+    return this.http.patch<CprClass>(this.url + '/admin/cpr_classes/' + classId, body, this.defaultOptions()).pipe(
       catchError(this.handleError)
     );
   }

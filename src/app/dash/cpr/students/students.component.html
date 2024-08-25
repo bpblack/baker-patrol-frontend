@@ -6,7 +6,7 @@
         <div class="col-auto">
           <h2>CPR Students</h2>
         </div>
-        @if (cprAdmin) {
+        @if (cprAdmin && cprYear && !cprYear.expired) {
           <div class="col">
             <div class="btn-group" dropdown>
               <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle" aria-controls="dropdown-basic">
@@ -90,7 +90,7 @@
                                 }
                                 <option [value]="0" [disabled]="s.has_cpr_cert">Has outside CPR certification</option>
                                 @for (c of cprClasses; track c.id) {
-                                  <option [value]="c.id" [disabled]="!s.has_cpr_cert && (c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count)">{{c.time}} &#64; {{c.location}}</option>
+                                  <option [value]="c.id" [disabled]="!s.has_cpr_cert && (c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count)">{{c.time}} &#64; {{c.classroom.name}}</option>
                                 }
                               </select>
                             </div>

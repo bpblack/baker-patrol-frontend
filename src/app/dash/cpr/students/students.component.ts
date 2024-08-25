@@ -4,7 +4,7 @@ import { faAt, faCheck, faCircleCheck, faCircleInfo, faGear, faTriangleExclamati
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 import { finalize, forkJoin } from 'rxjs';
-import { BakerApiService, CprClass, CprStudent, User, hasRole } from 'src/app/shared/services/baker-api.service';
+import { BakerApiService, CprClass, CprStudent, CprYear, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
 function cprClassValidator(id: number | null): ValidatorFn {
@@ -25,6 +25,7 @@ interface StudentMessages {
   providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
 })
 export class StudentsComponent {
+  public cprYear: CprYear;
   public cprClasses: CprClass[];
   public cprStudents: CprStudent[];
   public cprClassMap: Map<number, string>;
@@ -63,15 +64,16 @@ export class StudentsComponent {
       next: (u: User) => this.cprAdmin = hasRole(u.roles, new Set(['admin', 'cprior']))
     });
 
-    forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents()}).pipe(
+    forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents(), y: this._api.getCprYearLatest()}).pipe(
       finalize(() => {
-        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.location]));
+        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.classroom.name]));
         this.cprStudentMap = new Map<number, CprStudent>(this.cprStudents.map(s => [s.id, s]));
       })  
     ).subscribe({
-      next: (r: {c: CprClass[], s: CprStudent[]}) => {
+      next: (r: {c: CprClass[], s: CprStudent[], y: CprYear}) => {
         this.cprClasses = r.c;
         this.cprStudents = r.s;
+        this.cprYear = r.y ? r.y : {id: 0, year: "", expired: true};
       },
       error: (e: Error) => this.error.main = e.message
     })
