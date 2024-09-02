@@ -35,6 +35,7 @@ export interface User {
   email: string;
   seasons: Season[];
   roles: Role[];
+  cpr_token: string | null;
 }
 
 export interface RosterUser {
@@ -199,6 +200,19 @@ export interface Classroom {
   name: string;
   address?: string;
   map_link?: string;
+}
+
+export interface CprSignup {
+  student: {
+    name: string;
+    cpr_class_id: number | null;
+    has_cpr_cert: boolean;
+  }
+  ior: {
+    name: string;
+    email: string;
+  }
+  classes: CprClass[];
 }
 
 interface UserNameForm {
@@ -640,6 +654,19 @@ export class BakerApiService implements IAuthService {
 
   addClassroom(f: {name: string, address: string, map_link: string}): Observable<Classroom> {
     return this.http.post<Classroom>(this.url + '/admin/classrooms', JSON.stringify(f), this.defaultOptions()).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getCprSignup(t: string): Observable<CprSignup> {
+    return this.http.get<CprSignup>(this.url + '/signup/' + t).pipe(
+      catchError(this.handleError)
+    )
+  }
+
+  changeCprSignup(t: string, f: {cpr_class_id: number}): Observable<boolean> {
+    return this.http.patch<any>(this.url + '/signup/' + t, JSON.stringify(f), this.defaultOptions()).pipe(
+      map(r => true),
       catchError(this.handleError)
     );
   }

@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { faCheck, faCircleCheck, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { concatMap, finalize, forkJoin, of } from 'rxjs';
+import { Subscription, concatMap, finalize, forkJoin, of, switchMap, timer } from 'rxjs';
 import { BakerApiService, Classroom, CprClass, CprStudent, CprYear, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
@@ -44,6 +44,8 @@ export class CprClassesComponent {
     time: new FormControl('', [Validators.required, isPast]),
     class_size: new FormControl('', [Validators.required, Validators.pattern("^[0-9]+$")])
   });
+
+  private _poll: Subscription;
   
   constructor(private _api: BakerApiService, private _modal: BsModalService, private _fb: FormBuilder) {}
 
@@ -57,15 +59,8 @@ export class CprClassesComponent {
       next: (ca: Classroom[]) => this.cprClassrooms = ca
     });
 
-    forkJoin({y: this._api.getCprYearLatest(), cs: this._api.getCprClasses(true)}).pipe(
-      finalize(() => {
-        if (this.cprClasses.length > 0) {
-          const cur = this.cprClasses[this.selected];
-          this.resize = this._fb.group({
-            size: new FormControl(cur.class_size, [Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.students_count!)])
-          });
-        }
-      })
+    this._poll = timer(0, 60000).pipe(
+      switchMap(() => forkJoin({y: this._api.getCprYearLatest(), cs: this._api.getCprClasses(true)}))
     ).subscribe({
       next: (r: {y: CprYear, cs: CprClass[]}) => {
         this.cprYear = r.y ? r.y : {id: 0, year: "", expired: true};
@@ -74,7 +69,11 @@ export class CprClassesComponent {
       error: (e: Error) => {
         this.error = e.message
       }
-    })
+    });
+  }
+
+  ngOnDestroy() {
+    this._poll.unsubscribe();
   }
 
   getClassTitle(i: number) {
@@ -85,10 +84,6 @@ export class CprClassesComponent {
   selectClass(value: any) {
     this.selected = value.target.value;
     const cur = this.cprClasses[this.selected];
-    this.resize.controls['size'].setValue(cur.class_size);
-    this.resize.controls['size'].clearValidators();
-    this.resize.controls['size'].setValidators([Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.students_count!)]);
-    this.resize.controls['size'].markAsPristine();
   }
 
   classMailLink() {

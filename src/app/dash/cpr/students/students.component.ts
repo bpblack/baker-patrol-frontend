@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors,
 import { faAt, faCheck, faCircleCheck, faCircleInfo, faGear, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { finalize, forkJoin } from 'rxjs';
+import { Subscription, finalize, forkJoin, switchMap, timer } from 'rxjs';
 import { BakerApiService, CprClass, CprStudent, CprYear, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
@@ -57,6 +57,8 @@ export class StudentsComponent {
   //public changeStudentEmailForm: FormGroup;
   public changeClassForm: FormGroup;
 
+  private _poll: Subscription;
+
   constructor(private _api: BakerApiService, private _modal: BsModalService, private _fb: FormBuilder) {}
 
   ngOnInit() {
@@ -64,19 +66,22 @@ export class StudentsComponent {
       next: (u: User) => this.cprAdmin = hasRole(u.roles, new Set(['admin', 'cprior']))
     });
 
-    forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents(), y: this._api.getCprYearLatest()}).pipe(
-      finalize(() => {
-        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.classroom.name]));
-        this.cprStudentMap = new Map<number, CprStudent>(this.cprStudents.map(s => [s.id, s]));
-      })  
+    this._poll = timer(0, 60000).pipe(
+      switchMap(() => forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents(), y: this._api.getCprYearLatest()}))
     ).subscribe({
       next: (r: {c: CprClass[], s: CprStudent[], y: CprYear}) => {
         this.cprClasses = r.c;
         this.cprStudents = r.s;
         this.cprYear = r.y ? r.y : {id: 0, year: "", expired: true};
+        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.classroom.name]));
+        this.cprStudentMap = new Map<number, CprStudent>(this.cprStudents.map(s => [s.id, s]));
       },
       error: (e: Error) => this.error.main = e.message
-    })
+    });
+  }
+
+  ngOnDestroy() {
+    this._poll.unsubscribe();
   }
 
   getClassName(id: number | null): string {
