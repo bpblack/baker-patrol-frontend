@@ -6,8 +6,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from  "@auth0/angular-jwt";
 import { AlertModule } from 'ngx-bootstrap/alert';
 
-import { BakerApiService } from './shared/services/baker-api.service';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashModule } from './dash/dash.module';

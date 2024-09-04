@@ -2,16 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { faCheck, faCircleCheck, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { concatMap, finalize, of } from 'rxjs';
-import { BakerApiService, Classroom, CprClass, CprStudent, User, hasRole } from 'src/app/shared/services/baker-api.service';
+import { Subscription, concatMap, finalize, forkJoin, of, switchMap, timer } from 'rxjs';
+import { BakerApiService, Classroom, CprClass, CprStudent, CprYear, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
-
-function classSizeValidator(val: number): ValidatorFn {
-  return (c: AbstractControl): ValidationErrors | null => {
-    const cmp: number = +c.value;
-    return (cmp && cmp < val) ? { sizeTooSmall: true } : null; 
-  }
-}
 
 const isPast: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
   const now = new Date();
@@ -25,13 +18,15 @@ const isPast: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
 })
 export class CprClassesComponent {
   public selected: number = 0;
+  public cprYear: CprYear;
   public cprClasses: CprClass[];
   public cprClassrooms: Classroom[];
   public error: string | null = null;
   public success: string | null = null;
   public resize: FormGroup;
+  public editClass: boolean = false;
   public cprAdmin: boolean = false;
-  public disable = {resized: false, added: false};
+  public disable: boolean = false;// {resized: false, added: false};
   public icons = {gear: faGear, check: faCheck, tri: faTriangleExclamation, ok: faCircleCheck};
 
   public addClassRef: BsModalRef;
@@ -42,6 +37,8 @@ export class CprClassesComponent {
     time: new FormControl('', [Validators.required, isPast]),
     class_size: new FormControl('', [Validators.required, Validators.pattern("^[0-9]+$")])
   });
+
+  private _poll: Subscription;
   
   constructor(private _api: BakerApiService, private _modal: BsModalService, private _fb: FormBuilder) {}
 
@@ -55,55 +52,39 @@ export class CprClassesComponent {
       next: (ca: Classroom[]) => this.cprClassrooms = ca
     });
 
-    this._api.getCprClasses(true).pipe(
-      finalize(() => {
-        const cur = this.cprClasses[this.selected];
-        this.resize = this._fb.group({
-          size: new FormControl(cur.class_size, [Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.students_count!)])
-        });
-      })
+    this._poll = timer(0, 60000).pipe(
+      switchMap(() => forkJoin({y: this._api.getCprYearLatest(), cs: this._api.getCprClasses(true)}))
     ).subscribe({
-      next: (c: CprClass[]) => this.cprClasses = c,
-      error: (e: Error) => this.error = e.message
-    })
+      next: (r: {y: CprYear, cs: CprClass[]}) => {
+        this.cprYear = r.y ? r.y : {id: 0, year: "", expired: true};
+        this.cprClasses = r.cs;
+      },
+      error: (e: Error) => {
+        this.error = e.message
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this._poll.unsubscribe();
   }
 
   getClassTitle(i: number) {
     const c = this.cprClasses[i];
-    return `${c.time} @ ${c.location} (Enrollment: ${c.students_count}/${c.class_size})`
+    return `${c.time} @ ${c.classroom.name} (Enrollment: ${c.students_count}/${c.class_size})`
   }
 
   selectClass(value: any) {
     this.selected = value.target.value;
     const cur = this.cprClasses[this.selected];
-    this.resize.controls['size'].setValue(cur.class_size);
-    this.resize.controls['size'].clearValidators();
-    this.resize.controls['size'].setValidators([Validators.required, Validators.pattern("^[0-9]+$"), classSizeValidator(cur.students_count!)]);
-    this.resize.controls['size'].markAsPristine();
   }
 
   classMailLink() {
-    return 'mailto:?bcc=' + this.cprClasses[this.selected].students!.map((s: CprStudent) => s.email).join(',');
-  }
-
-  get size(): number {
-    return +this.resize.controls['size'].value;
-  }
-
-  onResize() {
-    if (!this.cprAdmin) return;
-    this.disable.resized = true;
-    const vals = this.resize.value;
-    let cur = this.cprClasses[this.selected];
-    this._api.resizeCprClass(cur.id, this.resize.value).pipe(
-      finalize(() => {
-        this.disable.resized = false;
-        this.resize.controls['size'].markAsPristine();
-      })
-    ).subscribe({
-      next: (b: boolean) => cur.class_size = +vals.size,
-      error: (e: Error) => this.error = e.message
-    });
+    if (this.cprClasses.length && this.cprClasses[this.selected].students && this.cprClasses[this.selected].students!.length > 0) {
+      return 'mailto:?bcc=' + this.cprClasses[this.selected].students!.map((s: CprStudent) => s.email).join(','); 
+    } else {
+      return '';
+    }
   }
 
   clearError() {
@@ -112,10 +93,6 @@ export class CprClassesComponent {
 
   clearSuccess() {
     this.success = null;
-  }
-
-  get newSize() {
-    return this.resize.controls['size'];
   }
 
   getAddClass(name: string): AbstractControl {
@@ -131,27 +108,67 @@ export class CprClassesComponent {
     this.addClassRef = this._modal.show(this.addClass, {animated: true, backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'});
   }
 
+  showEditClass() {
+    if (!this.cprAdmin) return;
+    this.editClass = true;
+    const selected: CprClass = this.cprClasses[this.selected];
+    this.addClassForm.controls['classroom_id'].setValue(String(selected.classroom.id));
+    this.addClassForm.controls['time'].setValue(new Date(selected.time));
+    this.addClassForm.controls['class_size'].setValue(selected.class_size);
+    this.addClassRef = this._modal.show(this.addClass, {animated: true, backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'});
+  }
+
   onAddClass() {
     if (!this.cprAdmin) return;
-    this.disable.added = true;
-    this._api.addCprClass(this.addClassForm.value).pipe(
-      finalize(() => this.disable.added = false)
-    ).subscribe({
-      next: (c: CprClass) => {
-        this.cprClasses.splice(this.cprClasses.findIndex((cur: CprClass) => {
-          const nd = Date.parse(c.time)
-          const cd = Date.parse(cur.time)
-          return nd <= cd;
-        }), 0, c);
-        this.addClassForm.reset();
-        this.success = 'Added ' + c.location + ' @ ' + c.time + ' with a class size of ' + c.class_size!;
-      }, 
-      error: (e: Error) => this.error = e.message
-    });
+    this.disable = true;
+    if (this.editClass){
+      let cur = this.cprClasses[this.selected];
+      this._api.editCprClass(cur.id, this.addClassForm.value).pipe(
+        finalize(() => {
+          this.disable = false;
+        })
+      ).subscribe({
+        next: (c: CprClass) => {
+          cur.classroom.id = c.classroom.id;
+          cur.classroom.name = c.classroom.name;
+          cur.class_size = c.class_size;
+          cur.time = c.time;
+          this.success = 'Updated to ' + cur.classroom.name + ' @ ' + c.time + ' with a class size of ' + cur.class_size!;
+          this.clearError();
+        },
+        error: (e: Error) => {
+          this.clearSuccess();
+          this.error = e.message;
+        }
+      });
+    } else {
+      this._api.addCprClass(this.addClassForm.value).pipe(
+        finalize(() => {
+          this.disable = false;
+        })
+      ).subscribe({
+        next: (c: CprClass) => {
+          this.cprClasses.splice(this.cprClasses.findIndex((cur: CprClass) => {
+            const nd = Date.parse(c.time)
+            const cd = Date.parse(cur.time)
+            return nd <= cd;
+          }), 0, c);
+          this.addClassForm.reset();
+          this.success = 'Added ' + c.classroom.name + ' @ ' + c.time + ' with a class size of ' + c.class_size!;
+          this.clearError();
+        }, 
+        error: (e: Error) => {
+          this.clearSuccess();
+          this.error = e.message;
+        }
+      });
+    }
   }
 
   hideAddClass() {
     this.addClassRef.hide();
     this.addClassForm.reset();
+    this.success = null;
+    this.error = null;
   }
 }

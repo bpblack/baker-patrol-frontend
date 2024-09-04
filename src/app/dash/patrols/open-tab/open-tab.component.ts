@@ -25,11 +25,11 @@ export class OpenTabComponent {
     ).subscribe((o: OpenRequest[]) => {
       this.openRequests = o;
       this.count.emit(this.openRequests.length);
-    })
+    });
   }
 
   ngOnDestroy() {
-    this._poll.unsubscribe()
+    this._poll.unsubscribe();
   }
 
   contactClick(i: number) {

@@ -12,6 +12,7 @@ const routes: Routes = [
   { path: 'Login', component: LoginComponent, canActivate: [NoAuthGuard] },
   { path: 'Forgot', component: ForgotComponent, canActivate: [NoAuthGuard] },
   { path: 'Reset/:id', component: ResetComponent,  canActivate: [NoAuthGuard] },
+  { path: 'CprSignup/:id', loadComponent: ()=> import('./cpr-signup/cpr-signup.component').then((m) => m.CprSignupComponent)},
   { path: 'GoogleCalendar', component: GoogleCalendarComponent, canActivate: [AuthGuard]},
   { path: 'Dash', loadChildren: () => import('./dash/dash.module').then(m => m.DashModule) }
 ];

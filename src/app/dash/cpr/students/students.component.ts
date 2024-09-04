@@ -3,8 +3,8 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors,
 import { faAt, faCheck, faCircleCheck, faCircleInfo, faGear, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
-import { finalize, forkJoin } from 'rxjs';
-import { BakerApiService, CprClass, CprStudent, User, hasRole } from 'src/app/shared/services/baker-api.service';
+import { Subscription, finalize, forkJoin, switchMap, timer } from 'rxjs';
+import { BakerApiService, CprClass, CprStudent, CprYear, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
 function cprClassValidator(id: number | null): ValidatorFn {
@@ -25,6 +25,7 @@ interface StudentMessages {
   providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
 })
 export class StudentsComponent {
+  public cprYear: CprYear;
   public cprClasses: CprClass[];
   public cprStudents: CprStudent[];
   public cprClassMap: Map<number, string>;
@@ -56,6 +57,8 @@ export class StudentsComponent {
   //public changeStudentEmailForm: FormGroup;
   public changeClassForm: FormGroup;
 
+  private _poll: Subscription;
+
   constructor(private _api: BakerApiService, private _modal: BsModalService, private _fb: FormBuilder) {}
 
   ngOnInit() {
@@ -63,18 +66,22 @@ export class StudentsComponent {
       next: (u: User) => this.cprAdmin = hasRole(u.roles, new Set(['admin', 'cprior']))
     });
 
-    forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents()}).pipe(
-      finalize(() => {
-        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.location]));
-        this.cprStudentMap = new Map<number, CprStudent>(this.cprStudents.map(s => [s.id, s]));
-      })  
+    this._poll = timer(0, 60000).pipe(
+      switchMap(() => forkJoin({c: this._api.getCprClasses(), s: this._api.getCprStudents(), y: this._api.getCprYearLatest()}))
     ).subscribe({
-      next: (r: {c: CprClass[], s: CprStudent[]}) => {
+      next: (r: {c: CprClass[], s: CprStudent[], y: CprYear}) => {
         this.cprClasses = r.c;
         this.cprStudents = r.s;
+        this.cprYear = r.y ? r.y : {id: 0, year: "", expired: true};
+        this.cprClassMap = new Map<number, string>(this.cprClasses.map(c => [c.id, c.time + ' @ ' + c.classroom.name]));
+        this.cprStudentMap = new Map<number, CprStudent>(this.cprStudents.map(s => [s.id, s]));
       },
       error: (e: Error) => this.error.main = e.message
-    })
+    });
+  }
+
+  ngOnDestroy() {
+    this._poll.unsubscribe();
   }
 
   getClassName(id: number | null): string {
@@ -131,13 +138,15 @@ export class StudentsComponent {
 
   hideAddStudent() {
     this.addStudentRef.hide();
+    this.success.add = null;
+    this.error.add = null;
   }
 
   resetRemoveForm() {
     // reset the checkbox controls for the current list of students
     this.removeStudentsForm = this._fb.group({});
     const rcs = this.cprStudents.forEach((s: CprStudent) => {
-      this.removeStudentsForm.addControl(s.id.toString(), new FormControl({value: false, disabled: s.cpr_class_id !== null}));
+      this.removeStudentsForm.addControl(s.id.toString(), new FormControl({value: false, disabled: s.has_cpr_cert || s.cpr_class_id !== null}));
     });
   }
 
@@ -179,6 +188,8 @@ export class StudentsComponent {
 
   hideRemoveStudents() {
     this.showRemove = false;
+    this.success.main = null;
+    this.error.main = null;
   }
 
   showSendReminders() {
@@ -203,6 +214,8 @@ export class StudentsComponent {
 
   hideSendReminders() {
     this.sendRemindersRef.hide();
+    this.success.remind = null;
+    this.error.remind = null;
   }
 
   showChangeClass(studentId: number, idx: number) {
@@ -212,8 +225,12 @@ export class StudentsComponent {
     const s = this.cprStudentMap.get(studentId);
     if (s !== undefined) {
       this.showChange.s = s;
+      let class_id = s.cpr_class_id;
+      if (s.has_cpr_cert) {
+        class_id = 0
+      }
       this.changeClassForm = this._fb.group({
-        cpr_class_id: new FormControl(s.cpr_class_id, [cprClassValidator(s.cpr_class_id)])
+        cpr_class_id: new FormControl(class_id, [cprClassValidator(class_id)])
       })
     } else {
       this.hideChangeClass();
@@ -242,13 +259,20 @@ export class StudentsComponent {
             this.removeStudentsForm.controls[s.id.toString()].enable();
           }
           s.cpr_class_id = null;
+          s.has_cpr_cert = false;
         } else {
           if (this.showRemove) {
             let rsfc = this.removeStudentsForm.controls[s.id.toString()];
             rsfc.disable()
             rsfc.setValue(false);
           }
-          s.cpr_class_id = cci;
+          if (cci === 0) {
+            s.cpr_class_id = null;
+            s.has_cpr_cert = true;
+          } else {
+            s.cpr_class_id = cci;
+            s.has_cpr_cert = false;
+          }
         }
         this.hideChangeClass();
       },

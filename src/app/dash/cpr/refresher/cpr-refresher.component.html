@@ -1,0 +1,17 @@
+@if (token === undefined) {
+<div class="card">
+  <div class="card-body">
+    <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+    Loading cpr class data...
+  </div>
+</div>
+} @else if (token === null) {
+  <div class="card">
+    <div class="card-body">
+      <fa-icon [icon]="icons.triangle" animation="spin"></fa-icon>&nbsp;
+      There is no current CPR Refresher cycle.
+    </div>
+  </div>
+} @else {
+  <baker-cpr-signup-form [token]="token"></baker-cpr-signup-form>
+}
