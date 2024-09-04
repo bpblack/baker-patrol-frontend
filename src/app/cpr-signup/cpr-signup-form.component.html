@@ -1,0 +1,92 @@
+<div class="card mt-3">
+  @if (cprSignup){
+    <div class="card-header">
+      <h2>CPR Class Signup</h2>
+    </div>
+    <div class="card-body">
+      @if (success) {
+        <div class="col-md-12">
+          <alert type="success" [dismissible]="true" (click)="clearSuccess()">
+            <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+            {{success}}
+          </alert>
+        </div>
+      } 
+      @if (error) {
+        <div class="col-md-12">
+          <alert type="danger" [dismissible]="true" (click)="clearError()">
+            <fa-icon [icon]="icons.ok"></fa-icon>&nbsp;
+            {{error}}
+          </alert>
+        </div>
+      }
+      <p>Hello {{cprSignup.student.name}},</p>
+      @if (cprSignup.student.has_cpr_cert) {
+        <p>
+          Our records indicate that you already have a Healthcare Provider CPR certification from an outside source. If this is accurate, you do not need&nbsp;
+          to take a Mt. Baker CPR Class. If this is not correct, please email {{cprSignup.ior.name}} &#64;&nbsp;
+          <a href="mailto:{{cprSignup.ior.email}}">{{cprSignup.ior.email}}</a>.
+        </p>
+      } @else {
+        <p>
+          @if (currentClass) {
+            You are currently signed up for the {{currentClass}} Mt. Baker Healthcare Provider CPR class.&nbsp;
+          } @else {
+            It is time to sign up for a {{year}} Mt. Baker Healthcare Provider CPR class.&nbsp;
+          }
+          You will need to bring your own pocket mask. Classes are held at the following locations:
+        </p>
+        <div class="card m-2">
+          <div class="card-body">
+            <dl class="row mb-0">
+              @for (c of classrooms; track c.id) {
+                <dt class="col-2 col-sm-2">{{c.name}}</dt>
+                <dd class="col-10 col-sm-10"><a [href]="c.map_link" target="_blank" rel="noopener noreferrer">{{c.address}}</a></dd>
+              }
+            </dl>
+          </div>
+        </div>
+        <p>Questions or problems? Email {{cprSignup.ior.name}} &#64; <a href="mailto:{{cprSignup.ior.email}}">{{cprSignup.ior.email}}</a>.</p>
+        @if (currentClass) {
+          <p>Please select a different class from the drop down menu below if you would like to change your class or unregister.</p>
+        } @else {
+          <p>Please select a class from the drop down menu below to sign up.</p>
+        }
+        <div>
+        <form class="row g-2" [formGroup]="signupForm" (ngSubmit)="onSignup()">
+          <div class="col-md-12">
+            <div class="input-group">
+              <span class="input-group-text" id="cci">CPR Class Selection</span>
+              <select [class]="styleControl('form-select')" formControlName="cpr_class_id" aria-describedby="cci">
+                <option value="0" [disabled]="disabled(0)" [selected]="selected(0)">Unregistered</option>
+                @for (c of cprSignup.classes; track c.id) {
+                  <option [value]="c.id" [disabled]="disabled(c.id)" [selected]="selected(c.id)">
+                    {{c.time}} &#64; {{c.classroom.name}} ({{c.students_count}}/{{c.class_size}})
+                  </option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="input-group">
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="!signupForm.valid && !submitted">
+                @if (!submitted) {
+                  Sign up
+                } @else {
+                  <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+                  Signing up...
+                }
+              </button>
+            </div>
+          </div>
+        </form>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="card-body">
+      <fa-icon [icon]="icons.gear" animation="spin"></fa-icon>&nbsp;
+      Loading signup data...
+    </div>
+  }
+</div>

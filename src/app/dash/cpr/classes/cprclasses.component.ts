@@ -6,13 +6,6 @@ import { Subscription, concatMap, finalize, forkJoin, of, switchMap, timer } fro
 import { BakerApiService, Classroom, CprClass, CprStudent, CprYear, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { styleControl } from 'src/app/shared/validations/validations';
 
-function classSizeValidator(val: number): ValidatorFn {
-  return (c: AbstractControl): ValidationErrors | null => {
-    const cmp: number = +c.value;
-    return (cmp && cmp < val) ? { sizeTooSmall: true } : null; 
-  }
-}
-
 const isPast: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
   const now = new Date();
   const v = Date.parse(c.value);
@@ -175,5 +168,7 @@ export class CprClassesComponent {
   hideAddClass() {
     this.addClassRef.hide();
     this.addClassForm.reset();
+    this.success = null;
+    this.error = null;
   }
 }

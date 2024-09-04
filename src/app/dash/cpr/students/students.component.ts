@@ -138,6 +138,8 @@ export class StudentsComponent {
 
   hideAddStudent() {
     this.addStudentRef.hide();
+    this.success.add = null;
+    this.error.add = null;
   }
 
   resetRemoveForm() {
@@ -186,6 +188,8 @@ export class StudentsComponent {
 
   hideRemoveStudents() {
     this.showRemove = false;
+    this.success.main = null;
+    this.error.main = null;
   }
 
   showSendReminders() {
@@ -210,6 +214,8 @@ export class StudentsComponent {
 
   hideSendReminders() {
     this.sendRemindersRef.hide();
+    this.success.remind = null;
+    this.error.remind = null;
   }
 
   showChangeClass(studentId: number, idx: number) {
@@ -253,6 +259,7 @@ export class StudentsComponent {
             this.removeStudentsForm.controls[s.id.toString()].enable();
           }
           s.cpr_class_id = null;
+          s.has_cpr_cert = false;
         } else {
           if (this.showRemove) {
             let rsfc = this.removeStudentsForm.controls[s.id.toString()];

@@ -50,6 +50,8 @@ import { CprSettingsComponent } from './cpr/settings/cprsettings.component';
 import { ScheduleComponent } from './season/schedule/schedule.component';
 import { SearchDutyDaysPipe } from './season/schedule/schedule-search.pipe';
 import { AdminSettingsComponent } from './season/settings/admin-settings.component';
+import { CprRefresherComponent } from './cpr/refresher/cpr-refresher.component';
+import { CprSignupFormComponent } from '../cpr-signup/cpr-signup-form.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +78,7 @@ import { AdminSettingsComponent } from './season/settings/admin-settings.compone
     CreateFormComponent,
     EmailFormComponent,
     OpenTabComponent,
+    CprRefresherComponent,
     CprClassesComponent,
     SearchStudentsPipe,
     StudentsComponent,
@@ -98,6 +101,7 @@ import { AdminSettingsComponent } from './season/settings/admin-settings.compone
     NgxMaskPipe,
     FontAwesomeModule,
     DropzoneCdkModule,
+    CprSignupFormComponent,
     DashRoutingModule
   ],
   providers: [provideNgxMask()]

@@ -13,7 +13,7 @@ import { BakerApiService,User, hasRole } from '../../shared/services/baker-api.s
 })
 export class DashComponent implements OnInit, OnDestroy {
   public roles = {cpr: false, cpradmin: false, leader: false, admin: false};
-  public cprAdmin: boolean = false;
+  public cprRefresher: boolean = false;
   public isCollapsed: boolean = true;
   public user: Observable<User>;
   public icons = {gear: faGear, power: faPowerOff, school: faSchoolFlag, chalkboard: faChalkboardUser, calendar: faCalendarDays}
@@ -43,6 +43,7 @@ export class DashComponent implements OnInit, OnDestroy {
         this.roles.cpradmin = this.roles.admin || hasRole(user.roles, new Set(['cprior']));
         this.roles.cpr = this.roles.cpradmin || hasRole(user.roles, new Set<string>(['cprinstructor']));
         this.roles.leader = this.roles.admin || hasRole(user.roles, new Set(['leader']), user.seasons[0].id);
+        this.cprRefresher = (user.cpr_token !== null);
       }
     );
   }

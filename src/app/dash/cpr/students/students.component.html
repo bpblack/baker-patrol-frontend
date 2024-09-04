@@ -85,9 +85,7 @@
                           <form class="row row-cols-auto gx-1 align-items-start" [formGroup]="changeClassForm" (ngSubmit)="onChangeClass()">
                             <div class="col">
                               <select class="form-select form-select-sm" formControlName="cpr_class_id">
-                                @if (!s.has_cpr_cert) {
-                                  <option [value]="null" [disabled]="showChange.s!.cpr_class_id === null">Uregistered</option>
-                                }
+                                <option [value]="null" [disabled]="showChange.s!.cpr_class_id === null && !s.has_cpr_cert">Uregistered</option>
                                 <option [value]="0" [disabled]="s.has_cpr_cert">Has outside CPR certification</option>
                                 @for (c of cprClasses; track c.id) {
                                   <option [value]="c.id" [disabled]="!s.has_cpr_cert && (c.id === showChange.s!.cpr_class_id || c.class_size === c.students_count)">{{c.time}} &#64; {{c.classroom.name}}</option>

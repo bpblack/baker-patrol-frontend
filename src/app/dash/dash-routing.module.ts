@@ -13,6 +13,7 @@ import { StudentsComponent } from './cpr/students/students.component';
 import { GetRoleGuard } from '../shared/guards/roles.guard';
 import { CprSettingsComponent } from './cpr/settings/cprsettings.component';
 import { AdminSettingsComponent } from './season/settings/admin-settings.component';
+import { CprRefresherComponent } from './cpr/refresher/cpr-refresher.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,7 @@ const routes: Routes = [
       path: 'Cpr',
       canActivateChild: [AuthGuard],
       children: [
+        { path: 'Refresher', component: CprRefresherComponent},
         { path: 'Classes', component: CprClassesComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'cprior', 'cprinstructor']))] },
         { path: 'Students', component: StudentsComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'cprior', 'cprinstructor']))] },
         { path: 'Settings', component: CprSettingsComponent, canActivate: [GetRoleGuard(new Set<string>(['admin', 'cprior']))] }

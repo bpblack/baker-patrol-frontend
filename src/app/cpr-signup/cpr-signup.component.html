@@ -9,7 +9,15 @@
   </div>
 </nav>
 <div class="container">
-  <div class="card mt-3">
+  @if (token) {
+    <baker-cpr-signup-form [token]="token"></baker-cpr-signup-form>
+  } @else {
+    <div class="card-body">
+      <fa-icon [icon]="gear" animation="spin"></fa-icon>&nbsp;
+      Loading signup data...
+    </div>
+  }
+  <!-- <div class="card mt-3">
     @if (cprSignup){
       <div class="card-header">
         <h2>CPR Class Signup</h2>
@@ -87,6 +95,6 @@
         Loading signup data...
       </div>
     }
-  </div>
+  </div> -->
 </div>
 
