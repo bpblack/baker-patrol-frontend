@@ -3,5 +3,5 @@ export const environment = {
     //apiUrl: 'https://volypatrol.mtbaker.us/api'
     apiUrl: 'http://localhost:3000/api',
     allowedDomains: ['localhost:3000', 'play.google.com'],
-    numWeekends: 24
+    numWeekends: 23
 };
