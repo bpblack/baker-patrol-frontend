@@ -1,10 +1,10 @@
 import { Component, Input } from "@angular/core";
 import { IconDefinition, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { DropzoneComponent } from "@ngx-dropzone/cdk";
+import { DropzoneComponent} from "@ngx-dropzone/cdk";
 
 @Component({
-  selector: "baker-dropzone",
-  template: `
+    selector: "baker-dropzone",
+    template: `
     <div class="border border-secondary-subtle rounded bg-body-secondary pe-auto baker-dropzone" (click)="onContainerClick()">
       <span class="border border-secondary-subtle rounded choose-file-button">Choose file</span>
       <span class="file-message">{{message}}</span>
@@ -17,7 +17,8 @@ import { DropzoneComponent } from "@ngx-dropzone/cdk";
       </div>
     }
   `,
-  styleUrls: ['./dropzone.component.css']
+    styleUrls: ['./dropzone.component.css'],
+    standalone: false
 })
 export class BakerDropzone extends DropzoneComponent {
   @Input() 

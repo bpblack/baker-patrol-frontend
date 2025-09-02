@@ -20,9 +20,10 @@ interface StudentMessages {
 }
 
 @Component({
-  selector: 'baker-cpr-students',
-  templateUrl: './students.component.html',
-  providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
+    selector: 'baker-cpr-students',
+    templateUrl: './students.component.html',
+    providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }],
+    standalone: false
 })
 export class StudentsComponent {
   public cprYear: CprYear;

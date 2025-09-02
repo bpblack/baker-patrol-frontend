@@ -4,8 +4,9 @@ import { Observable, concatMap } from 'rxjs';
 import { BakerApiService, DutyDay, Season } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-schedule',
-  templateUrl: './schedule.component.html'
+    selector: 'baker-schedule',
+    templateUrl: './schedule.component.html',
+    standalone: false
 })
 export class ScheduleComponent implements OnInit {
   public seasonName: string;

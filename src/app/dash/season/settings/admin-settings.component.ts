@@ -33,8 +33,9 @@ const validLength: ValidatorFn = (c: AbstractControl): ValidationErrors | null =
 }
 
 @Component({
-  selector: 'baker-season-admin-settings',
-  templateUrl: './admin-settings.component.html'
+    selector: 'baker-season-admin-settings',
+    templateUrl: './admin-settings.component.html',
+    standalone: false
 })
 export class AdminSettingsComponent implements OnInit, OnDestroy {
   public latest: Season;

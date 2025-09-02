@@ -4,8 +4,9 @@ import { Subscription, switchMap, timer } from 'rxjs';
 import { BakerApiService, OpenRequest, Season } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-open-tab',
-  templateUrl: './open-tab.component.html'
+    selector: 'baker-open-tab',
+    templateUrl: './open-tab.component.html',
+    standalone: false
 })
 export class OpenTabComponent {
   public error: string | null = null;

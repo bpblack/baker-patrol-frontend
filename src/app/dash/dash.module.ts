@@ -12,7 +12,7 @@ import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { DropzoneCdkModule } from '@ngx-dropzone/cdk';
+import { DropzoneComponent, FileInputDirective } from '@ngx-dropzone/cdk';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { DashRoutingModule } from './dash-routing.module';
@@ -100,7 +100,8 @@ import { CprSignupFormComponent } from '../cpr-signup/cpr-signup-form.component'
     NgxMaskDirective,
     NgxMaskPipe,
     FontAwesomeModule,
-    DropzoneCdkModule,
+    DropzoneComponent,
+    FileInputDirective,
     CprSignupFormComponent,
     DashRoutingModule
   ],

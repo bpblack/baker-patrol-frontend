@@ -11,8 +11,9 @@ interface Result {
 }
 
 @Component({
-  selector: 'baker-update-phone',
-  templateUrl: './update-phone.component.html'
+    selector: 'baker-update-phone',
+    templateUrl: './update-phone.component.html',
+    standalone: false
 })
 export class UpdatePhoneComponent {
   public submitted: boolean = false;

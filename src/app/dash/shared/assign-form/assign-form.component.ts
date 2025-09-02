@@ -13,8 +13,9 @@ interface Substitute {
 }
 
 @Component({
-  selector: 'baker-assign-sub-form',
-  templateUrl: './assign-form.component.html'
+    selector: 'baker-assign-sub-form',
+    templateUrl: './assign-form.component.html',
+    standalone: false
 })
 
 export class AssignFormComponent {

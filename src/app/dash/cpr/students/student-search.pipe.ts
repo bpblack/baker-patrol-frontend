@@ -1,7 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CprStudent } from '../../../shared/services/baker-api.service';
 
-@Pipe({name: 'searchStudents'})
+@Pipe({
+    name: 'searchStudents',
+    standalone: false
+})
 export class SearchStudentsPipe implements PipeTransform {
   transform(roster: CprStudent[], search: string, cm: Map<number, string>, fn: (i: number | null, m: Map<number, string>) => string): any {
     if (!search || search.length === 0 ) {

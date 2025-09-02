@@ -4,8 +4,9 @@ import { Observable, concatMap } from 'rxjs';
 import { BakerApiService, Season } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-team',
-  templateUrl: './team.component.html'
+    selector: 'baker-team',
+    templateUrl: './team.component.html',
+    standalone: false
 })
 export class TeamComponent {
   public igear: IconDefinition = faGear;

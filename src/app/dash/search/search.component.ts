@@ -1,8 +1,9 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
 
 @Component({
-  selector: 'baker-search',
-  templateUrl: './search.component.html' 
+    selector: 'baker-search',
+    templateUrl: './search.component.html',
+    standalone: false
 })
 export class SearchComponent {
   @Input() term!: string;

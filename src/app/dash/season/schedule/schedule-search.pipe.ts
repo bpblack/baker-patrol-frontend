@@ -1,7 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DutyDay } from '../../../shared/services/baker-api.service';
 
-@Pipe({name: 'searchDutyDays'})
+@Pipe({
+    name: 'searchDutyDays',
+    standalone: false
+})
 export class SearchDutyDaysPipe implements PipeTransform {
   transform(dutyDays: DutyDay[], search: string): any {
     if (!search || search.length === 0) {

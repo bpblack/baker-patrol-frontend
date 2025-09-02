@@ -6,8 +6,9 @@ import { IconDefinition, faGear, faSleigh } from '@fortawesome/free-solid-svg-ic
 import { finalize } from 'rxjs';
 
 @Component({
-  selector: 'baker-email-sub-form',
-  templateUrl: './email-form.component.html'
+    selector: 'baker-email-sub-form',
+    templateUrl: './email-form.component.html',
+    standalone: false
 })
 export class EmailFormComponent {
   public submitted: boolean = false;

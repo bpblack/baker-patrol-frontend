@@ -7,9 +7,10 @@ import { faCircleCheck, faGear, faKey, faTriangleExclamation } from '@fortawesom
 import { matchValidator, passwordRegexp, styleControl } from '../shared/validations/validations';
 
 @Component({
-  selector: 'baker-patrol-reset',
-  templateUrl: './reset.component.html',
-  styleUrls: ['./reset.component.css']
+    selector: 'baker-patrol-reset',
+    templateUrl: './reset.component.html',
+    styleUrls: ['./reset.component.css'],
+    standalone: false
 })
 export class ResetComponent {
   public success: boolean = false;

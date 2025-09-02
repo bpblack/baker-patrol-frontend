@@ -10,7 +10,7 @@
     }
     @if (showAlert()) {
       <alert type="danger" [dismissible]="true">
-        A new first and last name that does not match {{this.firstName}} {{this.lastName}} is required.
+        A new first and last name that does not match {{firstName}} {{lastName}} is required.
       </alert>
     }
     <form [formGroup]="updateName" (ngSubmit)="submit()">

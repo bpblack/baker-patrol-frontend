@@ -14,9 +14,10 @@ export interface PatrolResponsibility {
 }
 
 @Component({
-  selector: 'baker-duty-day',
-  templateUrl: './duty-day.component.html',
-  providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }]
+    selector: 'baker-duty-day',
+    templateUrl: './duty-day.component.html',
+    providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }],
+    standalone: false
 })
 export class DutyDayComponent {
   public dutyDay: DutyDayDetail;

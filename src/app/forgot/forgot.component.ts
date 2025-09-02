@@ -5,9 +5,10 @@ import { faAt, faCircleCheck, faGear, faTriangleExclamation } from '@fortawesome
 import { styleControl } from '../shared/validations/validations';
 
 @Component({
-  selector: 'baker-patrol-forgot',
-  templateUrl: './forgot.component.html',
-  styleUrls: ['./../login/login.component.css']
+    selector: 'baker-patrol-forgot',
+    templateUrl: './forgot.component.html',
+    styleUrls: ['./../login/login.component.css'],
+    standalone: false
 })
 export class ForgotComponent {
   public success: boolean = false;

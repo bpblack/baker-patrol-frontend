@@ -11,8 +11,9 @@ interface ITab {
 }
 
 @Component({
-  selector: 'baker-patrols',
-  templateUrl: './patrols.component.html'
+    selector: 'baker-patrols',
+    templateUrl: './patrols.component.html',
+    standalone: false
 })
 export class PatrolsComponent {
   public tabs: ITab[];

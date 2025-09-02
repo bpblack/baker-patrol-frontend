@@ -4,8 +4,9 @@ import { faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons
 import { Substitution } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-requests-tab',
-  templateUrl: './requests-tab.component.html'
+    selector: 'baker-requests-tab',
+    templateUrl: './requests-tab.component.html',
+    standalone: false
 })
 export class RequestsTabComponent {
   public igear: IconDefinition = faGear;

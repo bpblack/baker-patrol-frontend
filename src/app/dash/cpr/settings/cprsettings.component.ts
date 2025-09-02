@@ -8,8 +8,9 @@ import { styleControl } from 'src/app/shared/validations/validations';
 const urlRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
 
 @Component({
-  selector: 'baker-cpr-settings',
-  templateUrl: './cprsettings.component.html'
+    selector: 'baker-cpr-settings',
+    templateUrl: './cprsettings.component.html',
+    standalone: false
 })
 export class CprSettingsComponent {
   public disable = {classroom: false, initialize: false};

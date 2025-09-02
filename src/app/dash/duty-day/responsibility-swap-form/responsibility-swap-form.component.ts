@@ -12,8 +12,9 @@ export interface SwapResult {
 }
 
 @Component({
-  selector: 'baker-responsibility-swap-form',
-  templateUrl: './responsibility-swap-form.component.html'
+    selector: 'baker-responsibility-swap-form',
+    templateUrl: './responsibility-swap-form.component.html',
+    standalone: false
 })
 export class ResponsibilitySwapFormComponent implements OnInit {
   public submitted: boolean = false;

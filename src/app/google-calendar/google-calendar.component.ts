@@ -5,8 +5,9 @@ import { EMPTY, concatMap, finalize } from 'rxjs';
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'baker-google-calendar',
-  templateUrl: './google-calendar.component.html'
+    selector: 'baker-google-calendar',
+    templateUrl: './google-calendar.component.html',
+    standalone: false
 })
 export class GoogleCalendarComponent {
   public error: string;

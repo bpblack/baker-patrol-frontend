@@ -7,9 +7,10 @@ import { faCalendarDays, faChalkboardUser, faGear, faPowerOff, faSchoolFlag } fr
 import { BakerApiService,User, hasRole } from '../../shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-patrol-dash',
-  templateUrl: './dash.component.html',
-  providers: [{provide: BsDropdownConfig, useValue: {isAnimated: true, autoClose: true}}]
+    selector: 'baker-patrol-dash',
+    templateUrl: './dash.component.html',
+    providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }],
+    standalone: false
 })
 export class DashComponent implements OnInit, OnDestroy {
   public roles = {cpr: false, cpradmin: false, leader: false, admin: false};

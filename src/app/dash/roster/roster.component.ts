@@ -4,8 +4,9 @@ import { Observable, concatMap} from 'rxjs';
 import { BakerApiService, Season, TeamRoster, User, hasRole } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-roster',
-  templateUrl: './roster.component.html'
+    selector: 'baker-roster',
+    templateUrl: './roster.component.html',
+    standalone: false
 })
 export class RosterComponent {
   public isLeader: boolean = false;

@@ -13,8 +13,9 @@ const isPast: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
 } 
 
 @Component({
-  selector: 'baker-cpr-class',
-  templateUrl: './cprclasses.component.html'
+    selector: 'baker-cpr-class',
+    templateUrl: './cprclasses.component.html',
+    standalone: false
 })
 export class CprClassesComponent {
   public selected: number = 0;

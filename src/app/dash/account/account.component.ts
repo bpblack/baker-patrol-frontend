@@ -4,8 +4,9 @@ import { Observable } from 'rxjs';
 import { BakerApiService, User } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-account',
-  templateUrl: './account.component.html'
+    selector: 'baker-account',
+    templateUrl: './account.component.html',
+    standalone: false
 })
 export class AccountComponent {
   public user: Observable<User>;

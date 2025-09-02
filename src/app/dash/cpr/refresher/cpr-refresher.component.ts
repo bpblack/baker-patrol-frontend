@@ -4,7 +4,8 @@ import { BakerApiService, User } from "src/app/shared/services/baker-api.service
 
 @Component({
     selector: 'baker-cpr-refresher',
-    templateUrl: 'cpr-refresher.component.html'
+    templateUrl: 'cpr-refresher.component.html',
+    standalone: false
 })
 export class CprRefresherComponent implements OnInit {
   public token: string | null;

@@ -7,9 +7,10 @@ import { BakerApiService } from '../shared/services/baker-api.service';
 import { styleControl } from '../shared/validations/validations';
 
 @Component({
-  selector: 'baker-patrol-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    selector: 'baker-patrol-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent {
   public error: string | null = null;

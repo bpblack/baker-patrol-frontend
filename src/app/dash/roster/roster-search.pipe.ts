@@ -1,7 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TeamRoster, RosterUser } from '../../shared/services/baker-api.service';
 
-@Pipe({name: 'searchRoster'})
+@Pipe({
+    name: 'searchRoster',
+    standalone: false
+})
 export class SearchRosterPipe implements PipeTransform {
   transform(roster: TeamRoster[], search: string): any {
     if (!search || search.length === 0 ) {

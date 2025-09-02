@@ -3,8 +3,9 @@ import { IconDefinition, faGear, faTriangleExclamation } from '@fortawesome/free
 import { PatrolDetails } from 'src/app/shared/services/baker-api.service';
 
 @Component({
-  selector: 'baker-patrols-tab',
-  templateUrl: './patrols-tab.component.html'
+    selector: 'baker-patrols-tab',
+    templateUrl: './patrols-tab.component.html',
+    standalone: false
 })
 export class PatrolsTabComponent {
   public igear: IconDefinition = faGear;

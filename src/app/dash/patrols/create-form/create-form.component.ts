@@ -6,8 +6,9 @@ import { BakerApiService, SubAssignment } from 'src/app/shared/services/baker-ap
 import { AssignmentSuccessEvent, FormSubmittedEvent } from '../../shared/form-types';
 
 @Component({
-  selector: 'baker-create-sub-form',
-  templateUrl: './create-form.component.html'
+    selector: 'baker-create-sub-form',
+    templateUrl: './create-form.component.html',
+    standalone: false
 })
 export class CreateFormComponent {
   public submitted: boolean = false;

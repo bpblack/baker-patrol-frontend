@@ -23,7 +23,7 @@
                 <div class="input-group">
                   <span class="input-group-text" id="sdate">Start</span>
                   <input [class]="styleControl(seasonSetupForm.controls['start'])" #datepickerMDY="bsDatepicker" aria-describedby="sdate" bsDatepicker formControlName="start"
-                    [bsConfig]="dateConfig" [minDate]="this.startMonth[0]" [maxDate]="this.startMonth[1]" placeholder="MM/DD/YYYY">
+                    [bsConfig]="dateConfig" [minDate]="startMonth[0]" [maxDate]="startMonth[1]" placeholder="MM/DD/YYYY">
                   @if (setupErrors.start) {
                     <div class="invalid-feedback">
                       <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
@@ -36,7 +36,7 @@
                 <div class="input-group">
                   <span class="input-group-text" id="edate">End</span>
                   <input [class]="styleControl(seasonSetupForm.controls['end'])" #datepickerMDY="bsDatepicker" aria-describedby="edate" bsDatepicker formControlName="end"
-                    [bsConfig]="dateConfig" [minDate]="this.endMonth[0]" [maxDate]="this.endMonth[1]" placeholder="MM/DD/YYYY">
+                    [bsConfig]="dateConfig" [minDate]="endMonth[0]" [maxDate]="endMonth[1]" placeholder="MM/DD/YYYY">
                   @if (setupErrors.end) {
                     <div class="invalid-feedback">
                       <fa-icon [icon]="icons.tri"></fa-icon>&nbsp;
@@ -90,7 +90,7 @@
     </button>
   </div>
   <div class="modal-body">
-    @if (this.seasonSetupForm.valid) {
+    @if (seasonSetupForm.valid) {
       <div class="container">
         @if (setupErrors.api) {
           <div class="row">

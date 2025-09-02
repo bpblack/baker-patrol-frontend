@@ -9,10 +9,10 @@ import { styleControl } from '../shared/validations/validations';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
 @Component({
-  selector: 'baker-cpr-signup-form',
-  standalone: true,
-  imports: [FontAwesomeModule, ReactiveFormsModule, AlertModule],
-  templateUrl: './cpr-signup-form.component.html'
+    selector: 'baker-cpr-signup-form',
+    imports: [FontAwesomeModule, ReactiveFormsModule, AlertModule],
+    templateUrl: './cpr-signup-form.component.html',
+    standalone: true,
 })
 export class CprSignupFormComponent implements OnInit, OnDestroy {
   public cprSignup: CprSignup;

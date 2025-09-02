@@ -11,8 +11,9 @@ interface Result {
 }
 
 @Component({
-  selector: 'baker-update-password',
-  templateUrl: './update-password.component.html'
+    selector: 'baker-update-password',
+    templateUrl: './update-password.component.html',
+    standalone: false
 })
 export class UpdatePasswordComponent {
   public submitted: boolean = false;

@@ -11,8 +11,9 @@ interface Result {
 }
 
 @Component({
-  selector: 'baker-update-email',
-  templateUrl: './update-email.component.html'
+    selector: 'baker-update-email',
+    templateUrl: './update-email.component.html',
+    standalone: false
 })
 export class UpdateEmailComponent {
   public submitted: boolean = false;

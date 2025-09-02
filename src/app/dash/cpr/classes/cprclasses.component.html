@@ -51,7 +51,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (s of this.cprClasses[selected].students!; track s.id) {
+              @for (s of cprClasses[selected].students!; track s.id) {
                 <tr>
                   <td class="col-6" data-title="Student">{{s.first_name}} {{s.last_name}}</td>
                   <td data-title="Email"><a href="mailto:{{s.email}}">{{s.email}}</a></td>

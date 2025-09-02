@@ -7,8 +7,9 @@ import { idSelectionValidator } from 'src/app/shared/validations/validations';
 import { AssignmentSuccessEvent, FormSubmittedEvent } from '../form-types';
 
 @Component({
-  selector: 'baker-create-assign-sub-form',
-  templateUrl: './create-assign-form.component.html'
+    selector: 'baker-create-assign-sub-form',
+    templateUrl: './create-assign-form.component.html',
+    standalone: false
 })
 export class CreateAssignFormComponent {
   public error: string | null = null;

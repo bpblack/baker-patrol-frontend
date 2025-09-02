@@ -23,8 +23,9 @@ function nameValidator(fn: string, ln: string): ValidatorFn {
 }
 
 @Component({
-  selector: 'baker-update-name',
-  templateUrl: './update-name.component.html'
+    selector: 'baker-update-name',
+    templateUrl: './update-name.component.html',
+    standalone: false
 })
 export class UpdateNameComponent {
   public message: Result | null = null;

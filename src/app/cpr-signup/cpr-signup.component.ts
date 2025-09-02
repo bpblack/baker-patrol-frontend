@@ -5,10 +5,10 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CprSignupFormComponent } from './cpr-signup-form.component';
 
 @Component({
-  selector: 'baker-cpr-signup',
-  standalone: true,
-  imports: [CprSignupFormComponent, FontAwesomeModule],
-  templateUrl: './cpr-signup.component.html'
+    selector: 'baker-cpr-signup',
+    imports: [CprSignupFormComponent, FontAwesomeModule],
+    templateUrl: './cpr-signup.component.html',
+    standalone: true,
 })
 export class CprSignupComponent implements OnInit {
   public token: string;
