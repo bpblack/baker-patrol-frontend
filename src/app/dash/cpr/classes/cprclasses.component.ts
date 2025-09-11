@@ -106,6 +106,7 @@ export class CprClassesComponent {
 
   showAddClass() {
     if (!this.cprAdmin) return;
+    this.editClass = false;
     this.addClassRef = this._modal.show(this.addClass, {animated: true, backdrop: true, ignoreBackdropClick: true, class: 'modal-lg'});
   }
 

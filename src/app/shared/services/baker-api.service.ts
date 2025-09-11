@@ -652,7 +652,7 @@ export class BakerApiService implements IAuthService {
     );
   }
 
-  addClassroom(f: {name: string, address: string, map_link: string}): Observable<Classroom> {
+  addClassroom(f: {name: string, address: string, map_link: string, note: string}): Observable<Classroom> {
     return this.http.post<Classroom>(this.url + '/admin/classrooms', JSON.stringify(f), this.defaultOptions()).pipe(
       catchError(this.handleError)
     );

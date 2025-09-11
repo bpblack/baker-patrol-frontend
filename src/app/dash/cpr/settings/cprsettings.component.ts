@@ -25,7 +25,8 @@ export class CprSettingsComponent {
   public addClassroomForm: FormGroup = this._fb.group({
     name: new FormControl('', [Validators.required]),
     address: new FormControl('', [Validators.required]),
-    map_link: new FormControl('', [Validators.required, Validators.pattern(urlRegex)])
+    map_link: new FormControl('', [Validators.required, Validators.pattern(urlRegex)]),
+    note: new FormControl('')
   });
 
   constructor(private _api: BakerApiService, private _fb: FormBuilder) {}
@@ -65,6 +66,10 @@ export class CprSettingsComponent {
 
   get classroomLink() {
     return this.addClassroomForm.controls['map_link'];
+  }
+
+  get classroomNote() {
+    return this.addClassroomForm.controls['note'];
   }
 
   onAddClassroom() {

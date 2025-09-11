@@ -58,7 +58,7 @@
             <h4>Add a classroom</h4>
           </div>
           <div class="card-body">
-            <form class="row g-2" [formGroup]="addClassroomForm" (ngSubmit)="onAddClassroom()">
+            <form class="row g-2 form-floating" [formGroup]="addClassroomForm" (ngSubmit)="onAddClassroom()">
               @if (error) {
                 <div class="col-md-12">
                   <alert type="danger" [dismissible]="true" (click)="clearError()">
@@ -90,6 +90,12 @@
                 <div class="input-group">
                   <span class="input-group-text" id="clink">Map link</span>
                   <input type="text" [class]="styleControl(classroomLink)" aria-describedby="clink" formControlName="map_link" placeholder="Google maps share url">
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-floating">
+                  <textarea [class]="styleControl(classroomNote)" id="cnote" formControlName="note" placeholder="Classroom notes for emails"></textarea>
+                  <label for="cnote">Optional note to include in emails</label>
                 </div>
               </div>
               <div class="col-md-12">
