@@ -35,7 +35,7 @@ export class CprClassesComponent {
 
   public addClassForm: FormGroup = this._fb.group({
     classroom_id: new FormControl('', [Validators.required]),
-    time: new FormControl('', [Validators.required, isPast]),
+    time: new FormControl('', [Validators.required]),
     class_size: new FormControl('', [Validators.required, Validators.pattern("^[0-9]+$")])
   });
 
@@ -150,11 +150,8 @@ export class CprClassesComponent {
         })
       ).subscribe({
         next: (c: CprClass) => {
-          this.cprClasses.splice(this.cprClasses.findIndex((cur: CprClass) => {
-            const nd = Date.parse(c.time)
-            const cd = Date.parse(cur.time)
-            return nd <= cd;
-          }), 0, c);
+          this.cprClasses.push(c)
+          this.cprClasses.sort((a: CprClass, b: CprClass) => Date.parse(a.time) - Date.parse(b.time))
           this.addClassForm.reset();
           this.success = 'Added ' + c.classroom.name + ' @ ' + c.time + ' with a class size of ' + c.class_size!;
           this.clearError();
