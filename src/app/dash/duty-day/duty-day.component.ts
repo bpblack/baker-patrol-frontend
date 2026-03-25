@@ -4,7 +4,6 @@ import { Observable, Subscription, catchError, combineLatest, concatMap, forkJoi
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import moment from 'moment';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
 import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared/form-types';
