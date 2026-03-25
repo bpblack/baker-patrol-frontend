@@ -36,6 +36,7 @@ export interface User {
   seasons: Season[];
   roles: Role[];
   cpr_token: string | null;
+  todays_duty_day_id?: number | null;
 }
 
 export interface RosterUser {

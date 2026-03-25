@@ -78,7 +78,9 @@ export class PatrolsComponent {
   }
   
   ngOnDestroy() {
-    this._poll.unsubscribe();
+    if (this._poll) {
+      this._poll.unsubscribe();
+    }
   }
 
   startPoll() {

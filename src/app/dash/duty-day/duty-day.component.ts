@@ -4,6 +4,7 @@ import { Observable, Subscription, catchError, combineLatest, concatMap, forkJoi
 import { IconDefinition, faGear } from '@fortawesome/free-solid-svg-icons';
 import { BsDropdownConfig } from 'ngx-bootstrap/dropdown';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import moment from 'moment';
 import { SwapResult } from './responsibility-swap-form/responsibility-swap-form.component';
 import { BakerApiService, DutyDayDetail, LatestSub, Patrol, Role, SubHistory, User, hasRole } from 'src/app/shared/services/baker-api.service';
 import { AssignmentSuccessEvent, FormSubmittedEvent, isAssignmentSuccessEvent, isFormSubmittedEvent } from '../shared/form-types';
@@ -24,6 +25,7 @@ export class DutyDayComponent {
   public available: string[];
   public error: string | null = null;
   public isLeader: boolean = false;
+  public isStaff: boolean = false;
   public disable: boolean = false;
   public patrolling: string[] = [];
   public hosting: string[] = [];
@@ -60,20 +62,24 @@ export class DutyDayComponent {
       error: (e: Error) => this.error = e.message
     })
 
-    // poll once a minute for updated data and emails
-    this._poll = interval(60000).pipe(
-      switchMap(() => forkJoin({
-        dd: this._api.getDutyDay(this._id), 
-        a: this.isLeader ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
-      }))
-    ).subscribe((x: {dd: DutyDayDetail, a: string[]}) => {
-      this.updateDutyDay(x.dd);
-      this.available = x.a;
-    });
+    if (this._id !== -1) {
+      // poll once a minute for updated data and emails
+      this._poll = interval(60000).pipe(
+        switchMap(() => forkJoin({
+          dd: this._api.getDutyDay(this._id), 
+          a: this.isLeader ? this._api.getAvailablePatrollers(this._id) : of(<string[]>[])
+        }))
+      ).subscribe((x: {dd: DutyDayDetail, a: string[]}) => {
+        this.updateDutyDay(x.dd);
+        this.available = x.a;
+      });
+    }
   }
 
   ngOnDestroy() {
-    this._poll.unsubscribe();
+    if (this._id !== -1) {
+      this._poll.unsubscribe();
+    }
   }
 
   availableMailTo() {
@@ -185,6 +191,7 @@ export class DutyDayComponent {
 
   private updateRoles(ra: Role[], seasonId: number, teamId: number) {
     this.isLeader = hasRole(ra, new Set(['admin', 'leader']), seasonId, teamId);
+    this.isStaff = hasRole(ra, new Set(['staff']))
   }
 
   private updateDutyDay(dd: DutyDayDetail) {

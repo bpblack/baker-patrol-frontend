@@ -15,92 +15,101 @@
       @if (user | async; as user) {
         <div>
           <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" routerLinkActive="active" routerLink="./Patrols">Duty Days</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLinkActive="active" routerLink="./Team">Team</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLinkActive="active" routerLink="./Roster">Roster</a>
-            </li>
-            @if (roles.admin) {
-              <li class="nav-item dropdown" dropdown>
-                <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Admin
-                </a>
-                <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
-                  <li class="nav-item">
-                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Schedule">
-                      <fa-icon [icon]="icons.calendar"></fa-icon>&nbsp;
-                      Season
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Settings">
-                      <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
-                      Settings
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            } @else if (roles.leader) {
+            @if (roles.staff) {
               <li class="nav-item">
-                <a class="nav-link" routerLinkActive="active" routerLink="./Season/Schedule">Season</a>
-              </li>
-            }
-            @if (roles.cpr) {
-              <li class="nav-item dropdown" dropdown>
-                <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  CPR
+                <a class="nav-link" routerLink="/Login" (click)="logout()">
+                  <fa-icon [icon]="icons.power"></fa-icon>&nbsp;
+                  Logout
                 </a>
-                <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
-                  <li>
-                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Classes">
-                      <fa-icon [icon]="icons.school"></fa-icon>&nbsp;
-                      Classes
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Students">
-                      <fa-icon [icon]="icons.chalkboard"></fa-icon>&nbsp;
-                      Students
-                    </a>
-                  </li>
-                  @if (roles.cpradmin) {
-                    <li>
-                      <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Settings">
+              </li>
+            } @else {
+              <li class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="./Patrols">Duty Days</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="./Team">Team</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" routerLinkActive="active" routerLink="./Roster">Roster</a>
+              </li>
+              @if (roles.admin) {
+                <li class="nav-item dropdown" dropdown>
+                  <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Admin
+                  </a>
+                  <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+                    <li class="nav-item">
+                      <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Schedule">
+                        <fa-icon [icon]="icons.calendar"></fa-icon>&nbsp;
+                        Season
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="dropdown-item" routerLinkActive="active" routerLink="./Season/Settings">
                         <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
                         Settings
                       </a>
                     </li>
-                  }
+                  </ul>
+                </li>
+              } @else if (roles.leader) {
+                <li class="nav-item">
+                  <a class="nav-link" routerLinkActive="active" routerLink="./Season/Schedule">Season</a>
+                </li>
+              }
+              @if (roles.cpr) {
+                <li class="nav-item dropdown" dropdown>
+                  <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    CPR
+                  </a>
+                  <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Classes">
+                        <fa-icon [icon]="icons.school"></fa-icon>&nbsp;
+                        Classes
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Students">
+                        <fa-icon [icon]="icons.chalkboard"></fa-icon>&nbsp;
+                        Students
+                      </a>
+                    </li>
+                    @if (roles.cpradmin) {
+                      <li>
+                        <a class="dropdown-item" routerLinkActive="active" routerLink="./Cpr/Settings">
+                          <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
+                          Settings
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </li>
+              } @else if (cprRefresher) {
+                <li class="nav-item">
+                  <a class="nav-link" routerLinkActive="active" routerLink="./Cpr/Refresher">CPR Refresher</a>
+                </li>
+              }
+              <li class="nav-item dropdown" dropdown>
+                <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{user.first_name}} {{user.last_name}}
+                </a>
+                <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" routerLinkActive="active" routerLink="./Account">
+                      <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
+                      Settings
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" routerLink="/Login" (click)="logout()">
+                      <fa-icon [icon]="icons.power"></fa-icon>&nbsp;
+                      Logout
+                    </a>
+                  </li>
                 </ul>
               </li>
-            } @else if (cprRefresher) {
-              <li class="nav-item">
-                <a class="nav-link" routerLinkActive="active" routerLink="./Cpr/Refresher">CPR Refresher</a>
-              </li>
             }
-            <li class="nav-item dropdown" dropdown>
-              <a dropdownToggle class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {{user.first_name}} {{user.last_name}}
-              </a>
-              <ul id="nav-dropdown" *dropdownMenu class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" routerLinkActive="active" routerLink="./Account">
-                    <fa-icon [icon]="icons.gear"></fa-icon>&nbsp;
-                    Settings
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" routerLink="/Login" (click)="logout()">
-                    <fa-icon [icon]="icons.power"></fa-icon>&nbsp;
-                    Logout
-                  </a>
-                </li>
-              </ul>
-            </li>
           </ul>  
         </div>
       }

@@ -3,7 +3,11 @@
     <div class="card-header container-fluid">
       <div class="row">
         <div class="col-md-auto">
-          <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
+          @if(isStaff && dutyDay.team.id === -1) {
+            <h2>No volunteer patrol team is on duty today ({{dutyDay.date}})</h2>
+          } @else {
+            <h2>{{dutyDay.team.name}} Duty Day {{dutyDay.date}}</h2>
+          }
         </div>
         @if (isLeader) {
           <div class="col">
@@ -25,56 +29,58 @@
         }
       </div>
     </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-          <thead>
-            <tr>
-              <th>Patroller</th>
-              <th>Skills</th>
-              <th class="col-md-3">Responsibility</th>
-              @if (isLeader) {
-                <th>Phone #</th>
-                <th>Management</th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @for (patrol of dutyDay.patrols; track patrol.id; let i=$index) {
-              <tr [ngClass]="rowColor(patrol.patroller.id, patrol.latest_substitution)">
-                <td data-title="Patroller">{{patrol.patroller.name}}</td>
-                <td data-title="Skills">{{patrol.patroller.skills}}</td>
-                <td data-title="Responsibility">
-                  @if (isLeader && dutyDay.swapable) {
-                    @if (swapRow !== i) {
-                      <a class="link-secondary" (click)="setSwapRow(i)">
-                        {{patrol.responsibility.name}}
-                      </a>
-                    } @else {
-                      <span class="editable-container editable-inline">
-                        <baker-responsibility-swap-form [patrolId]="patrol.id" [responsibilities]="responsibilities.get(patrol.responsibility.role)!" (swap)="onPatrolSwap($event)">
-                        </baker-responsibility-swap-form>
-                      </span>
-                    }
-                  } @else {
-                    {{patrol.responsibility.name}}
-                  }
-                </td>
+    @if (dutyDay.patrols.length > 0) {
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Patroller</th>
+                <th>Skills</th>
+                <th class="col-md-3">Responsibility</th>
                 @if (isLeader) {
-                  <td data-title="Phone #">
-                    <a href="tel:{{patrol.patroller.phone}}" class="baker-tel">{{patrol.patroller.phone}}</a>
-                  </td>
-                  <td data-title="Management">
-                    <button class="btn btn-primary" [disabled]="!dutyDay.swapable" (click)="showManageModal(i)">
-                      Manage
-                    </button>
-                  </td>}
+                  <th>Phone #</th>
+                  <th>Management</th>
+                }
               </tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              @for (patrol of dutyDay.patrols; track patrol.id; let i=$index) {
+                <tr [ngClass]="rowColor(patrol.patroller.id, patrol.latest_substitution)">
+                  <td data-title="Patroller">{{patrol.patroller.name}}</td>
+                  <td data-title="Skills">{{patrol.patroller.skills}}</td>
+                  <td data-title="Responsibility">
+                    @if (isLeader && dutyDay.swapable) {
+                      @if (swapRow !== i) {
+                        <a class="link-secondary" (click)="setSwapRow(i)">
+                          {{patrol.responsibility.name}}
+                        </a>
+                      } @else {
+                        <span class="editable-container editable-inline">
+                          <baker-responsibility-swap-form [patrolId]="patrol.id" [responsibilities]="responsibilities.get(patrol.responsibility.role)!" (swap)="onPatrolSwap($event)">
+                          </baker-responsibility-swap-form>
+                        </span>
+                      }
+                    } @else {
+                      {{patrol.responsibility.name}}
+                    }
+                  </td>
+                  @if (isLeader) {
+                    <td data-title="Phone #">
+                      <a href="tel:{{patrol.patroller.phone}}" class="baker-tel">{{patrol.patroller.phone}}</a>
+                    </td>
+                    <td data-title="Management">
+                      <button class="btn btn-primary" [disabled]="!dutyDay.swapable" (click)="showManageModal(i)">
+                        Manage
+                      </button>
+                    </td>}
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    }
   </div>
 } @else {
   <div class="card">
@@ -149,5 +155,5 @@
       <fa-icon [icon]="igear" animation="spin"></fa-icon>&nbsp;
       Loading patrol substitution data...
     </div>
-  }
+}
 </ng-template>
