@@ -14,7 +14,7 @@
   "dependencies": {
     "@angular/animations": "^20.2.3",
     "@angular/cdk": "^20.2.1",
-    "@angular/cli": "~20.2.1",
+    "@angular/cli": "^20.3.21",
     "@angular/common": "^20.2.3",
     "@angular/compiler": "^20.2.3",
     "@angular/compiler-cli": "^20.2.3",
@@ -50,7 +50,7 @@
     "typescript": "~5.9.2"
   },
   "engines": {
-    "node": "v22.19.0",
-    "npm": "11.6.3"
+    "node": "v25.2.1",
+    "npm": "11.12.0"
   }
 }
